@@ -1,7 +1,5 @@
 library aicycle_insurance;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export './src/claim_folder/claim_folder.dart';
+
+const packageName = 'aicycle_insurance';
