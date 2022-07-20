@@ -1,5 +1,11 @@
 class StringKeys {
   StringKeys._();
+  // common
+  static const String areYouSureToDeleteImage =
+      'Bạn chắc chắn muốn xoá toàn bộ ảnh đã tải lên?';
+  static const String dialogCancel = 'Huỷ';
+  static const String delete = 'Xoá';
+
   // part directions
   static const String carHead = 'Trước';
   static const String rightHead45 = 'Phải - Trước';
@@ -14,4 +20,10 @@ class StringKeys {
   static const String noImages = "Chưa có ảnh, vui lòng chụp thêm";
   static const String detail = "Cụ thể";
   static const String imageWord = "Ảnh";
+  // camera
+  static const String close = 'Đóng';
+  static const String overViewShot = 'Toàn cảnh';
+  static const String middleViewShot = 'Trung cảnh';
+  static const String closeUpViewShot = 'Cận cảnh';
+  static const String middleAndCloseUpView = 'Trung & Cận cảnh';
 }

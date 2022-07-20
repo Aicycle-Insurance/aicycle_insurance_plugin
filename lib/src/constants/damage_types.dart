@@ -1,4 +1,4 @@
-import 'package:aicycle_insurance/types/damage_type.dart';
+import '../../types/damage_type.dart';
 
 class DamageTypeConstant {
   DamageTypeConstant._();

@@ -3,14 +3,11 @@
 
 import 'dart:io';
 
-import 'package:aicycle_insurance/src/constants/endpoints.dart';
-import 'package:aicycle_insurance/src/modules/resful_module.dart';
-import 'package:aicycle_insurance/src/modules/resful_module_impl.dart';
-import 'package:aicycle_insurance/types/summaty_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../types/summaty_image.dart';
 import '../../types/part_direction.dart';
 import '../../gen/assets.gen.dart';
 import '../../types/part_direction_meta.dart';
@@ -19,6 +16,12 @@ import '../constants/car_brand.dart';
 import '../constants/colors.dart';
 import '../constants/car_part_direction.dart';
 import '../constants/strings.dart';
+import '../camera_view/camera_argument.dart';
+import '../constants/endpoints.dart';
+import '../modules/resful_module.dart';
+import '../modules/resful_module_impl.dart';
+import '../preview_all_image/preview_all_image_page.dart';
+import '../camera_view/camera_page.dart';
 import 'photo_taken_point.dart';
 import 'widgets/summary_image_section.dart';
 // import 'package:get/get.dart';
@@ -75,6 +78,9 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
   final double _carWidth = 274.0;
   late List<SummaryImage> _summaryImages;
 
+  // Aicycle Claim id
+  var claimId = ''.obs;
+
   /// 6 góc chụp
   /// trái trước
   late Rx<PartDirection> _front45Left;
@@ -116,32 +122,32 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
   void initPartDirection() {
     _front45Left = Rx<PartDirection>(PartDirection(
       partDirectionId: 4,
-      partDirectionNameKey: StringKeys.leftHead45,
+      partDirectionName: StringKeys.leftHead45,
       meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[4]!),
     ));
     _frontStraight = Rx<PartDirection>(PartDirection(
       partDirectionId: 2,
-      partDirectionNameKey: StringKeys.carHead,
+      partDirectionName: StringKeys.carHead,
       meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[2]!),
     ));
     _front45Right = Rx<PartDirection>(PartDirection(
       partDirectionId: 3,
-      partDirectionNameKey: StringKeys.rightHead45,
+      partDirectionName: StringKeys.rightHead45,
       meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[3]!),
     ));
     _leftRear = Rx<PartDirection>(PartDirection(
       partDirectionId: 7,
-      partDirectionNameKey: StringKeys.leftTail45,
+      partDirectionName: StringKeys.leftTail45,
       meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[7]!),
     ));
     _rightRear = Rx<PartDirection>(PartDirection(
       partDirectionId: 6,
-      partDirectionNameKey: StringKeys.rightTail45,
+      partDirectionName: StringKeys.rightTail45,
       meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[6]!),
     ));
     _rear = Rx<PartDirection>(PartDirection(
       partDirectionId: 5,
-      partDirectionNameKey: StringKeys.carTail,
+      partDirectionName: StringKeys.carTail,
       meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[5]!),
     ));
   }
@@ -231,10 +237,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                                     constraints.maxHeight,
                                 child: Obx(
                                   () => PhotoTakenPoint(
-                                    onTap: () {
-                                      // => controller
-                                      //   .goToAIModeCamera(carDirection)
-                                    },
+                                    onTap: () => _goToCameraPage(carDirection),
                                     isTaken:
                                         carDirection.value.images.isNotEmpty ||
                                             carDirection
@@ -295,8 +298,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                       child: Text(
-                                        carDirection
-                                            .value.partDirectionNameKey.tr,
+                                        carDirection.value.partDirectionName,
                                         style: const TextStyle(fontSize: 12),
                                         maxLines: 2,
                                       ),
@@ -304,10 +306,8 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                                     const SizedBox(height: 4),
                                     if (allImageLength > 0)
                                       GestureDetector(
-                                        onTap: () {
-                                          // => controller
-                                          //   .goToPartDetails(carDirection)
-                                        },
+                                        onTap: () =>
+                                            _goToPreviewPage(carDirection),
                                         child: Container(
                                           padding: const EdgeInsets.all(4),
                                           decoration: BoxDecoration(
@@ -373,6 +373,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
         token: widget.uTokenKey,
       );
       if (response.body != null) {
+        claimId.value = response.body['data'][0]['claimId'].toString();
         return response.body['data'][0]['claimId'].toString();
       } else {
         if (widget.onError != null) {
@@ -383,5 +384,44 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
     } catch (e) {
       rethrow;
     }
+  }
+
+  void _goToPreviewPage(Rx<PartDirection> partDirection) async {
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => PreviewAllImagePage(
+                  cameraArgument: CameraArgument(
+                    partDirection: partDirection.value,
+                    claimId: claimId.value,
+                    imageRangeId: 1,
+                  ),
+                  token: widget.uTokenKey,
+                  onError: (message) {
+                    if (widget.onError != null) {
+                      widget.onError!(message);
+                    }
+                  },
+                ))).then((value) {
+      if (value is CameraArgument) {
+        partDirection.value = value.partDirection;
+      }
+    });
+  }
+
+  void _goToCameraPage(Rx<PartDirection> partDirection) async {
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => CameraPage(
+                    cameraArgument: CameraArgument(
+                  partDirection: partDirection.value,
+                  claimId: claimId.value,
+                  imageRangeId: 1,
+                )))).then((value) {
+      if (value is CameraArgument) {
+        partDirection.value = value.partDirection;
+      }
+    });
   }
 }

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:aicycle_insurance/src/constants/endpoints.dart';
+import '../constants/endpoints.dart';
 import 'package:get/get.dart';
 import 'package:path/path.dart';
 import 'package:http/http.dart' as http;

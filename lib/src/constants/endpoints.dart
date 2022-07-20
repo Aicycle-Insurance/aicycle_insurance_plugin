@@ -10,4 +10,10 @@ class Endpoints {
       baseUrl + '/claimfolders/$claimID/summaries';
   static String deleteSummaryImage(String imageId) =>
       baseUrl + '/claimimages/summary/$imageId';
+
+  // part image
+  static String deleteAllImageInClaim(String claimID) =>
+      baseUrl + '/claimimages/all/$claimID';
+  static String deleteImageInCLaim(String imageID) =>
+      baseUrl + '/claimimages/$imageID';
 }

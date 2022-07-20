@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:aicycle_insurance/src/modules/module_types/options.dart';
-import 'package:aicycle_insurance/src/modules/module_types/common_response.dart';
-import 'package:aicycle_insurance/src/modules/resful_module.dart';
+import '../modules/module_types/options.dart';
+import '../modules/module_types/common_response.dart';
+import '../modules/resful_module.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 

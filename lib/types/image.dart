@@ -1,6 +1,6 @@
-import 'package:aicycle_insurance/src/extensions/hex_color_extension.dart';
 import 'package:flutter/material.dart';
 
+import '../src/extensions/hex_color_extension.dart';
 import 'mask_data.dart';
 
 class AiImage {

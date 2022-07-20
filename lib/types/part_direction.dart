@@ -5,7 +5,7 @@ import 'part_direction_meta.dart';
 
 class PartDirection {
   final int partDirectionId;
-  final String partDirectionNameKey;
+  final String partDirectionName;
   // final List<String> images;
   // final List<String> overViewImages;
   // final List<String> middleViewImages;
@@ -23,7 +23,7 @@ class PartDirection {
 
   PartDirection({
     required this.partDirectionId,
-    required this.partDirectionNameKey,
+    required this.partDirectionName,
     this.images = const [],
     this.overViewImages = const [],
     this.middleViewImages = const [],
@@ -38,7 +38,7 @@ class PartDirection {
 
   PartDirection copyWith({
     int? partDirectionId,
-    String? partDirectionNameKey,
+    String? partDirectionName,
     List<AiImage>? images,
     List<AiImage>? overViewImages,
     List<AiImage>? middleViewImages,
@@ -57,7 +57,7 @@ class PartDirection {
         middleViewImages: middleViewImages ?? this.middleViewImages,
         overViewImages: overViewImages ?? this.overViewImages,
         partDirectionId: partDirectionId ?? this.partDirectionId,
-        partDirectionNameKey: partDirectionNameKey ?? this.partDirectionNameKey,
+        partDirectionName: partDirectionName ?? this.partDirectionName,
         imageFiles: imageFiles ?? this.imageFiles,
         overViewImageFiles: overViewImageFiles ?? this.overViewImageFiles,
         middleViewImageFiles: middleViewImageFiles ?? this.middleViewImageFiles,

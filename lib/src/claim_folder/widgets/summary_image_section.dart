@@ -1,17 +1,19 @@
 import 'dart:io';
 
-import 'package:aicycle_insurance/src/constants/colors.dart';
-import 'package:aicycle_insurance/src/constants/endpoints.dart';
-import 'package:aicycle_insurance/src/constants/strings.dart';
-import 'package:aicycle_insurance/src/modules/resful_module.dart';
-import 'package:aicycle_insurance/src/modules/resful_module_impl.dart';
-import 'package:aicycle_insurance/src/utils/upload_image_to_s3.dart';
-import 'package:aicycle_insurance/types/summaty_image.dart';
+import 'package:aicycle_insurance/src/common/image_view/image_view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
+
+import '../../constants/colors.dart';
+import '../../constants/endpoints.dart';
+import '../../constants/strings.dart';
+import '../../modules/resful_module.dart';
+import '../../modules/resful_module_impl.dart';
+import '../../utils/upload_image_to_s3.dart';
+import '../../../types/summaty_image.dart';
 
 class SummaryImagesSection extends StatefulWidget {
   const SummaryImagesSection({
@@ -117,11 +119,13 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
           shrinkWrap: true,
           children: _images.map((element) {
             late Widget child;
+            late String imageUrl;
             if (element.localFilePath != null && element.localFilePath != '') {
               child = Image.file(
                 File(element.localFilePath!),
                 fit: BoxFit.cover,
               );
+              imageUrl = element.localFilePath!;
             } else {
               child = CachedNetworkImage(
                 imageUrl: element.url ?? '',
@@ -145,19 +149,27 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
                   );
                 },
               );
+              imageUrl = element.url!;
             }
             return Stack(
               children: [
                 GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    height: 72,
-                    width: double.maxFinite,
-                    decoration:
-                        BoxDecoration(borderRadius: BorderRadius.circular(8.0)),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(6.0),
-                      child: child,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ImageView(imageUrl: imageUrl)),
+                  ),
+                  child: Hero(
+                    tag: imageUrl,
+                    child: Container(
+                      height: 72,
+                      width: double.maxFinite,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8.0)),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(6.0),
+                        child: child,
+                      ),
                     ),
                   ),
                 ),

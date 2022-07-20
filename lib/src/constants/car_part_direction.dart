@@ -1,5 +1,4 @@
-import 'package:aicycle_insurance/gen/assets.gen.dart';
-
+import '../../gen/assets.gen.dart';
 import 'strings.dart';
 
 class CarPartConstant {
