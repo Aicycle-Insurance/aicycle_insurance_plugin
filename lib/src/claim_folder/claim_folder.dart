@@ -1,10 +1,12 @@
 // Copyright © 2022 AICycle. All rights reserved.
 // found in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:aicycle_insurance/src/constants/endpoints.dart';
 import 'package:aicycle_insurance/src/modules/resful_module.dart';
 import 'package:aicycle_insurance/src/modules/resful_module_impl.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:aicycle_insurance/types/summaty_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,6 +20,7 @@ import '../constants/colors.dart';
 import '../constants/car_part_direction.dart';
 import '../constants/strings.dart';
 import 'photo_taken_point.dart';
+import 'widgets/summary_image_section.dart';
 // import 'package:get/get.dart';
 
 class ClaimFolderView extends StatefulWidget {
@@ -31,6 +34,12 @@ class ClaimFolderView extends StatefulWidget {
     required this.uTokenKey,
     this.loadingWidget,
     this.onError,
+    this.onFrontLeftChanged,
+    this.onFrontRightChanged,
+    this.onFrontChanged,
+    this.onLeftRearChanged,
+    this.onRightRearChanged,
+    this.onRearChanged,
   }) : super(key: key);
 
   /// ID hồ sơ
@@ -48,6 +57,13 @@ class ClaimFolderView extends StatefulWidget {
   /// Khi xử lý lỗi
   final Function(String message)? onError;
 
+  final Function(List<File>)? onFrontLeftChanged;
+  final Function(List<File>)? onFrontRightChanged;
+  final Function(List<File>)? onFrontChanged;
+  final Function(List<File>)? onLeftRearChanged;
+  final Function(List<File>)? onRightRearChanged;
+  final Function(List<File>)? onRearChanged;
+
   @override
   State<ClaimFolderView> createState() => _ClaimFolderViewState();
 }
@@ -57,9 +73,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
   final double _carHeight = 448.0;
   // 3d car width
   final double _carWidth = 274.0;
-  late List overViewImages;
-  final String _testUrl =
-      'https://s3-sgn09.fptcloud.com/aicycle-dev/INSURANCE/1657685983338/1657685983301.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=0080fa5f9d06c7ad85c7%2F20220717%2Fsgn09%2Fs3%2Faws4_request&X-Amz-Date=20220717T161001Z&X-Amz-Expires=7200&X-Amz-Signature=d63d3c47ece4565f9a327ae09eae77ba810f578fee85b723da08c3e75f312be2&X-Amz-SignedHeaders=host';
+  late List<SummaryImage> _summaryImages;
 
   /// 6 góc chụp
   /// trái trước
@@ -72,22 +86,22 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
   late Rx<PartDirection> _front45Right;
 
   /// phải sau
-  late Rx<PartDirection> _behind45Left;
+  late Rx<PartDirection> _leftRear;
 
   /// sau
-  late Rx<PartDirection> _behindStraight;
+  late Rx<PartDirection> _rear;
 
   /// phải sau
-  late Rx<PartDirection> _behind45Right;
+  late Rx<PartDirection> _rightRear;
 
   List<Rx<PartDirection>> get _listPartDirections {
     return [
       _front45Left,
       _frontStraight,
       _front45Right,
-      _behind45Left,
-      _behind45Right,
-      _behindStraight,
+      _leftRear,
+      _rightRear,
+      _rear,
     ];
   }
 
@@ -95,7 +109,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
   void initState() {
     super.initState();
     initPartDirection();
-    overViewImages = [1, 2, 3, 4];
+    _summaryImages = [];
     // _createClaimFolder();
   }
 
@@ -115,17 +129,17 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
       partDirectionNameKey: StringKeys.rightHead45,
       meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[3]!),
     ));
-    _behind45Left = Rx<PartDirection>(PartDirection(
+    _leftRear = Rx<PartDirection>(PartDirection(
       partDirectionId: 7,
       partDirectionNameKey: StringKeys.leftTail45,
       meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[7]!),
     ));
-    _behind45Right = Rx<PartDirection>(PartDirection(
+    _rightRear = Rx<PartDirection>(PartDirection(
       partDirectionId: 6,
       partDirectionNameKey: StringKeys.rightTail45,
       meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[6]!),
     ));
-    _behindStraight = Rx<PartDirection>(PartDirection(
+    _rear = Rx<PartDirection>(PartDirection(
       partDirectionId: 5,
       partDirectionNameKey: StringKeys.carTail,
       meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[5]!),
@@ -136,7 +150,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: _createClaimFolder(),
-        builder: (context, snapShot) {
+        builder: (context, AsyncSnapshot<String?> snapShot) {
           if (snapShot.connectionState == ConnectionState.waiting) {
             return Center(
                 child:
@@ -150,53 +164,18 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    color: Colors.white,
-                    padding: const EdgeInsets.all(16).copyWith(bottom: 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              '${StringKeys.overView} (${overViewImages.length})',
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            CupertinoButton(
-                              padding: EdgeInsets.zero,
-                              minSize: 0,
-                              child: Material(
-                                color: Colors.transparent,
-                                child: Row(
-                                  children: const [
-                                    Icon(
-                                      CupertinoIcons.camera,
-                                      size: 18,
-                                      color: DefaultColors.blue,
-                                    ),
-                                    SizedBox(width: 4),
-                                    Material(
-                                      child: Text(
-                                        StringKeys.takePicture,
-                                        style: TextStyle(
-                                          color: DefaultColors.blue,
-                                          fontWeight: FontWeight.normal,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              onPressed: () {},
-                            )
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        _overViewImageSection(),
-                      ],
-                    ),
+                  SummaryImagesSection(
+                    claimId: snapShot.data!,
+                    token: widget.uTokenKey,
+                    images: _summaryImages,
+                    onError: (message) {
+                      if (widget.onError != null) {
+                        widget.onError!(message);
+                      }
+                    },
+                    imagesOnChanged: (images) {
+                      _summaryImages = images;
+                    },
                   ),
                   _partDirectionsSection(),
                 ],
@@ -206,67 +185,6 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
             return Container();
           }
         });
-  }
-
-  Widget _overViewImageSection() {
-    if (overViewImages.isEmpty) {
-      return const Text(
-        StringKeys.noImages,
-      );
-    } else {
-      return GridView.count(
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisCount: 4,
-        mainAxisSpacing: 4,
-        crossAxisSpacing: 8,
-        shrinkWrap: true,
-        children: overViewImages.map((element) {
-          return Stack(
-            children: [
-              GestureDetector(
-                onTap: () {},
-                child: Container(
-                  height: 72,
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(8.0)),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(6.0),
-                    // child: Image.network(
-                    //   _testUrl,
-                    //   fit: BoxFit.cover,
-                    // ),
-                    child: CachedNetworkImage(
-                      imageUrl: _testUrl,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                right: 4,
-                top: 4,
-                child: CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  minSize: 0,
-                  child: const CircleAvatar(
-                    radius: 10,
-                    backgroundColor: Colors.black54,
-                    child: Center(
-                      child: Icon(
-                        Icons.clear_rounded,
-                        color: Colors.white,
-                        size: 14,
-                      ),
-                    ),
-                  ),
-                  onPressed: () {},
-                ),
-              )
-            ],
-          );
-        }).toList(),
-      );
-    }
   }
 
   Widget _partDirectionsSection() {
