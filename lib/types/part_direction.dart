@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 import 'image.dart';
 import 'part_direction_meta.dart';
@@ -67,7 +67,7 @@ class PartDirection {
 
 class XFileWithId {
   final int? imageId;
-  final File file;
+  final XFile file;
 
   XFileWithId({required this.imageId, required this.file});
 }

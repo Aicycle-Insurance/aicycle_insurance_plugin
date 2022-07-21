@@ -1,8 +1,9 @@
 import 'dart:io';
 
-import '../../constants/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../../constants/colors.dart';
 
 class ConfirmDialog {
   static Future<bool?> show(

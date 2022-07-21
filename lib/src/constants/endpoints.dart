@@ -6,8 +6,8 @@ class Endpoints {
 
   // summary image
   static const String addSummaryImageToClaim = baseUrl + '/claimimages/summary';
-  static String getSummaryImages(String claimID) =>
-      baseUrl + '/claimfolders/$claimID/summaries';
+  static String getSummaryImages(String sessionId) =>
+      baseUrl + '/session/$sessionId/summaries';
   static String deleteSummaryImage(String imageId) =>
       baseUrl + '/claimimages/summary/$imageId';
 
@@ -16,4 +16,7 @@ class Endpoints {
       baseUrl + '/claimimages/all/$claimID';
   static String deleteImageInCLaim(String imageID) =>
       baseUrl + '/claimimages/$imageID';
+  // call engine
+  static String callEngineAfterTakePhoto =
+      baseUrl + '/claimimages/damage-assessment';
 }

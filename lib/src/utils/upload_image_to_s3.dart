@@ -1,7 +1,8 @@
 import 'dart:io';
 
+import '../modules/resful_module.dart';
+import '../modules/resful_module_impl.dart';
 import '../constants/endpoints.dart';
-import 'package:get/get.dart';
 import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
 import 'package:mime/mime.dart' as mime;
@@ -62,17 +63,16 @@ Future<UploadResponse?> upLoadImageToS3({
   }
 }
 
-Future<List<String>> getUploadImageUrls({
+Future<List<dynamic>> getUploadImageUrls({
   required List<String> filePaths,
   required String token,
 }) async {
   try {
-    Map<String, String> header = {'authorization': 'Bearer $token'};
-    GetConnect getConnect = Get.find();
-    var response = await getConnect.post(
+    RestfulModule restfulModule = RestfulModuleImpl();
+    var response = await restfulModule.post(
       Endpoints.getUploadUrl,
       {'filePaths': filePaths},
-      headers: header,
+      token: token,
     );
     var result = response.body;
     return result['urls'];

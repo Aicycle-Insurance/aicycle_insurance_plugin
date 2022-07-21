@@ -20,6 +20,12 @@ class StringKeys {
   static const String noImages = "Chưa có ảnh, vui lòng chụp thêm";
   static const String detail = "Cụ thể";
   static const String imageWord = "Ảnh";
+  static const String gallery = "Thư viện ảnh";
+  static const String camera = "Máy ảnh";
+  static const String noCameraPermission =
+      "Bạn không có quyền truy cập máy ảnh! Vui lòng cấp quyền trong phần cài đặt trên điện thoại của bạn!";
+  static const String isProcessing =
+      "Hệ thống đang xử lý dữ liệu.\nVui lòng đợi trong giây lát.";
   // camera
   static const String close = 'Đóng';
   static const String overViewShot = 'Toàn cảnh';

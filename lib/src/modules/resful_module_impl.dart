@@ -6,7 +6,7 @@ import '../modules/resful_module.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
-class ResfulModuleImpl implements RestfulModule {
+class RestfulModuleImpl implements RestfulModule {
   final GetConnect getConnect = GetConnect(
     timeout: const Duration(seconds: 120),
     maxRedirects: 3,

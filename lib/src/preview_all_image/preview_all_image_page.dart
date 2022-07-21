@@ -145,12 +145,12 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
           .removeWhere((element) => element.imageId == imageId);
       currentArg.value.partDirection.overViewImageFiles
           .removeWhere((element) => element.imageId.toString() == imageId);
-      // over view
+      // middle view
       currentArg.value.partDirection.middleViewImages
           .removeWhere((element) => element.imageId == imageId);
       currentArg.value.partDirection.middleViewImageFiles
           .removeWhere((element) => element.imageId.toString() == imageId);
-      // over view
+      // close up view
       currentArg.value.partDirection.closeViewImages
           .removeWhere((element) => element.imageId == imageId);
       currentArg.value.partDirection.closeViewImageFiles
@@ -161,7 +161,7 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
 
     // delete on server
     try {
-      RestfulModule restfulModule = ResfulModuleImpl();
+      RestfulModule restfulModule = RestfulModuleImpl();
       var response = await restfulModule.delete(
         Endpoints.deleteImageInCLaim(imageId),
         token: widget.token,
@@ -184,7 +184,7 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
 
     if (confirm != null && confirm) {
       try {
-        RestfulModule restfulModule = ResfulModuleImpl();
+        RestfulModule restfulModule = RestfulModuleImpl();
         var response = await restfulModule.delete(
           Endpoints.deleteAllImageInClaim(currentArg.value.claimId),
           token: widget.token,
@@ -206,10 +206,13 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
         context,
         MaterialPageRoute(
             builder: (context) => CameraPage(
-                    cameraArgument: CameraArgument(
+                token: widget.token,
+                onError: widget.onError,
+                cameraArgument: CameraArgument(
                   partDirection: currentArg.value.partDirection,
                   claimId: currentArg.value.claimId,
                   imageRangeId: rangeId,
+                  carBrand: currentArg.value.carBrand,
                 )))).then((value) {
       if (value is CameraArgument) {
         currentArg.value.partDirection = value.partDirection;

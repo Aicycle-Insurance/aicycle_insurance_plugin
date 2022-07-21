@@ -21,12 +21,14 @@ class SummaryImagesSection extends StatefulWidget {
     required this.images,
     required this.imagesOnChanged,
     required this.token,
+    required this.sessionId,
     required this.claimId,
     required this.onError,
   }) : super(key: key);
 
   final String token;
   final String claimId;
+  final String sessionId;
   final List<SummaryImage> images;
   final Function(List<SummaryImage>) imagesOnChanged;
   final Function(String) onError;
@@ -117,7 +119,7 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
           mainAxisSpacing: 4,
           crossAxisSpacing: 8,
           shrinkWrap: true,
-          children: _images.map((element) {
+          children: _images.reversed.map((element) {
             late Widget child;
             late String imageUrl;
             if (element.localFilePath != null && element.localFilePath != '') {
@@ -202,16 +204,40 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
   }
 
   void _takePicture() async {
-    final ImagePicker imagePicker = ImagePicker();
-    var file = await imagePicker.pickImage(source: ImageSource.camera);
-    if (file != null) {
-      SummaryImage temp = SummaryImage(localFilePath: file.path);
-      _images.add(temp);
-      widget.imagesOnChanged(_images);
-      await _addSummaryImage(file).then((value) {
-        _images.last.copyWith(imageId: value);
+    ImageSource? source = await showCupertinoModalPopup(
+      context: context,
+      builder: (context) {
+        return CupertinoActionSheet(
+          actions: [
+            CupertinoActionSheetAction(
+              child: const Text(StringKeys.gallery),
+              onPressed: () {
+                Navigator.pop(context, ImageSource.gallery);
+              },
+            ),
+            CupertinoActionSheetAction(
+              child: const Text(StringKeys.camera),
+              onPressed: () {
+                Navigator.pop(context, ImageSource.camera);
+              },
+            )
+          ],
+        );
+      },
+    );
+
+    if (source != null) {
+      final ImagePicker imagePicker = ImagePicker();
+      var file = await imagePicker.pickImage(source: source);
+      if (file != null) {
+        SummaryImage temp = SummaryImage(localFilePath: file.path);
+        _images.add(temp);
         widget.imagesOnChanged(_images);
-      });
+        await _addSummaryImage(file).then((value) {
+          _images.last.copyWith(imageId: value);
+          widget.imagesOnChanged(_images);
+        });
+      }
     }
   }
 
@@ -219,7 +245,7 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
     if (image.imageId != null) {
       _images.removeWhere((element) => element.imageId == image.imageId);
       // call api
-      final RestfulModule restfulModule = ResfulModuleImpl();
+      final RestfulModule restfulModule = RestfulModuleImpl();
       try {
         await restfulModule.delete(
           Endpoints.deleteSummaryImage(image.imageId.toString()),
@@ -236,7 +262,7 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
 
   // Thêm ảnh toàn cảnh (summary images)
   Future<int?> _addSummaryImage(XFile file) async {
-    final RestfulModule restfulModule = ResfulModuleImpl();
+    final RestfulModule restfulModule = RestfulModuleImpl();
     try {
       var result =
           await upLoadImageToS3(imageFiles: file.path, token: widget.token);
@@ -264,9 +290,10 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
   Future<void> _getSummaryImages() async {
     try {
       isLoadingImage(true);
-      final RestfulModule restfulModule = ResfulModuleImpl();
-      var response = await restfulModule
-          .get(Endpoints.getSummaryImages(widget.claimId), token: widget.token);
+      final RestfulModule restfulModule = RestfulModuleImpl();
+      var response = await restfulModule.get(
+          Endpoints.getSummaryImages(widget.sessionId),
+          token: widget.token);
       if (response.statusCode == 200) {
         List result = response.body['results'];
         _images.assignAll(result.map((e) => SummaryImage.fromJson(e)).toList());

@@ -1,3 +1,6 @@
+import 'package:aicycle_insurance/src/extensions/hex_color_extension.dart';
+import 'package:flutter/material.dart';
+
 import '../../types/damage_type.dart';
 
 class DamageTypeConstant {
@@ -37,3 +40,8 @@ class DamageTypeConstant {
     typeScratch
   ];
 }
+
+final damageClassColors = <String, Color>{
+  for (var type in DamageTypeConstant.listDamageType)
+    type.damageTypeName: HexColor.fromHex(type.colorHex)
+};

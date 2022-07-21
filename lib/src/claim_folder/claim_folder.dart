@@ -24,7 +24,6 @@ import '../preview_all_image/preview_all_image_page.dart';
 import '../camera_view/camera_page.dart';
 import 'photo_taken_point.dart';
 import 'widgets/summary_image_section.dart';
-// import 'package:get/get.dart';
 
 class ClaimFolderView extends StatefulWidget {
   /// Hiển thị các góc chụp và thông tin liên quan.
@@ -32,7 +31,7 @@ class ClaimFolderView extends StatefulWidget {
 
   const ClaimFolderView({
     Key? key,
-    required this.folderId,
+    required this.sessionId,
     required this.carBrand,
     required this.uTokenKey,
     this.loadingWidget,
@@ -46,7 +45,7 @@ class ClaimFolderView extends StatefulWidget {
   }) : super(key: key);
 
   /// ID hồ sơ
-  final String folderId;
+  final String sessionId;
 
   /// Hãng xe hỗ trợ
   final CarBrandType carBrand;
@@ -173,6 +172,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                   SummaryImagesSection(
                     claimId: snapShot.data!,
                     token: widget.uTokenKey,
+                    sessionId: widget.sessionId,
                     images: _summaryImages,
                     onError: (message) {
                       if (widget.onError != null) {
@@ -228,6 +228,9 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                           clipBehavior: Clip.none,
                           children: <Widget>[
                             ..._listPartDirections.map((carDirection) {
+                              int allImageLength =
+                                  carDirection.value.images.length +
+                                      carDirection.value.imageFiles.length;
                               return Positioned(
                                 left: carDirection.value.meta
                                         .verticalRelativePosition[0] *
@@ -237,7 +240,9 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                                     constraints.maxHeight,
                                 child: Obx(
                                   () => PhotoTakenPoint(
-                                    onTap: () => _goToCameraPage(carDirection),
+                                    onTap: allImageLength == 0
+                                        ? () => _goToCameraPage(carDirection)
+                                        : () => _goToPreviewPage(carDirection),
                                     isTaken:
                                         carDirection.value.images.isNotEmpty ||
                                             carDirection
@@ -305,37 +310,33 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                                     ),
                                     const SizedBox(height: 4),
                                     if (allImageLength > 0)
-                                      GestureDetector(
-                                        onTap: () =>
-                                            _goToPreviewPage(carDirection),
-                                        child: Container(
-                                          padding: const EdgeInsets.all(4),
-                                          decoration: BoxDecoration(
-                                            color: DefaultColors.blue,
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                          ),
-                                          child: Text.rich(
-                                            TextSpan(
-                                              children: [
-                                                TextSpan(
-                                                  text: '$allImageLength',
-                                                  style: const TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
+                                      Container(
+                                        padding: const EdgeInsets.all(4),
+                                        decoration: BoxDecoration(
+                                          color: DefaultColors.blue,
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        child: Text.rich(
+                                          TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                text: '$allImageLength',
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
-                                                const TextSpan(
-                                                  text:
-                                                      ' ${StringKeys.imageWord}',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 12,
-                                                  ),
+                                              ),
+                                              const TextSpan(
+                                                text:
+                                                    ' ${StringKeys.imageWord}',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 12,
                                                 ),
-                                              ],
-                                            ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       )
@@ -359,12 +360,12 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
 
   // Tạo folder phía AICycle
   Future<String?> _createClaimFolder() async {
-    RestfulModule restfulModule = ResfulModuleImpl();
+    RestfulModule restfulModule = RestfulModuleImpl();
     try {
       Map<String, dynamic> data = {
-        'claimName': 'PTI folder - ${widget.folderId}',
+        'claimName': 'PTI folder - ${widget.sessionId}',
         'vehicleBrandId': CarBrand.carBrandIds[widget.carBrand].toString(),
-        'externalSessionId': widget.folderId,
+        'externalSessionId': widget.sessionId,
       };
 
       var response = await restfulModule.post(
@@ -392,6 +393,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
         MaterialPageRoute(
             builder: (context) => PreviewAllImagePage(
                   cameraArgument: CameraArgument(
+                    carBrand: widget.carBrand,
                     partDirection: partDirection.value,
                     claimId: claimId.value,
                     imageRangeId: 1,
@@ -414,10 +416,13 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
         context,
         MaterialPageRoute(
             builder: (context) => CameraPage(
-                    cameraArgument: CameraArgument(
+                token: widget.uTokenKey,
+                onError: widget.onError ?? (message) {},
+                cameraArgument: CameraArgument(
                   partDirection: partDirection.value,
                   claimId: claimId.value,
                   imageRangeId: 1,
+                  carBrand: widget.carBrand,
                 )))).then((value) {
       if (value is CameraArgument) {
         partDirection.value = value.partDirection;
