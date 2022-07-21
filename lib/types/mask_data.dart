@@ -1,6 +1,7 @@
-import 'package:aicycle_insurance/constants/damage_types.dart';
-import 'package:aicycle_insurance/src/extensions/hex_color_extension.dart';
 import 'package:flutter/material.dart';
+
+import '../src/extensions/hex_color_extension.dart';
+import '../src/constants/damage_types.dart';
 
 class MaskData {
   final String masksPath;
