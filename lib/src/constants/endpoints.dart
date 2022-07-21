@@ -1,6 +1,11 @@
 class Endpoints {
   Endpoints._();
-  static const String baseUrl = 'https://dev-api-insurance.aicycle.ai';
+
+  /// API Dev
+  // static const String baseUrl = 'https://dev-api-insurance.aicycle.ai';
+
+  /// API Prod
+  static const String baseUrl = 'https://api-insurance.aicycle.ai';
   static const String createClaimFolder = baseUrl + '/claimfolders';
   static String getUploadUrl = baseUrl + '/images/url';
 
