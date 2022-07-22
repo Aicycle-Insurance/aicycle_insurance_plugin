@@ -4,7 +4,6 @@
 
 Flutter plugin to add AICycle Insurance Widget inside your project.
 
-
 ### Set permissions
    - **iOS** add these on ```ios/Runner/Info.plist``` file
 
@@ -35,6 +34,18 @@ Flutter plugin to add AICycle Insurance Widget inside your project.
     ```
     minSdkVersion 21
     ```
+### Screenshots
+- **Claim Folder Page**
+![empty claim folder](screenshots/1658461061996.JPEG)
+![claim folder](screenshots/1658461245554.JPEG)
+
+- **Camera View**
+![camera view of over view tab](screenshots/1658461062123.JPEG)
+![camera view of middle view tab](screenshots/1658461062097.JPEG)
+![image with damage mask after ai detection](screenshots/1658461062060.JPEG)
+
+- **Preview Image Page**
+![preview image page](screenshots/1658461062155.JPEG)
 ### Import the package
 ```dart
 import 'package:aicycle_insurance/aicycle_insurance.dart';

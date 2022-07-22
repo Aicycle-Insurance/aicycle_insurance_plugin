@@ -297,8 +297,8 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
       if (response.statusCode == 200) {
         List result = response.body['results'];
         _images.assignAll(result.map((e) => SummaryImage.fromJson(e)).toList());
-        isLoadingImage(false);
       }
+      isLoadingImage(false);
     } catch (e) {
       isLoadingImage(false);
       rethrow;

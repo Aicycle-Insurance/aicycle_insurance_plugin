@@ -42,10 +42,9 @@ class _MyHomePageState extends State<MyHomePage> {
         sessionId: '288', // fake session id
         carBrand: CarBrandType.kiaMorning,
         onError: (message) {
-          print(message);
+          // handle error here.
         },
-        uTokenKey:
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMyIsImlhdCI6MTY1ODEyNjEyMCwiZXhwIjoyNTIyMTI2MTIwfQ.wRr-cI6tIPq1jyK6FaOEyWrzb9CGKjBNPc7k0ku6WLY',
+        uTokenKey: '', // Liên hệ để có token key
       ),
     );
   }
