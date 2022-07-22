@@ -36,8 +36,9 @@ Flutter plugin to add AICycle Insurance Widget inside your project.
     ```
 ### Screenshots
 - **Claim Folder Page**
-![empty claim folder](screenshots/1658461061996.JPEG)
-![claim folder](screenshots/1658461245554.JPEG)
+<!-- ![empty claim folder](screenshots/1658461061996.JPEG)
+![claim folder](screenshots/1658461245554.JPEG) -->
+<img src="screenshots/1658461061996.JPEG" width="256"/><img src="screenshots/1658461245554.JPEG" width="256"/>
 
 - **Camera View**
 ![camera view of over view tab](screenshots/1658461062123.JPEG)
