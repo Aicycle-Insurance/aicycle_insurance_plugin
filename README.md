@@ -38,15 +38,19 @@ Flutter plugin to add AICycle Insurance Widget inside your project.
 - **Claim Folder Page**
 <!-- ![empty claim folder](screenshots/1658461061996.JPEG)
 ![claim folder](screenshots/1658461245554.JPEG) -->
-<img src="screenshots/1658461061996.JPEG" width="256"/><img src="screenshots/1658461245554.JPEG" width="256"/>
+<img src="screenshots/1658461061996.JPEG" width="256"/>   <img src="screenshots/1658461245554.JPEG" width="256"/>
 
 - **Camera View**
-![camera view of over view tab](screenshots/1658461062123.JPEG)
+<!-- ![camera view of over view tab](screenshots/1658461062123.JPEG)
 ![camera view of middle view tab](screenshots/1658461062097.JPEG)
-![image with damage mask after ai detection](screenshots/1658461062060.JPEG)
+![image with damage mask after ai detection](screenshots/1658461062060.JPEG) -->
+<img src="screenshots/1658461062123.JPEG" width="256"/>   <img src="screenshots/1658461062097.JPEG" width="256"/>
+<img src="screenshots/1658461062060.JPEG" width="256"/>
 
 - **Preview Image Page**
-![preview image page](screenshots/1658461062155.JPEG)
+<!-- ![preview image page](screenshots/1658461062155.JPEG) -->
+<img src="screenshots/1658461062155.JPEG" width="256"/>
+
 ### Import the package
 ```dart
 import 'package:aicycle_insurance/aicycle_insurance.dart';
