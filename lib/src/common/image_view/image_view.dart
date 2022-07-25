@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
 class ImageView extends StatelessWidget {
-  const ImageView({Key? key, required this.imageUrl}) : super(key: key);
+  const ImageView({Key key, this.imageUrl}) : super(key: key);
   final String imageUrl;
 
   @override
   Widget build(BuildContext context) {
-    late ImageProvider image;
+    ImageProvider image;
     if (imageUrl.startsWith('https')) {
       image = CachedNetworkImageProvider(imageUrl);
     } else {

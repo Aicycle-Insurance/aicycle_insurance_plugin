@@ -17,13 +17,13 @@ import '../../../types/summaty_image.dart';
 
 class SummaryImagesSection extends StatefulWidget {
   const SummaryImagesSection({
-    Key? key,
-    required this.images,
-    required this.imagesOnChanged,
-    required this.token,
-    required this.sessionId,
-    required this.claimId,
-    required this.onError,
+    Key key,
+    this.images,
+    this.imagesOnChanged,
+    this.token,
+    this.sessionId,
+    this.claimId,
+    this.onError,
   }) : super(key: key);
 
   final String token;
@@ -103,7 +103,7 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
 
   Widget _overViewImageSection() {
     return Obx(() {
-      if (isLoadingImage.isTrue) {
+      if (isLoadingImage.value == true) {
         return const SizedBox(
           height: 60,
           child: Center(child: CircularProgressIndicator()),
@@ -120,14 +120,14 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
           crossAxisSpacing: 8,
           shrinkWrap: true,
           children: _images.reversed.map((element) {
-            late Widget child;
-            late String imageUrl;
+            Widget child;
+            String imageUrl;
             if (element.localFilePath != null && element.localFilePath != '') {
               child = Image.file(
-                File(element.localFilePath!),
+                File(element.localFilePath),
                 fit: BoxFit.cover,
               );
-              imageUrl = element.localFilePath!;
+              imageUrl = element.localFilePath;
             } else {
               child = CachedNetworkImage(
                 imageUrl: element.url ?? '',
@@ -151,7 +151,7 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
                   );
                 },
               );
-              imageUrl = element.url!;
+              imageUrl = element.url;
             }
             return Stack(
               children: [
@@ -204,7 +204,7 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
   }
 
   void _takePicture() async {
-    ImageSource? source = await showCupertinoModalPopup(
+    ImageSource source = await showCupertinoModalPopup(
       context: context,
       builder: (context) {
         return CupertinoActionSheet(
@@ -228,7 +228,8 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
 
     if (source != null) {
       final ImagePicker imagePicker = ImagePicker();
-      var file = await imagePicker.pickImage(source: source);
+      var pickedFile = await imagePicker.getImage(source: source);
+      var file = File.fromRawPath(await pickedFile.readAsBytes());
       if (file != null) {
         SummaryImage temp = SummaryImage(localFilePath: file.path);
         _images.add(temp);
@@ -261,7 +262,7 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
   }
 
   // Thêm ảnh toàn cảnh (summary images)
-  Future<int?> _addSummaryImage(XFile file) async {
+  Future<dynamic> _addSummaryImage(File file) async {
     final RestfulModule restfulModule = RestfulModuleImpl();
     try {
       var result =

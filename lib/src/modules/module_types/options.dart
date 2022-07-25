@@ -4,7 +4,7 @@ class CommonRequestOptions {
   ///
   /// The key of Header Map is case-insensitive, eg: content-type and Content-Type are
   /// regard as the same key.
-  Map<String, String>? headers;
+  Map<String, String> headers;
 
   /// The request Content-Type. The default value is [ContentType.json].
   /// If you want to encode request body with 'application/x-www-form-urlencoded',

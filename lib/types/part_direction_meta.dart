@@ -11,16 +11,16 @@ class PartDirectionMeta {
   final String ceratoChassisPath;
 
   const PartDirectionMeta({
-    required this.type,
-    required this.title,
-    required this.image3DPath,
-    required this.relativePosition,
-    required this.verticalRelativePosition,
-    required this.chassisPath,
-    required this.kiaChassisPath,
-    required this.innovaChassisPath,
-    required this.viosChassisPath,
-    required this.ceratoChassisPath,
+    this.type,
+    this.title,
+    this.image3DPath,
+    this.relativePosition,
+    this.verticalRelativePosition,
+    this.chassisPath,
+    this.kiaChassisPath,
+    this.innovaChassisPath,
+    this.viosChassisPath,
+    this.ceratoChassisPath,
   });
 
   factory PartDirectionMeta.fromJson(Map<String, dynamic> json) =>

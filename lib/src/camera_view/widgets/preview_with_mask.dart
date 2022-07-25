@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
+// import 'package:image_picker/image_picker.dart';
 
 import '../../../types/damage_assessment.dart';
 import '../../constants/damage_types.dart';
@@ -11,31 +11,31 @@ import '../../constants/colors.dart';
 
 class PreviewImageWithMask extends StatelessWidget {
   const PreviewImageWithMask({
-    Key? key,
-    required this.damageAssess,
-    required this.previewFile,
+    Key key,
+    this.damageAssess,
+    this.previewFile,
   }) : super(key: key);
 
-  final Rx<XFile?> previewFile;
-  final Rx<DamageAssessmentModel?> damageAssess;
+  final Rx<File> previewFile;
+  final Rx<DamageAssessmentModel> damageAssess;
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       var masks = <Widget>[];
-      if (damageAssess.value != null) {
+      if (damageAssess.value = null) {
         // duyệt hết các parts trả về
-        for (var i = 0; i < damageAssess.value!.carParts.length; i++) {
-          var imWidth = damageAssess.value!.imageSize[0].toDouble();
-          var imHeight = damageAssess.value!.imageSize[1].toDouble();
+        for (var i = 0; i < damageAssess.value.carParts.length; i++) {
+          var imWidth = damageAssess.value.imageSize[0].toDouble();
+          var imHeight = damageAssess.value.imageSize[1].toDouble();
           // duyệt các damages của từng part
           for (var j = 0;
-              j < damageAssess.value!.carParts[i].carPartDamages.length;
+              j < damageAssess.value.carParts[i].carPartDamages.length;
               j++) {
             var carPartDamage =
-                damageAssess.value!.carParts[i].carPartDamages[j];
+                damageAssess.value.carParts[i].carPartDamages[j];
             var color = damageClassColors[carPartDamage.className]
-                    ?.withOpacity(damageBaseOpacity) ??
+                    .withOpacity(damageBaseOpacity) ??
                 Colors.transparent;
             var box = carPartDamage.boxes;
 
@@ -75,7 +75,7 @@ class PreviewImageWithMask extends StatelessWidget {
             child: Stack(
               children: [
                 Image.file(
-                  File(previewFile.value!.path),
+                  File(previewFile.value.path),
                   fit: BoxFit.cover,
                 ),
                 ...masks,

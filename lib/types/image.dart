@@ -5,24 +5,24 @@ import 'mask_data.dart';
 
 class AiImage {
   AiImage({
-    required this.imageId,
-    required this.imageName,
-    required this.claimId,
-    required this.url,
-    required this.imageSize,
-    required this.partDirectionName,
-    required this.imageRangeName,
-    required this.totalItem,
-    required this.damageExist,
-    required this.damageMasks,
-    required this.partsMasks,
-    required this.deletedFlag,
-    required this.createdDate,
-    required this.updatedDate,
-    required this.createdBy,
-    required this.timeProcess,
-    required this.errorNote,
-    required this.errorType,
+    this.imageId,
+    this.imageName,
+    this.claimId,
+    this.url,
+    this.imageSize,
+    this.partDirectionName,
+    this.imageRangeName,
+    this.totalItem,
+    this.damageExist,
+    this.damageMasks,
+    this.partsMasks,
+    this.deletedFlag,
+    this.createdDate,
+    this.updatedDate,
+    this.createdBy,
+    this.timeProcess,
+    this.errorNote,
+    this.errorType,
   });
 
   final String imageId;
@@ -32,37 +32,37 @@ class AiImage {
   final List<double> imageSize;
   final String partDirectionName;
   final String imageRangeName;
-  final String? totalItem;
-  final bool? damageExist;
+  final String totalItem;
+  final bool damageExist;
   final List<MaskData> damageMasks;
   final List<PartsMask> partsMasks;
-  final bool? deletedFlag;
+  final bool deletedFlag;
   final DateTime createdDate;
   final DateTime updatedDate;
-  final String? createdBy;
+  final String createdBy;
   final double timeProcess;
   final List<String> errorType;
-  final String? errorNote;
+  final String errorNote;
 
   AiImage copyWith({
-    String? imageId,
-    String? imageName,
-    String? claimId,
-    String? url,
-    List<double>? imageSize,
-    String? partDirectionName,
-    String? imageRangeName,
-    String? totalItem,
-    bool? damageExist,
-    List<MaskData>? damageMasks,
-    List<PartsMask>? partsMasks,
-    bool? deletedFlag,
-    DateTime? createdDate,
-    DateTime? updatedDate,
-    String? createdBy,
-    double? timeProcess,
-    List<String>? errorType,
-    String? errorNote,
+    String imageId,
+    String imageName,
+    String claimId,
+    String url,
+    List<double> imageSize,
+    String partDirectionName,
+    String imageRangeName,
+    String totalItem,
+    bool damageExist,
+    List<MaskData> damageMasks,
+    List<PartsMask> partsMasks,
+    bool deletedFlag,
+    DateTime createdDate,
+    DateTime updatedDate,
+    String createdBy,
+    double timeProcess,
+    List<String> errorType,
+    String errorNote,
   }) =>
       AiImage(
         imageId: imageId ?? this.imageId,
@@ -125,14 +125,14 @@ class AiImage {
 
 class PartsMask {
   PartsMask({
-    required this.masksPath,
-    required this.category,
-    required this.boxes,
-    required this.vehiclePartName,
-    required this.scores,
-    required this.maskUrl,
-    required this.isPart,
-    required this.color,
+    this.masksPath,
+    this.category,
+    this.boxes,
+    this.vehiclePartName,
+    this.scores,
+    this.maskUrl,
+    this.isPart,
+    this.color,
   });
 
   final String masksPath;
@@ -145,14 +145,14 @@ class PartsMask {
   final Color color;
 
   PartsMask copyWith({
-    String? masksPath,
-    String? category,
-    List<double>? boxes,
-    String? vehiclePartName,
-    double? scores,
-    String? maskUrl,
-    bool? isPart,
-    Color? color,
+    String masksPath,
+    String category,
+    List<double> boxes,
+    String vehiclePartName,
+    double scores,
+    String maskUrl,
+    bool isPart,
+    Color color,
   }) =>
       PartsMask(
         masksPath: masksPath ?? this.masksPath,

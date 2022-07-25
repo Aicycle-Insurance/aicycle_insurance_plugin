@@ -9,17 +9,17 @@ import 'preview_image_container.dart';
 
 class CloseViewSection extends StatelessWidget {
   const CloseViewSection({
-    Key? key,
+    Key key,
     this.imageFiles = const [],
     this.imageFromServers = const [],
-    required this.onRetake,
-    required this.onDelete,
+    this.onRetake,
+    this.onDelete,
   }) : super(key: key);
 
   final List<XFileWithId> imageFiles;
   final List<AiImage> imageFromServers;
-  final Function()? onRetake;
-  final Function(String imageId)? onDelete;
+  final Function() onRetake;
+  final Function(String imageId) onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +72,7 @@ class CloseViewSection extends StatelessWidget {
                   return PreviewImageContainer(
                     imageUrl: e.url,
                     onDelete: () =>
-                        onDelete != null ? onDelete!(e.imageId) : null,
+                        onDelete != null ? onDelete(e.imageId) : null,
                     onRetake: onRetake,
                   );
                 }).toList(),
@@ -80,7 +80,7 @@ class CloseViewSection extends StatelessWidget {
                   return PreviewImageContainer(
                     imageUrl: e.file.path,
                     onDelete: () => onDelete != null
-                        ? onDelete!(e.imageId.toString())
+                        ? onDelete(e.imageId.toString())
                         : null,
                     onRetake: onRetake,
                   );

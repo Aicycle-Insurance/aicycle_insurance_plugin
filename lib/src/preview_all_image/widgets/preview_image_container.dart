@@ -5,15 +5,15 @@ import 'package:flutter/material.dart';
 
 class PreviewImageContainer extends StatelessWidget {
   const PreviewImageContainer({
-    Key? key,
-    required this.imageUrl,
-    required this.onDelete,
-    required this.onRetake,
+    Key key,
+    this.imageUrl,
+    this.onDelete,
+    this.onRetake,
   }) : super(key: key);
 
   final String imageUrl;
-  final Function()? onDelete;
-  final Function()? onRetake;
+  final Function() onDelete;
+  final Function() onRetake;
 
   @override
   Widget build(BuildContext context) {

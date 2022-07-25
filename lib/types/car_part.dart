@@ -6,8 +6,8 @@ import 'damage.dart';
 class CarPart {
   final String uuid;
   final String carPartClassName;
-  final String? carPartLocation;
-  final num? carPartScore;
+  final String carPartLocation;
+  final num carPartScore;
   final List<dynamic> carPartBoxes;
   final String carPartMaskPath;
   final String carPartMaskUrl;
@@ -16,16 +16,16 @@ class CarPart {
   final Color color;
 
   CarPart({
-    required this.carPartClassName,
-    required this.carPartLocation,
-    required this.carPartScore,
-    required this.carPartBoxes,
-    required this.carPartMaskPath,
-    required this.carPartMaskUrl,
-    required this.carPartIsPart,
-    required this.carPartDamages,
-    required this.color,
-    required this.uuid,
+    this.carPartClassName,
+    this.carPartLocation,
+    this.carPartScore,
+    this.carPartBoxes,
+    this.carPartMaskPath,
+    this.carPartMaskUrl,
+    this.carPartIsPart,
+    this.carPartDamages,
+    this.color,
+    this.uuid,
   });
 
   factory CarPart.fromJson(Map<String, dynamic> json) => CarPart(

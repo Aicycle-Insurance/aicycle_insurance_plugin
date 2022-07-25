@@ -9,11 +9,11 @@ class DamageAssessmentModel {
   final List<CarPart> carParts;
 
   DamageAssessmentModel({
-    required this.imageId,
-    required this.imgUrl,
-    required this.imageSize,
-    required this.carDamages,
-    required this.carParts,
+    this.imageId,
+    this.imgUrl,
+    this.imageSize,
+    this.carDamages,
+    this.carParts,
   });
 
   factory DamageAssessmentModel.fromJson(Map<String, dynamic> json) {
@@ -30,50 +30,3 @@ class DamageAssessmentModel {
     );
   }
 }
-
-
-
-
-// class CarDamageModel {
-//   final String className;
-//   final String maskUrl;
-//   final String? location;
-//   final num score;
-//   final List<dynamic> boxes;
-//   final String maskPath;
-//   final bool isPart;
-//   final Color color;
-
-//   CarDamageModel({
-//     required this.className,
-//     required this.location,
-//     required this.score,
-//     required this.boxes,
-//     required this.maskPath,
-//     required this.isPart,
-//     required this.maskUrl,
-//     required this.color,
-//   });
-
-//   factory CarDamageModel.fromJson(Map<String, dynamic> json) {
-//     int damageIdx = LocalStorageService()
-//         .damageTypes
-//         .indexWhere((element) => element.damageTypeGuid == json['class_uuid']);
-//     String _name = 'Unknown';
-//     if (damageIdx != -1) {
-//       _name = LocalStorageService().damageTypes[damageIdx].damageTypeName;
-//     }
-//     return CarDamageModel(
-//       className: json['damage_type_name'] ?? _name,
-//       location: json['location'],
-//       score: json['score'],
-//       boxes: json['box'],
-//       maskPath: json['mask_path'],
-//       isPart: json['is_part'],
-//       maskUrl: json['mask_url'] ?? '',
-//       color: json['damage_type_color'] != null
-//           ? HexColor.fromHex(json['car_part_color'])
-//           : Colors.transparent,
-//     );
-//   }
-// }

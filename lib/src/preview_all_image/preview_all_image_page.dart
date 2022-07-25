@@ -17,10 +17,10 @@ import 'widgets/over_view_section.dart';
 
 class PreviewAllImagePage extends StatefulWidget {
   const PreviewAllImagePage({
-    Key? key,
-    required this.cameraArgument,
-    required this.token,
-    required this.onError,
+    Key key,
+    this.cameraArgument,
+    this.token,
+    this.onError,
   }) : super(key: key);
 
   final CameraArgument cameraArgument;
@@ -33,7 +33,7 @@ class PreviewAllImagePage extends StatefulWidget {
 
 class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
   final _toolbarHeight = 64.0;
-  late Rx<CameraArgument> currentArg;
+  Rx<CameraArgument> currentArg;
 
   @override
   void initState() {

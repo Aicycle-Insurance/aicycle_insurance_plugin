@@ -5,7 +5,7 @@ import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
+// import 'package:image_picker/image_picker.dart';
 
 import '../../camera_view/camera_argument.dart';
 import '../../constants/colors.dart';
@@ -14,21 +14,21 @@ import '../../../types/part_direction.dart';
 
 class BottomActionBar extends StatelessWidget {
   const BottomActionBar({
-    Key? key,
-    required this.previewFile,
-    required this.currentTabIndex,
-    required this.currentArg,
-    required this.flashMode,
-    required this.onTakePicture,
+    Key key,
+    this.previewFile,
+    this.currentTabIndex,
+    this.currentArg,
+    this.flashMode,
+    this.onTakePicture,
   }) : super(key: key);
 
   final barHeight = 108.0;
 
-  final Rx<XFile?> previewFile;
+  final Rx<File> previewFile;
   final RxInt currentTabIndex;
   final Rx<CameraArgument> currentArg;
   final ValueNotifier<CameraFlashes> flashMode;
-  final Function()? onTakePicture;
+  final Function() onTakePicture;
 
   @override
   Widget build(BuildContext context) {

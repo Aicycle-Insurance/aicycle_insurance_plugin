@@ -11,12 +11,12 @@ class UploadResponse {
   final String filePath;
   final String imageName;
 
-  UploadResponse({required this.filePath, required this.imageName});
+  UploadResponse({this.filePath, this.imageName});
 }
 
-Future<UploadResponse?> upLoadImageToS3({
-  required String token,
-  required String imageFiles,
+Future<UploadResponse> upLoadImageToS3({
+  String token,
+  String imageFiles,
 }) async {
   List<bool> results = [];
   try {
@@ -58,14 +58,15 @@ Future<UploadResponse?> upLoadImageToS3({
         imageName: imageName,
       );
     }
+    return null;
   } catch (e) {
     rethrow;
   }
 }
 
 Future<List<dynamic>> getUploadImageUrls({
-  required List<String> filePaths,
-  required String token,
+  List<String> filePaths,
+  String token,
 }) async {
   try {
     RestfulModule restfulModule = RestfulModuleImpl();

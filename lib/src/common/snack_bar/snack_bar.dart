@@ -8,8 +8,8 @@ const textColor = Colors.white;
 class CommonSnackbar {
   static show(
     BuildContext context, {
-    required SnackbarType type,
-    required String message,
+    SnackbarType type,
+    String message,
   }) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
