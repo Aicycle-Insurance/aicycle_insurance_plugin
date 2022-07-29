@@ -32,4 +32,10 @@ class StringKeys {
   static const String middleViewShot = 'Trung cảnh';
   static const String closeUpViewShot = 'Cận cảnh';
   static const String middleAndCloseUpView = 'Trung & Cận cảnh';
+
+  static const String save = 'Lưu';
+  static const String cancel = 'Huỷ';
+  static const String noWord = 'Không';
+  static const String yesWord = 'Có';
+  static const String missingDamage = 'Thiếu vết hỏng?';
 }

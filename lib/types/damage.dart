@@ -6,6 +6,7 @@ import '../src/extensions/hex_color_extension.dart';
 class DamageModel {
   final num? overlapRate;
   final String className;
+  final String uuid;
   final String maskUrl;
   final String? location;
   final num? score;
@@ -16,6 +17,7 @@ class DamageModel {
 
   DamageModel({
     required this.className,
+    required this.uuid,
     required this.location,
     required this.score,
     required this.boxes,
@@ -35,6 +37,7 @@ class DamageModel {
     }
     return DamageModel(
       className: json['damage_type_name'] ?? json['class'] ?? _name,
+      uuid: json['class_uuid'] ?? '',
       location: json['location'],
       score: json['score'],
       boxes: json['box'],

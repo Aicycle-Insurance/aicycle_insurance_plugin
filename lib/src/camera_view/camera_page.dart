@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:aicycle_insurance/aicycle_insurance.dart';
+import 'package:aicycle_insurance/src/camera_view/widgets/drawing_tool_layer.dart';
 import 'package:aicycle_insurance/src/constants/shot_range.dart';
 import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:flutter/cupertino.dart';
@@ -227,6 +228,8 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                                 ),
                               ),
                             ),
+
+                          /// Preview file kèm mask thiệt hại
                           if (_previewFile.value != null)
                             Positioned(
                               left: 0,
@@ -330,6 +333,18 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                                 ),
                               ),
                             ),
+                          if (_damageAssessment.value != null &&
+                              _previewFile.value != null)
+                            DrawingToolLayer(
+                              damageAssess: Rx<DamageAssessmentModel>(
+                                  _damageAssessment.value!),
+                              imageUrl: _previewFile.value!.path,
+                              onCancelCallBack: () {
+                                _damageAssessment.value = null;
+                                _previewFile.value = null;
+                              },
+                              onSaveCallBack: () {},
+                            )
                         ],
                       );
                     }),
