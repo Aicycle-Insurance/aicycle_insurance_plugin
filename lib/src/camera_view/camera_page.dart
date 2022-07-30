@@ -511,7 +511,8 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
               file: _previewFile.value!,
             ),
           );
-          _currentArg.value.partDirection.imageFiles = temp;
+          _currentArg.value.partDirection =
+              _currentArg.value.partDirection.copyWith(imageFiles: temp);
 
           /// gán chi tiết từng góc ảnh
           switch (currentTabIndex.value) {
@@ -524,7 +525,9 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                   file: _previewFile.value!,
                 )
               ]);
-              _currentArg.value.partDirection.overViewImageFiles = temp;
+              _currentArg.value.partDirection = _currentArg.value.partDirection
+                  .copyWith(overViewImageFiles: temp);
+              // _currentArg.value.partDirection.overViewImageFiles = temp;
               break;
             case 1:
               var temp =
@@ -533,7 +536,9 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                 imageId: _damageAssessment.value!.imageId,
                 file: _previewFile.value!,
               ));
-              _currentArg.value.partDirection.middleViewImageFiles = temp;
+              _currentArg.value.partDirection = _currentArg.value.partDirection
+                  .copyWith(middleViewImageFiles: temp);
+              // _currentArg.value.partDirection.middleViewImageFiles = temp;
 
               /// thêm danh sách các bộ phận có hư hại để chụp cận cảnh
               for (CarPart obj in _damageAssessment.value?.carParts ?? []) {
@@ -554,7 +559,10 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                 imageId: _damageAssessment.value!.imageId,
                 file: _previewFile.value!,
               ));
-              _currentArg.value.partDirection.closeViewImageFiles = temp;
+              // print(temp);
+              _currentArg.value.partDirection = _currentArg.value.partDirection
+                  .copyWith(closeViewImageFiles: temp);
+              // _currentArg.value.partDirection.closeViewImageFiles = temp;
               break;
           }
         }

@@ -3,7 +3,7 @@ import 'dart:convert';
 import '../modules/module_types/options.dart';
 import '../modules/module_types/common_response.dart';
 import '../modules/resful_module.dart';
-import 'package:flutter/foundation.dart';
+// import 'package:flutter/foundation.dart';s
 import 'package:get/get.dart';
 
 class RestfulModuleImpl implements RestfulModule {
@@ -21,10 +21,6 @@ class RestfulModuleImpl implements RestfulModule {
     if (headers != null) finalHeaders = headers;
 
     if (!(finalHeaders.containsKey('authorization'))) {
-      if (kDebugMode) {
-        // ignore: avoid_print
-        print('AICycle Token: $token');
-      }
       finalHeaders['authorization'] = 'Bearer ' + token;
     }
     return finalHeaders;
