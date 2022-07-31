@@ -21,7 +21,13 @@ class Endpoints {
       baseUrl + '/claimimages/all/$claimID';
   static String deleteImageInCLaim(String imageID) =>
       baseUrl + '/claimimages/$imageID';
+  static String getImageInCLaim(String sessionID) =>
+      baseUrl + '/session/$sessionID/all-images';
   // call engine
   static String callEngineAfterTakePhoto =
       baseUrl + '/claimimages/damage-assessment';
+  static String runEnginePercent =
+      baseUrl + '/claimimages/run_engine_percentage/';
+  static String callEngineAfterUserEdit(String imageId) =>
+      baseUrl + '/claimimages/$imageId/damage-reassessment';
 }

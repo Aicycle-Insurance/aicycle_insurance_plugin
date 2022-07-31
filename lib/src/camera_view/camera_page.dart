@@ -1,7 +1,6 @@
 import 'dart:io';
+import 'dart:typed_data';
 
-import 'package:aicycle_insurance/aicycle_insurance.dart';
-import 'package:aicycle_insurance/src/constants/shot_range.dart';
 import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +11,9 @@ import 'package:path_provider/path_provider.dart';
 import '../../../types/part_direction.dart';
 import '../../types/car_part.dart';
 import '../../types/damage_assessment.dart';
+import '../../aicycle_insurance.dart';
+import '../camera_view/widgets/drawing_tool_layer.dart';
+import '../constants/shot_range.dart';
 import '../common/snack_bar/snack_bar.dart';
 import '../constants/endpoints.dart';
 import '../utils/upload_image_to_s3.dart';
@@ -52,6 +54,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
   late Rx<DamageAssessmentModel?> _damageAssessment;
   var listCarPartFromMiddleView = <String, CarPart>{}.obs;
   late Rx<CarPart> _carPartOnSelected;
+  var previewUserMaskImagesBuffer = <Uint8List>[].obs;
 
   /// camera
   final flashMode = ValueNotifier(CameraFlashes.NONE);
@@ -227,6 +230,8 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                                 ),
                               ),
                             ),
+
+                          /// Preview file kèm mask thiệt hại
                           if (_previewFile.value != null)
                             Positioned(
                               left: 0,
@@ -238,6 +243,8 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                                 child: PreviewImageWithMask(
                                   damageAssess: _damageAssessment,
                                   previewFile: _previewFile,
+                                  previewUserMaskImagesBuffer:
+                                      previewUserMaskImagesBuffer,
                                 ),
                               ),
                             ),
@@ -330,6 +337,21 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                                 ),
                               ),
                             ),
+                          if (_damageAssessment.value != null &&
+                              _previewFile.value != null)
+                            DrawingToolLayer(
+                              damageAssess: Rx<DamageAssessmentModel>(
+                                  _damageAssessment.value!),
+                              imageUrl: _previewFile.value!.path,
+                              onCancelCallBack: () {
+                                _damageAssessment.value = null;
+                                _previewFile.value = null;
+                              },
+                              onSaveCallBack: (buffer) {
+                                previewUserMaskImagesBuffer.assignAll(buffer);
+                              },
+                              token: widget.token,
+                            )
                         ],
                       );
                     }),
@@ -496,7 +518,8 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
               file: _previewFile.value!,
             ),
           );
-          _currentArg.value.partDirection.imageFiles = temp;
+          _currentArg.value.partDirection =
+              _currentArg.value.partDirection.copyWith(imageFiles: temp);
 
           /// gán chi tiết từng góc ảnh
           switch (currentTabIndex.value) {
@@ -509,7 +532,9 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                   file: _previewFile.value!,
                 )
               ]);
-              _currentArg.value.partDirection.overViewImageFiles = temp;
+              _currentArg.value.partDirection = _currentArg.value.partDirection
+                  .copyWith(overViewImageFiles: temp);
+              // _currentArg.value.partDirection.overViewImageFiles = temp;
               break;
             case 1:
               var temp =
@@ -518,7 +543,9 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                 imageId: _damageAssessment.value!.imageId,
                 file: _previewFile.value!,
               ));
-              _currentArg.value.partDirection.middleViewImageFiles = temp;
+              _currentArg.value.partDirection = _currentArg.value.partDirection
+                  .copyWith(middleViewImageFiles: temp);
+              // _currentArg.value.partDirection.middleViewImageFiles = temp;
 
               /// thêm danh sách các bộ phận có hư hại để chụp cận cảnh
               for (CarPart obj in _damageAssessment.value?.carParts ?? []) {
@@ -539,7 +566,10 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                 imageId: _damageAssessment.value!.imageId,
                 file: _previewFile.value!,
               ));
-              _currentArg.value.partDirection.closeViewImageFiles = temp;
+              // print(temp);
+              _currentArg.value.partDirection = _currentArg.value.partDirection
+                  .copyWith(closeViewImageFiles: temp);
+              // _currentArg.value.partDirection.closeViewImageFiles = temp;
               break;
           }
         }

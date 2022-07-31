@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -14,10 +15,12 @@ class PreviewImageWithMask extends StatelessWidget {
     Key? key,
     required this.damageAssess,
     required this.previewFile,
+    this.previewUserMaskImagesBuffer,
   }) : super(key: key);
 
   final Rx<XFile?> previewFile;
   final Rx<DamageAssessmentModel?> damageAssess;
+  final RxList<Uint8List>? previewUserMaskImagesBuffer;
 
   @override
   Widget build(BuildContext context) {
@@ -59,12 +62,14 @@ class PreviewImageWithMask extends StatelessWidget {
           }
         }
       }
-      // for (var maskImageBuffer in previewUserMaskImagesBuffer) {
-      //   masks.add(Image.memory(
-      //     maskImageBuffer,
-      //     fit: BoxFit.fill,
-      //   ));
-      // }
+      if (previewUserMaskImagesBuffer != null) {
+        for (var maskImageBuffer in previewUserMaskImagesBuffer!) {
+          masks.add(Image.memory(
+            maskImageBuffer,
+            fit: BoxFit.fill,
+          ));
+        }
+      }
       return Container(
         color: Colors.black,
         child: InteractiveViewer(

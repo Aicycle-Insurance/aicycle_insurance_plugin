@@ -6,6 +6,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../types/image.dart';
+import '../../types/image_range.dart';
 import '../../types/summaty_image.dart';
 import '../../types/part_direction.dart';
 import '../../gen/assets.gen.dart';
@@ -150,10 +152,20 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
     ));
   }
 
+  Future<String?> _createAndCallImage() async {
+    var result = await _createClaimFolder().then((value) async {
+      if (value != null) {
+        await _getAllImageInClaimFolder();
+        return value;
+      }
+    });
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: _createClaimFolder(),
+        future: _createAndCallImage(),
         builder: (context, AsyncSnapshot<String?> snapShot) {
           if (snapShot.connectionState == ConnectionState.waiting) {
             return Center(
@@ -382,6 +394,67 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
         return null;
       }
     } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> _getAllImageInClaimFolder() async {
+    try {
+      RestfulModule restfulModule = RestfulModuleImpl();
+
+      /// Gọi lấy ảnh từng góc chụp
+      for (var _part in _listPartDirections) {
+        var response = await restfulModule.get(
+          Endpoints.getImageInCLaim(widget.sessionId),
+          token: widget.uTokenKey,
+          query: {
+            "partDirectionId": _part.value.partDirectionId.toString(),
+          },
+        );
+        if (response.body != null) {
+          List result = response.body['data'];
+          List<AiImage> _images =
+              result.map((e) => AiImage.fromJson(e)).toList();
+
+          /// Tạo list trung gian Gán ảnh vào part
+          List<AiImage> _overViewImages = [];
+          List<AiImage> _middleViewImages = [];
+          List<AiImage> _closeImages = [];
+          for (var _image in _images) {
+            switch (imageRangeIds[_image.imageRangeName]) {
+              case 1:
+                _overViewImages.add(_image);
+                break;
+              case 2:
+                _middleViewImages.add(_image);
+                break;
+              case 3:
+                _closeImages.add(_image);
+                break;
+            }
+          }
+
+          /// Gán ảnh vào part
+          _part.value = _part.value.copyWith(
+            images: _images,
+            overViewImages: _overViewImages,
+            closeViewImages: _closeImages,
+            middleViewImages: _middleViewImages,
+            imageFiles: [],
+            overViewImageFiles: [],
+            closeViewImageFiles: [],
+            middleViewImageFiles: [],
+          );
+        } else {
+          if (widget.onError != null) {
+            widget.onError!(response.statusMessage ?? 'Package error');
+          }
+        }
+      }
+    } catch (e) {
+      if (widget.onError != null) {
+        widget.onError!('Package get images error');
+      }
       rethrow;
     }
   }

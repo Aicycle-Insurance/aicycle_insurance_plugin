@@ -55,6 +55,7 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
       padding: const EdgeInsets.all(16).copyWith(bottom: 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
