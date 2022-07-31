@@ -93,7 +93,7 @@ class AiImage {
         imageSize: json["imageSize"] != null
             ? List<double>.from(json["imageSize"].map((x) => x.toDouble()))
             : [],
-        partDirectionName: json["partDirectionName"],
+        partDirectionName: json["directionName"],
         imageRangeName: json["imageRangeName"],
         totalItem: json["totalItem"],
         damageExist: json["damageExist"],

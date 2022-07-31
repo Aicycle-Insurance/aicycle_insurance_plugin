@@ -1,8 +1,6 @@
 import 'dart:io';
+import 'dart:typed_data';
 
-import 'package:aicycle_insurance/aicycle_insurance.dart';
-import 'package:aicycle_insurance/src/camera_view/widgets/drawing_tool_layer.dart';
-import 'package:aicycle_insurance/src/constants/shot_range.dart';
 import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +11,9 @@ import 'package:path_provider/path_provider.dart';
 import '../../../types/part_direction.dart';
 import '../../types/car_part.dart';
 import '../../types/damage_assessment.dart';
+import '../../aicycle_insurance.dart';
+import '../camera_view/widgets/drawing_tool_layer.dart';
+import '../constants/shot_range.dart';
 import '../common/snack_bar/snack_bar.dart';
 import '../constants/endpoints.dart';
 import '../utils/upload_image_to_s3.dart';
@@ -53,6 +54,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
   late Rx<DamageAssessmentModel?> _damageAssessment;
   var listCarPartFromMiddleView = <String, CarPart>{}.obs;
   late Rx<CarPart> _carPartOnSelected;
+  var previewUserMaskImagesBuffer = <Uint8List>[].obs;
 
   /// camera
   final flashMode = ValueNotifier(CameraFlashes.NONE);
@@ -241,6 +243,8 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                                 child: PreviewImageWithMask(
                                   damageAssess: _damageAssessment,
                                   previewFile: _previewFile,
+                                  previewUserMaskImagesBuffer:
+                                      previewUserMaskImagesBuffer,
                                 ),
                               ),
                             ),
@@ -343,7 +347,10 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                                 _damageAssessment.value = null;
                                 _previewFile.value = null;
                               },
-                              onSaveCallBack: () {},
+                              onSaveCallBack: (buffer) {
+                                previewUserMaskImagesBuffer.assignAll(buffer);
+                              },
+                              token: widget.token,
                             )
                         ],
                       );

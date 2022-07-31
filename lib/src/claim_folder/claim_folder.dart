@@ -405,16 +405,14 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
       /// Gọi lấy ảnh từng góc chụp
       for (var _part in _listPartDirections) {
         var response = await restfulModule.get(
-          Endpoints.getImageInCLaim(claimId.value),
+          Endpoints.getImageInCLaim(widget.sessionId),
           token: widget.uTokenKey,
           query: {
-            "externalSessionId": widget.sessionId,
             "partDirectionId": _part.value.partDirectionId.toString(),
           },
         );
         if (response.body != null) {
           List result = response.body['data'];
-          print(result);
           List<AiImage> _images =
               result.map((e) => AiImage.fromJson(e)).toList();
 
@@ -454,7 +452,6 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
         }
       }
     } catch (e) {
-      print(e);
       if (widget.onError != null) {
         widget.onError!('Package get images error');
       }

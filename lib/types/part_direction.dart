@@ -6,10 +6,6 @@ import 'part_direction_meta.dart';
 class PartDirection {
   final int partDirectionId;
   final String partDirectionName;
-  // final List<String> images;
-  // final List<String> overViewImages;
-  // final List<String> middleViewImages;
-  // final List<String> closeViewImages;
   List<AiImage> images;
   List<AiImage> overViewImages;
   List<AiImage> middleViewImages;

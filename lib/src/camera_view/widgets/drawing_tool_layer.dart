@@ -10,9 +10,17 @@ import 'package:flutter_painter/flutter_painter.dart';
 import 'package:flutter_phosphor_icons/flutter_phosphor_icons.dart';
 import 'package:get/get.dart';
 import 'package:image/image.dart' as imageplugin;
+import 'package:mime/mime.dart' as mime;
+import 'package:http/http.dart' as http;
+import 'package:nanoid/nanoid.dart';
 
+import '../../../types/user_corrected_damage.dart';
 import '../../../types/damage_type.dart';
 import '../../../types/damage_assessment.dart';
+import '../../common/dialog/process_dialog.dart';
+import '../../constants/endpoints.dart';
+import '../../modules/resful_module.dart';
+import '../../modules/resful_module_impl.dart';
 import '../../constants/colors.dart';
 import '../../constants/damage_types.dart';
 import '../../constants/strings.dart';
@@ -42,12 +50,14 @@ class DrawingToolLayer extends StatefulWidget {
     required this.imageUrl,
     required this.onCancelCallBack,
     required this.onSaveCallBack,
+    required this.token,
   }) : super(key: key);
 
   final String imageUrl;
+  final String token;
   final Rx<DamageAssessmentModel> damageAssess;
   final Function() onCancelCallBack;
-  final Function() onSaveCallBack;
+  final Function(List<Uint8List>) onSaveCallBack;
 
   @override
   State<DrawingToolLayer> createState() => _DrawingToolLayerState();
@@ -71,7 +81,7 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
     ),
   );
 
-  /// Trạng thái độ rộng bút
+  /// Trạng thái thay đổi độ rộng bút
   var isStrokeWidthChanged = false.obs;
 
   late Rx<DamageTypes> currentDamageType;
@@ -81,6 +91,9 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
   /// map mask url với dữ liệu mask tương ứng
   var initNetworkMask = <String, ui.Image>{};
   var damageMaskDrawables = <String, Drawable>{};
+
+  /// lưu mask vừa vẽ để hiển thị preview
+  var previewUserMaskImagesBuffer = <Uint8List>[].obs;
   Size? painterSize;
 
   /// painter key để lấy kích thước vùng vẽ
@@ -95,9 +108,15 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
               element.damageTypeGuid ==
               widget.damageAssess.value.carDamages.first.uuid);
       currentDamageType = Rx<DamageTypes>(currentType);
+      paintController.freeStyleColor =
+          HexColor.fromHex(currentType.colorHex).withOpacity(damageBaseOpacity);
     } else {
       currentDamageType = Rx<DamageTypes>(DamageTypeConstant.typeDent);
     }
+    currentDamageType.listen((p0) {
+      paintController.freeStyleColor =
+          HexColor.fromHex(p0.colorHex).withOpacity(damageBaseOpacity);
+    });
     drawStatus = Rx<DrawStatus>(DrawStatus.none);
   }
 
@@ -174,7 +193,15 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
     }
     paintController.value =
         paintController.value.copyWith(drawables: drawables);
-    // await saveDamageMask();
+    await saveDamageMask();
+  }
+
+  Future<void> saveDamageMask() async {
+    var currentDamageClass = currentDamageType.value;
+    paintController.groupDrawables(newAction: false);
+    paintController.performedActions.removeLast();
+    var groupedDrawable = paintController.drawables[0];
+    damageMaskDrawables[currentDamageClass.damageTypeName] = groupedDrawable;
   }
 
   @override
@@ -188,12 +215,11 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
             return Obx(() {
               return Stack(
                 children: [
-                  Container(
-                    // key: controller.painterKey,
-                    color: Colors.black,
-                    child: Center(
-                      child: RotatedBox(
-                        quarterTurns: 1,
+                  if (drawStatus.value == DrawStatus.drawing)
+                    Container(
+                      // key: controller.painterKey,
+                      color: Colors.black,
+                      child: Center(
                         child: AspectRatio(
                           aspectRatio: backgroundImage.value.width /
                               backgroundImage.value.height,
@@ -204,8 +230,8 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
                         ),
                       ),
                     ),
-                  ),
-                  if (drawStatus.value == DrawStatus.ready)
+                  if (drawStatus.value == DrawStatus.ready ||
+                      drawStatus.value == DrawStatus.end)
                     SafeArea(
                       child: Align(
                         alignment: Alignment.bottomLeft,
@@ -531,8 +557,9 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
                                               ),
                                             ),
                                             onPressed: () {
-                                              drawStatus.value =
-                                                  DrawStatus.ready;
+                                              drawStatus.value = DrawStatus.end;
+                                              paintController.clearDrawables();
+                                              widget.onCancelCallBack();
                                             },
                                           ),
                                           const SizedBox(width: 8),
@@ -556,7 +583,7 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
                                                     color: DefaultColors.blue),
                                               ),
                                             ),
-                                            onPressed: () {},
+                                            onPressed: finishAnnotate,
                                           ),
                                         ],
                                       ),
@@ -627,13 +654,139 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
       barrierDismissible: true,
     );
     if (result != null) {
-      paintController.freeStyleColor =
-          HexColor.fromHex(result.colorHex).withOpacity(damageBaseOpacity);
+      await saveDamageMask();
       currentDamageType.value = result;
-      // if (onDamageTypeChanged != null) {
-      //   onDamageTypeChanged!(result);
-      // }
+      await setDamageMask();
     }
+  }
+
+  void finishAnnotate() async {
+    paintController.freeStyleMode = FreeStyleMode.none;
+    ProgressDialog.showWithCircleIndicator(context, isLandScape: true);
+    await saveDamageMask();
+
+    final size = Size(backgroundImage.value.width.toDouble(),
+        backgroundImage.value.height.toDouble());
+
+    List<UserCorrectedDamageItem> correctedItems = [];
+    for (var drawableItem in damageMaskDrawables.entries) {
+      var renderedImage = await renderDamageMask(
+          drawableItem.value, size, damageClassColors[drawableItem.key]!);
+      var pngImageBuffer = (await renderedImage.pngBytes)!;
+      correctedItems.add(
+        UserCorrectedDamageItem(
+            maskData: pngImageBuffer,
+            damageClass: drawableItem.key,
+            maskImgName: nanoid() + '.png'),
+      );
+      previewUserMaskImagesBuffer.add(pngImageBuffer);
+    }
+    await userCorrectDamage(
+      UserCorrectedDamages(
+        imageId: widget.damageAssess.value.imageId.toString(),
+        correctedData: correctedItems,
+      ),
+      isReAssessment: true,
+    );
+    ProgressDialog.hide(context);
+    widget.onSaveCallBack(previewUserMaskImagesBuffer);
+    drawStatus.value = DrawStatus.end;
+  }
+
+  Future userCorrectDamage(UserCorrectedDamages userCorrectedDamages,
+      {bool isReAssessment = false}) async {
+    try {
+      RestfulModule restfulModule = RestfulModuleImpl();
+
+      /// upload ảnh mask
+      List<dynamic> filePaths =
+          userCorrectedDamages.correctedData.map((imageData) {
+        return 'INSURANCE_RESULT/${imageData.maskImgName}';
+      }).toList();
+
+      var response = await restfulModule.post(
+        Endpoints.getUploadUrl,
+        {'filePaths': filePaths},
+        token: widget.token,
+      );
+      var uploadUrls = response.body['urls'];
+
+      for (int idx = 0; idx < filePaths.length; idx++) {
+        List<int> imageData = userCorrectedDamages.correctedData[idx].maskData;
+        var url = Uri.parse(uploadUrls[idx]['uploadUrl']);
+        var uploadRes = await http.put(
+          url,
+          body: imageData,
+          headers: {
+            'Content-Type': mime.lookupMimeType(
+                userCorrectedDamages.correctedData[idx].maskImgName)!
+          },
+        );
+        if (uploadRes.statusCode != 200) {
+          throw Exception(
+              "Upload failed. Got status code ${uploadRes.statusCode}");
+        }
+      }
+
+      ///
+      /// call process the new result
+      List<Map<String, String>> damagePayload = [];
+      for (var correctedData in userCorrectedDamages.correctedData) {
+        int idx = DamageTypeConstant.listDamageType.indexWhere(
+            (element) => element.damageTypeName == correctedData.damageClass);
+
+        damagePayload.add({
+          "class": DamageTypeConstant.listDamageType[idx].damageTypeGuid,
+          "maskPath": correctedData.maskImgName,
+        });
+      }
+      if (!isReAssessment) {
+        await restfulModule.post(
+          Endpoints.runEnginePercent,
+          {
+            "images": [
+              {
+                "imageId": userCorrectedDamages.imageId,
+                "damages": damagePayload,
+              }
+            ]
+          },
+          token: widget.token,
+        );
+      } else {
+        await restfulModule.post(
+          Endpoints.callEngineAfterUserEdit(userCorrectedDamages.imageId),
+          {"damages": damagePayload},
+          token: widget.token,
+        );
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<ui.Image> renderDamageMask(
+      Drawable maskDrawable, Size size, Color color) async {
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(recorder);
+
+    canvas.save();
+
+    var _scale = paintController.painterKey.currentContext?.size ?? size;
+
+    canvas.transform(Matrix4.identity()
+        .scaled(size.width / _scale.width, size.height / _scale.height)
+        .storage);
+    canvas.drawColor(color, ui.BlendMode.clear);
+    canvas.saveLayer(Rect.largest, Paint());
+
+    maskDrawable.draw(canvas, size);
+    canvas.restore();
+
+    var renderedImage = await recorder
+        .endRecording()
+        .toImage(size.width.floor(), size.height.floor());
+    return renderedImage;
   }
 
   void setFreeStyleStrokeWidth(double value) {
