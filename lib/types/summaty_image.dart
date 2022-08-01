@@ -8,20 +8,20 @@ class SummaryImage {
     this.localFilePath,
   });
 
-  final int? imageId;
+  final int imageId;
   final String imageName;
-  final int? claimId;
-  final String? url;
-  final String? filePath;
-  final String? localFilePath;
+  final int claimId;
+  final String url;
+  final String filePath;
+  final String localFilePath;
 
   SummaryImage copyWith({
-    int? imageId,
-    String? imageName,
-    int? claimId,
-    String? url,
-    String? filePath,
-    String? localFilePath,
+    int imageId,
+    String imageName,
+    int claimId,
+    String url,
+    String filePath,
+    String localFilePath,
   }) =>
       SummaryImage(
         imageId: imageId ?? this.imageId,

@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 
 class PhotoTakenPoint extends StatelessWidget {
   const PhotoTakenPoint({
-    Key? key,
+    Key key,
     this.isTaken = false,
     this.onTap,
   }) : super(key: key);
 
   final double size = 24;
   final bool isTaken;
-  final Function()? onTap;
+  final Function() onTap;
 
   @override
   Widget build(BuildContext context) {

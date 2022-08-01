@@ -8,18 +8,18 @@ class MaskData {
   final String maskUrl;
   final List<double> boxes;
   final String category;
-  final String? vehiclePartName;
+  final String vehiclePartName;
   final Color color;
   final bool userCreated;
 
   MaskData(
-      {required this.masksPath,
-      required this.maskUrl,
-      required this.boxes,
-      required this.category,
-      required this.vehiclePartName,
-      required this.color,
-      required this.userCreated});
+      {this.masksPath,
+      this.maskUrl,
+      this.boxes,
+      this.category,
+      this.vehiclePartName,
+      this.color,
+      this.userCreated});
 
   factory MaskData.fromJson(Map<String, dynamic> json) {
     int damageIdx = DamageTypeConstant.listDamageType.indexWhere((element) =>

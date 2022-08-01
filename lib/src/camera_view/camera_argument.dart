@@ -9,9 +9,9 @@ class CameraArgument {
   final CarBrandType carBrand;
 
   CameraArgument({
-    required this.partDirection,
-    required this.claimId,
-    required this.imageRangeId,
-    required this.carBrand,
+    this.partDirection,
+    this.claimId,
+    this.imageRangeId,
+    this.carBrand,
   });
 }

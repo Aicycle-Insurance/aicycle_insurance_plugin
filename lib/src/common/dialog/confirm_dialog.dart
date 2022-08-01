@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import '../../constants/colors.dart';
 
 class ConfirmDialog {
-  static Future<bool?> show(
+  static Future<bool> show(
     BuildContext context, {
-    required String content,
-    required String cancelButtonLabel,
-    required String confirmButtonLabel,
+    String content,
+    String cancelButtonLabel,
+    String confirmButtonLabel,
   }) async {
     final androidAlert = AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

@@ -45,12 +45,12 @@ enum DrawStatus {
 // ignore: must_be_immutable
 class DrawingToolLayer extends StatefulWidget {
   const DrawingToolLayer({
-    Key? key,
-    required this.damageAssess,
-    required this.imageUrl,
-    required this.onCancelCallBack,
-    required this.onSaveCallBack,
-    required this.token,
+    Key key,
+    this.damageAssess,
+    this.imageUrl,
+    this.onCancelCallBack,
+    this.onSaveCallBack,
+    this.token,
   }) : super(key: key);
 
   final String imageUrl;
@@ -84,9 +84,9 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
   /// Trạng thái thay đổi độ rộng bút
   var isStrokeWidthChanged = false.obs;
 
-  late Rx<DamageTypes> currentDamageType;
-  late Rx<ui.Image> backgroundImage;
-  late Rx<DrawStatus> drawStatus;
+  Rx<DamageTypes> currentDamageType;
+  Rx<ui.Image> backgroundImage;
+  Rx<DrawStatus> drawStatus;
 
   /// map mask url với dữ liệu mask tương ứng
   var initNetworkMask = <String, ui.Image>{};
@@ -94,7 +94,7 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
 
   /// lưu mask vừa vẽ để hiển thị preview
   var previewUserMaskImagesBuffer = <Uint8List>[].obs;
-  Size? painterSize;
+  Size painterSize;
 
   /// painter key để lấy kích thước vùng vẽ
   final GlobalKey painterKey = GlobalKey();
@@ -150,21 +150,21 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
     if (damageMaskDrawables.containsKey(currentDamageClass.damageTypeName)) {
       // Get the existing mask
       paintController.value = paintController.value.copyWith(
-          drawables: [damageMaskDrawables[currentDamageClass.damageTypeName]!]);
+          drawables: [damageMaskDrawables[currentDamageClass.damageTypeName]]);
       return;
     }
 
     // Init mask
-    var viewWidth = painterSize!.width;
-    var viewHeight = painterSize!.height;
+    var viewWidth = painterSize.width;
+    var viewHeight = painterSize.height;
     for (var part in widget.damageAssess.value.carParts) {
       for (var mask in part.carPartDamages) {
         if (mask.uuid != currentDamageClass.damageTypeGuid) continue;
-        var img = initNetworkMask[mask.maskUrl]!;
+        var img = initNetworkMask[mask.maskUrl];
         var tImg = imageplugin.decodePng(
-            (await img.toByteData(format: ui.ImageByteFormat.png))!
+            (await img.toByteData(format: ui.ImageByteFormat.png))
                 .buffer
-                .asUint8List())!;
+                .asUint8List());
 
         var _color = HexColor.fromHex(currentDamageClass.colorHex)
             .withOpacity(damageBaseOpacity);
@@ -184,10 +184,11 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
                 .image;
 
         var drawable = ImageDrawable.fittedToSize(
-            image: finalImg,
-            position: Offset(viewWidth * (mask.boxes[0] + maskW / 2),
-                viewHeight * (mask.boxes[1] + maskH / 2)),
-            size: Size(viewWidth * maskW, viewHeight * maskH));
+            // image: finalImg,
+            // position: Offset(viewWidth * (mask.boxes[0] + maskW / 2),
+            //     viewHeight * (mask.boxes[1] + maskH / 2)),
+            // size: Size(viewWidth * maskW, viewHeight * maskH),
+            );
         drawables.add(drawable);
       }
     }
@@ -671,8 +672,8 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
     List<UserCorrectedDamageItem> correctedItems = [];
     for (var drawableItem in damageMaskDrawables.entries) {
       var renderedImage = await renderDamageMask(
-          drawableItem.value, size, damageClassColors[drawableItem.key]!);
-      var pngImageBuffer = (await renderedImage.pngBytes)!;
+          drawableItem.value, size, damageClassColors[drawableItem.key]);
+      var pngImageBuffer = (await renderedImage.pngBytes);
       correctedItems.add(
         UserCorrectedDamageItem(
             maskData: pngImageBuffer,
@@ -719,7 +720,7 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
           body: imageData,
           headers: {
             'Content-Type': mime.lookupMimeType(
-                userCorrectedDamages.correctedData[idx].maskImgName)!
+                userCorrectedDamages.correctedData[idx].maskImgName)
           },
         );
         if (uploadRes.statusCode != 200) {

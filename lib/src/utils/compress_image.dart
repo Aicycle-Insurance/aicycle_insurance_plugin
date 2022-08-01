@@ -7,7 +7,7 @@ import 'package:path_provider/path_provider.dart';
 class ImageUtils {
   ImageUtils._();
   static Future<XFile> compressImage(File img) async {
-    late File? compressedFile;
+    File compressedFile;
     try {
       final Directory extDir = await getTemporaryDirectory();
       final appImageDir =

@@ -13,8 +13,8 @@ class RestfulModuleImpl implements RestfulModule {
   );
 
   Future<Map<String, String>> _getHeaders({
-    required String token,
-    Map<String, String>? headers,
+    String token,
+    Map<String, String> headers,
   }) async {
     var finalHeaders = <String, String>{};
 
@@ -30,9 +30,9 @@ class RestfulModuleImpl implements RestfulModule {
   Future<CommonResponse<T>> delete<T>(
     String uri, {
     data,
-    required String token,
-    Map<String, dynamic>? query,
-    CommonRequestOptions? options,
+    String token,
+    Map<String, dynamic> query,
+    CommonRequestOptions options,
   }) async {
     var result = await getConnect.delete<T>(
       uri,
@@ -62,15 +62,15 @@ class RestfulModuleImpl implements RestfulModule {
   @override
   Future<CommonResponse<T>> get<T>(
     String uri, {
-    required String token,
-    Map<String, dynamic>? query,
-    CommonRequestOptions? options,
+    String token,
+    Map<String, dynamic> query,
+    CommonRequestOptions options,
   }) async {
     var result = await getConnect.get<T>(
       uri,
       query: query,
-      headers: (await _getHeaders(headers: options?.headers, token: token)),
-      contentType: options?.contentType,
+      headers: (await _getHeaders(headers: options.headers, token: token)),
+      contentType: options.contentType,
     );
     if (result.statusCode == 500) {
       String message = 'Internal Server Error';
@@ -95,16 +95,16 @@ class RestfulModuleImpl implements RestfulModule {
   Future<CommonResponse<T>> patch<T>(
     String uri,
     data, {
-    required String token,
-    Map<String, dynamic>? query,
-    CommonRequestOptions? options,
+    String token,
+    Map<String, dynamic> query,
+    CommonRequestOptions options,
   }) async {
     var result = await getConnect.patch<T>(
       uri,
       data,
       query: query,
-      headers: (await _getHeaders(headers: options?.headers, token: token)),
-      contentType: options?.contentType,
+      headers: (await _getHeaders(headers: options.headers, token: token)),
+      contentType: options.contentType,
     );
     if (result.statusCode == 500) {
       String message = 'Internal Server Error';
@@ -129,16 +129,16 @@ class RestfulModuleImpl implements RestfulModule {
   Future<CommonResponse<T>> post<T>(
     String uri,
     data, {
-    required String token,
-    Map<String, dynamic>? query,
-    CommonRequestOptions? options,
+    String token,
+    Map<String, dynamic> query,
+    CommonRequestOptions options,
   }) async {
     var result = await getConnect.post<T>(
       uri,
       data,
       query: query,
-      headers: (await _getHeaders(headers: options?.headers, token: token)),
-      contentType: options?.contentType,
+      headers: (await _getHeaders(headers: options.headers, token: token)),
+      contentType: options.contentType,
     );
     if (result.statusCode == 500) {
       String message = 'Internal Server Error';
@@ -163,16 +163,16 @@ class RestfulModuleImpl implements RestfulModule {
   Future<CommonResponse<T>> put<T>(
     String uri, {
     data,
-    required String token,
-    Map<String, dynamic>? query,
-    CommonRequestOptions? options,
+    String token,
+    Map<String, dynamic> query,
+    CommonRequestOptions options,
   }) async {
     var result = await getConnect.put<T>(
       uri,
       data,
       query: query,
-      headers: (await _getHeaders(headers: options?.headers, token: token)),
-      contentType: options?.contentType,
+      headers: (await _getHeaders(headers: options.headers, token: token)),
+      contentType: options.contentType,
     );
     if (result.statusCode == 500) {
       String message = 'Internal Server Error';

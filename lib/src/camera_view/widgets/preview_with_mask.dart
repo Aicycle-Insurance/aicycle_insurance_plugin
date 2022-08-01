@@ -12,15 +12,15 @@ import '../../constants/colors.dart';
 
 class PreviewImageWithMask extends StatelessWidget {
   const PreviewImageWithMask({
-    Key? key,
-    required this.damageAssess,
-    required this.previewFile,
+    Key key,
+    this.damageAssess,
+    this.previewFile,
     this.previewUserMaskImagesBuffer,
   }) : super(key: key);
 
-  final Rx<XFile?> previewFile;
-  final Rx<DamageAssessmentModel?> damageAssess;
-  final RxList<Uint8List>? previewUserMaskImagesBuffer;
+  final Rx<XFile> previewFile;
+  final Rx<DamageAssessmentModel> damageAssess;
+  final RxList<Uint8List> previewUserMaskImagesBuffer;
 
   @override
   Widget build(BuildContext context) {
@@ -28,15 +28,15 @@ class PreviewImageWithMask extends StatelessWidget {
       var masks = <Widget>[];
       if (damageAssess.value != null) {
         // duyệt hết các parts trả về
-        for (var i = 0; i < damageAssess.value!.carParts.length; i++) {
-          var imWidth = damageAssess.value!.imageSize[0].toDouble();
-          var imHeight = damageAssess.value!.imageSize[1].toDouble();
+        for (var i = 0; i < damageAssess.value.carParts.length; i++) {
+          var imWidth = damageAssess.value.imageSize[0].toDouble();
+          var imHeight = damageAssess.value.imageSize[1].toDouble();
           // duyệt các damages của từng part
           for (var j = 0;
-              j < damageAssess.value!.carParts[i].carPartDamages.length;
+              j < damageAssess.value.carParts[i].carPartDamages.length;
               j++) {
             var carPartDamage =
-                damageAssess.value!.carParts[i].carPartDamages[j];
+                damageAssess.value.carParts[i].carPartDamages[j];
             var color = damageClassColors[carPartDamage.className]
                     ?.withOpacity(damageBaseOpacity) ??
                 Colors.transparent;
@@ -63,7 +63,7 @@ class PreviewImageWithMask extends StatelessWidget {
         }
       }
       if (previewUserMaskImagesBuffer != null) {
-        for (var maskImageBuffer in previewUserMaskImagesBuffer!) {
+        for (var maskImageBuffer in previewUserMaskImagesBuffer) {
           masks.add(Image.memory(
             maskImageBuffer,
             fit: BoxFit.fill,
@@ -80,7 +80,7 @@ class PreviewImageWithMask extends StatelessWidget {
             child: Stack(
               children: [
                 Image.file(
-                  File(previewFile.value!.path),
+                  File(previewFile.value.path),
                   fit: BoxFit.cover,
                 ),
                 ...masks,

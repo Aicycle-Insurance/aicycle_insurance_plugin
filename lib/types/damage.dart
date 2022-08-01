@@ -4,28 +4,28 @@ import 'package:flutter/material.dart';
 import '../src/extensions/hex_color_extension.dart';
 
 class DamageModel {
-  final num? overlapRate;
+  final num overlapRate;
   final String className;
   final String uuid;
   final String maskUrl;
-  final String? location;
-  final num? score;
+  final String location;
+  final num score;
   final List<dynamic> boxes;
   final String maskPath;
   final bool isPart;
   final Color color;
 
   DamageModel({
-    required this.className,
-    required this.uuid,
-    required this.location,
-    required this.score,
-    required this.boxes,
-    required this.maskPath,
-    required this.maskUrl,
-    required this.isPart,
-    required this.color,
-    required this.overlapRate,
+    this.className,
+    this.uuid,
+    this.location,
+    this.score,
+    this.boxes,
+    this.maskPath,
+    this.maskUrl,
+    this.isPart,
+    this.color,
+    this.overlapRate,
   });
 
   factory DamageModel.fromJson(Map<String, dynamic> json) {

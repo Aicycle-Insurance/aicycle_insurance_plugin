@@ -31,10 +31,10 @@ class ClaimFolderView extends StatefulWidget {
   /// Khởi tạo hồ sơ bảo hiểm phía AICycle
 
   const ClaimFolderView({
-    Key? key,
-    required this.sessionId,
-    required this.carBrand,
-    required this.uTokenKey,
+    Key key,
+    this.sessionId,
+    this.carBrand,
+    this.uTokenKey,
     this.loadingWidget,
     this.onError,
     this.onFrontLeftChanged,
@@ -55,28 +55,28 @@ class ClaimFolderView extends StatefulWidget {
   final String uTokenKey;
 
   /// Custom loading widget
-  final Widget? loadingWidget;
+  final Widget loadingWidget;
 
   /// Khi xử lý lỗi
-  final Function(String message)? onError;
+  final Function(String message) onError;
 
   /// Hàm call back trả về danh sách ảnh Trái - Trước
-  final Function(List<File>)? onFrontLeftChanged;
+  final Function(List<File>) onFrontLeftChanged;
 
   /// Hàm call back trả về danh sách ảnh Phải - Trước
-  final Function(List<File>)? onFrontRightChanged;
+  final Function(List<File>) onFrontRightChanged;
 
   /// Hàm call back trả về danh sách ảnh Trước
-  final Function(List<File>)? onFrontChanged;
+  final Function(List<File>) onFrontChanged;
 
   /// Hàm call back trả về danh sách ảnh Trái - Sau
-  final Function(List<File>)? onLeftRearChanged;
+  final Function(List<File>) onLeftRearChanged;
 
   /// Hàm call back trả về danh sách ảnh Phải - Sau
-  final Function(List<File>)? onRightRearChanged;
+  final Function(List<File>) onRightRearChanged;
 
   /// Hàm call back trả về danh sách ảnh Sau
-  final Function(List<File>)? onRearChanged;
+  final Function(List<File>) onRearChanged;
 
   @override
   State<ClaimFolderView> createState() => _ClaimFolderViewState();
@@ -87,29 +87,29 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
   final double _carHeight = 448.0;
   // 3d car width
   final double _carWidth = 274.0;
-  late List<SummaryImage> _summaryImages;
+  List<SummaryImage> _summaryImages;
 
   // Aicycle Claim id
   var claimId = ''.obs;
 
   /// 6 góc chụp
   /// trái trước
-  late Rx<PartDirection> _front45Left;
+  Rx<PartDirection> _front45Left;
 
   /// trước
-  late Rx<PartDirection> _frontStraight;
+  Rx<PartDirection> _frontStraight;
 
   /// phải trước
-  late Rx<PartDirection> _front45Right;
+  Rx<PartDirection> _front45Right;
 
   /// phải sau
-  late Rx<PartDirection> _leftRear;
+  Rx<PartDirection> _leftRear;
 
   /// sau
-  late Rx<PartDirection> _rear;
+  Rx<PartDirection> _rear;
 
   /// phải sau
-  late Rx<PartDirection> _rightRear;
+  Rx<PartDirection> _rightRear;
 
   List<Rx<PartDirection>> get _listPartDirections {
     return [
@@ -134,36 +134,36 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
     _front45Left = Rx<PartDirection>(PartDirection(
       partDirectionId: 4,
       partDirectionName: StringKeys.leftHead45,
-      meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[4]!),
+      meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[4]),
     ));
     _frontStraight = Rx<PartDirection>(PartDirection(
       partDirectionId: 2,
       partDirectionName: StringKeys.carHead,
-      meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[2]!),
+      meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[2]),
     ));
     _front45Right = Rx<PartDirection>(PartDirection(
       partDirectionId: 3,
       partDirectionName: StringKeys.rightHead45,
-      meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[3]!),
+      meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[3]),
     ));
     _leftRear = Rx<PartDirection>(PartDirection(
       partDirectionId: 7,
       partDirectionName: StringKeys.leftTail45,
-      meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[7]!),
+      meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[7]),
     ));
     _rightRear = Rx<PartDirection>(PartDirection(
       partDirectionId: 6,
       partDirectionName: StringKeys.rightTail45,
-      meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[6]!),
+      meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[6]),
     ));
     _rear = Rx<PartDirection>(PartDirection(
       partDirectionId: 5,
       partDirectionName: StringKeys.carTail,
-      meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[5]!),
+      meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[5]),
     ));
   }
 
-  Future<String?> _createAndCallImage() async {
+  Future<String> _createAndCallImage() async {
     var result = await _createClaimFolder().then((value) async {
       if (value != null) {
         await _getAllImageInClaimFolder();
@@ -177,7 +177,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: _createAndCallImage(),
-        builder: (context, AsyncSnapshot<String?> snapShot) {
+        builder: (context, AsyncSnapshot<String> snapShot) {
           if (snapShot.connectionState == ConnectionState.waiting) {
             return Center(
                 child:
@@ -192,13 +192,13 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SummaryImagesSection(
-                    claimId: snapShot.data!,
+                    claimId: snapShot.data,
                     token: widget.uTokenKey,
                     sessionId: widget.sessionId,
                     images: _summaryImages,
                     onError: (message) {
                       if (widget.onError != null) {
-                        widget.onError!(message);
+                        widget.onError(message);
                       }
                     },
                     imagesOnChanged: (images) {
@@ -381,7 +381,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
   }
 
   // Tạo folder phía AICycle
-  Future<String?> _createClaimFolder() async {
+  Future<String> _createClaimFolder() async {
     RestfulModule restfulModule = RestfulModuleImpl();
     try {
       Map<String, dynamic> data = {
@@ -400,7 +400,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
         return response.body['data'][0]['claimId'].toString();
       } else {
         if (widget.onError != null) {
-          widget.onError!(response.statusMessage ?? 'Package error');
+          widget.onError(response.statusMessage ?? 'Package error');
         }
         return null;
       }
@@ -458,13 +458,13 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
           );
         } else {
           if (widget.onError != null) {
-            widget.onError!(response.statusMessage ?? 'Package error');
+            widget.onError(response.statusMessage ?? 'Package error');
           }
         }
       }
     } catch (e) {
       if (widget.onError != null) {
-        widget.onError!('Package get images error: $e');
+        widget.onError('Package get images error: $e');
       }
       rethrow;
     }
@@ -484,7 +484,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                   token: widget.uTokenKey,
                   onError: (message) {
                     if (widget.onError != null) {
-                      widget.onError!(message);
+                      widget.onError(message);
                     }
                   },
                 ))).then((value) {

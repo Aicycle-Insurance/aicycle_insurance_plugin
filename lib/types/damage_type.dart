@@ -1,9 +1,9 @@
 class DamageTypes {
   DamageTypes({
-    required this.damageTypeId,
-    required this.damageTypeName,
-    required this.damageTypeGuid,
-    required this.colorHex,
+    this.damageTypeId,
+    this.damageTypeName,
+    this.damageTypeGuid,
+    this.colorHex,
   });
 
   String damageTypeId;

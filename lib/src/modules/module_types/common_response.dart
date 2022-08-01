@@ -9,18 +9,18 @@ class CommonResponse<T> {
   });
 
   /// Response body. may have been transformed, please refer to [ResponseType].
-  T? body;
+  T body;
 
   /// Response headers.
-  Map<String, dynamic>? headers;
+  Map<String, dynamic> headers;
 
   /// Http status code.
-  int? statusCode;
+  int statusCode;
 
   /// Returns the reason phrase associated with the status code.
   /// The reason phrase must be set before the body is written
   /// to. Setting the reason phrase after writing to the body.
-  String? statusMessage;
+  String statusMessage;
 
   /// We are more concerned about `data` field.
   @override

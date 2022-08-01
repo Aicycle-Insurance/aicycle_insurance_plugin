@@ -9,11 +9,11 @@ class DamageAssessmentModel {
   final List<CarPart> carParts;
 
   DamageAssessmentModel({
-    required this.imageId,
-    required this.imgUrl,
-    required this.imageSize,
-    required this.carDamages,
-    required this.carParts,
+    this.imageId,
+    this.imgUrl,
+    this.imageSize,
+    this.carDamages,
+    this.carParts,
   });
 
   factory DamageAssessmentModel.fromJson(Map<String, dynamic> json) {
@@ -31,9 +31,6 @@ class DamageAssessmentModel {
   }
 }
 
-
-
-
 // class CarDamageModel {
 //   final String className;
 //   final String maskUrl;
@@ -45,14 +42,14 @@ class DamageAssessmentModel {
 //   final Color color;
 
 //   CarDamageModel({
-//     required this.className,
-//     required this.location,
-//     required this.score,
-//     required this.boxes,
-//     required this.maskPath,
-//     required this.isPart,
-//     required this.maskUrl,
-//     required this.color,
+//      this.className,
+//      this.location,
+//      this.score,
+//      this.boxes,
+//      this.maskPath,
+//      this.isPart,
+//      this.maskUrl,
+//      this.color,
 //   });
 
 //   factory CarDamageModel.fromJson(Map<String, dynamic> json) {

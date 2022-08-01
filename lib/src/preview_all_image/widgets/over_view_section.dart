@@ -6,15 +6,15 @@ import 'preview_image_container.dart';
 
 class OverViewSection extends StatelessWidget {
   const OverViewSection({
-    Key? key,
-    required this.imageUrl,
-    required this.onRetake,
-    required this.onDelete,
+    Key key,
+    this.imageUrl,
+    this.onRetake,
+    this.onDelete,
   }) : super(key: key);
 
-  final String? imageUrl;
-  final Function()? onRetake;
-  final Function()? onDelete;
+  final String imageUrl;
+  final Function() onRetake;
+  final Function() onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +33,9 @@ class OverViewSection extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: imageUrl != null && imageUrl!.isNotEmpty
+              child: imageUrl != null && imageUrl.isNotEmpty
                   ? PreviewImageContainer(
-                      imageUrl: imageUrl!,
+                      imageUrl: imageUrl,
                       onDelete: onDelete,
                       onRetake: onRetake,
                     )

@@ -18,8 +18,8 @@ class PartDirection {
   PartDirectionMeta meta;
 
   PartDirection({
-    required this.partDirectionId,
-    required this.partDirectionName,
+    this.partDirectionId,
+    this.partDirectionName,
     this.images = const [],
     this.overViewImages = const [],
     this.middleViewImages = const [],
@@ -28,23 +28,23 @@ class PartDirection {
     this.overViewImageFiles = const [],
     this.middleViewImageFiles = const [],
     this.closeViewImageFiles = const [],
-    required this.meta,
+    this.meta,
     this.imagesCount = 0,
   });
 
   PartDirection copyWith({
-    int? partDirectionId,
-    String? partDirectionName,
-    List<AiImage>? images,
-    List<AiImage>? overViewImages,
-    List<AiImage>? middleViewImages,
-    List<AiImage>? closeViewImages,
-    List<XFileWithId>? imageFiles,
-    List<XFileWithId>? overViewImageFiles,
-    List<XFileWithId>? middleViewImageFiles,
-    List<XFileWithId>? closeViewImageFiles,
-    int? imagesCount,
-    PartDirectionMeta? meta,
+    int partDirectionId,
+    String partDirectionName,
+    List<AiImage> images,
+    List<AiImage> overViewImages,
+    List<AiImage> middleViewImages,
+    List<AiImage> closeViewImages,
+    List<XFileWithId> imageFiles,
+    List<XFileWithId> overViewImageFiles,
+    List<XFileWithId> middleViewImageFiles,
+    List<XFileWithId> closeViewImageFiles,
+    int imagesCount,
+    PartDirectionMeta meta,
   }) =>
       PartDirection(
         closeViewImages: closeViewImages ?? this.closeViewImages,
@@ -62,8 +62,8 @@ class PartDirection {
 }
 
 class XFileWithId {
-  final int? imageId;
+  final int imageId;
   final XFile file;
 
-  XFileWithId({required this.imageId, required this.file});
+  XFileWithId({this.imageId, this.file});
 }
