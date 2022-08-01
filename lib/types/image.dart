@@ -93,7 +93,7 @@ class AiImage {
         imageSize: json["imageSize"] != null
             ? List<double>.from(json["imageSize"].map((x) => x.toDouble()))
             : [],
-        partDirectionName: json["directionName"],
+        partDirectionName: json["partDirectionName"] ?? json["directionName"],
         imageRangeName: json["imageRangeName"],
         totalItem: json["totalItem"],
         damageExist: json["damageExist"],
@@ -166,7 +166,7 @@ class PartsMask {
       );
 
   factory PartsMask.fromJson(Map<String, dynamic> json) => PartsMask(
-        masksPath: json["masksPath"],
+        masksPath: json["masksPath"] ?? '',
         boxes: json["boxes"] != null
             ? List<double>.from(json["boxes"].map((x) => x.toDouble()))
             : [0, 0, 1, 1],
@@ -175,7 +175,7 @@ class PartsMask {
             json["class"] ??
             "Unknown",
         scores: json["scores"] != null ? json["scores"].toDouble() : 0.0,
-        maskUrl: json["maskUrl"],
+        maskUrl: json["maskUrl"] ?? '',
         isPart: json["isPart"],
         color: json['vehicleColor'] != null
             ? HexColor.fromHex(json['vehicleColor'])

@@ -60,11 +60,22 @@ class ClaimFolderView extends StatefulWidget {
   /// Khi xử lý lỗi
   final Function(String message)? onError;
 
+  /// Hàm call back trả về danh sách ảnh Trái - Trước
   final Function(List<File>)? onFrontLeftChanged;
+
+  /// Hàm call back trả về danh sách ảnh Phải - Trước
   final Function(List<File>)? onFrontRightChanged;
+
+  /// Hàm call back trả về danh sách ảnh Trước
   final Function(List<File>)? onFrontChanged;
+
+  /// Hàm call back trả về danh sách ảnh Trái - Sau
   final Function(List<File>)? onLeftRearChanged;
+
+  /// Hàm call back trả về danh sách ảnh Phải - Sau
   final Function(List<File>)? onRightRearChanged;
+
+  /// Hàm call back trả về danh sách ảnh Sau
   final Function(List<File>)? onRearChanged;
 
   @override
@@ -453,7 +464,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
       }
     } catch (e) {
       if (widget.onError != null) {
-        widget.onError!('Package get images error');
+        widget.onError!('Package get images error: $e');
       }
       rethrow;
     }
