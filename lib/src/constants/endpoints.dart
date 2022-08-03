@@ -17,8 +17,8 @@ class Endpoints {
       baseUrl + '/claimimages/summary/$imageId';
 
   // part image
-  static String deleteAllImageInClaim(String claimID) =>
-      baseUrl + '/claimimages/all/$claimID';
+  static String deleteAllImageInClaim(String sessionID) =>
+      baseUrl + '/session/$sessionID/all-images';
   static String deleteImageInCLaim(String imageID) =>
       baseUrl + '/claimimages/$imageID';
   static String getImageInCLaim(String sessionID) =>

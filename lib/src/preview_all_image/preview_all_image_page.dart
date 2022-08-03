@@ -41,8 +41,31 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
     currentArg = Rx<CameraArgument>(widget.cameraArgument);
   }
 
+  RxList<AiImage> overviewImages = <AiImage>[].obs;
+  RxList<XFileWithId> overviewImageFiles = <XFileWithId>[].obs;
+  RxList<AiImage> middleAndCloseImages = <AiImage>[].obs;
+
+  RxList<XFileWithId> middleAndCloseImageFiles = <XFileWithId>[].obs;
+  //  {
+  //   var imageList = <XFileWithId>[];
+  //   imageList.addAll(currentArg.value.partDirection.middleViewImageFiles);
+  //   imageList.addAll(currentArg.value.partDirection.closeViewImageFiles);
+  //   return imageList;
+  // }
+
   @override
   Widget build(BuildContext context) {
+    overviewImages.assignAll(currentArg.value.partDirection.overViewImages);
+    overviewImageFiles
+        .assignAll(currentArg.value.partDirection.overViewImageFiles);
+    middleAndCloseImages
+        .addAll(currentArg.value.partDirection.middleViewImages);
+    middleAndCloseImages.addAll(currentArg.value.partDirection.closeViewImages);
+    middleAndCloseImageFiles
+        .addAll(currentArg.value.partDirection.middleViewImageFiles);
+    middleAndCloseImageFiles
+        .addAll(currentArg.value.partDirection.closeViewImageFiles);
+
     return WillPopScope(
       onWillPop: _willPop,
       child: Scaffold(
@@ -79,43 +102,26 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
           minimum: const EdgeInsets.all(16),
           child: Obx(
             () {
-              // image server
-              var imageList = <AiImage>[];
-              imageList.addAll(currentArg.value.partDirection.middleViewImages);
-              imageList.addAll(currentArg.value.partDirection.closeViewImages);
-              // image file
-              var imageFiles = <XFileWithId>[];
-              imageFiles
-                  .addAll(currentArg.value.partDirection.middleViewImageFiles);
-              imageFiles
-                  .addAll(currentArg.value.partDirection.closeViewImageFiles);
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   OverViewSection(
-                    imageUrl: currentArg
-                            .value.partDirection.overViewImageFiles.isNotEmpty
-                        ? currentArg.value.partDirection.overViewImageFiles
-                            .first.file.path
-                        : currentArg
-                                .value.partDirection.overViewImages.isNotEmpty
-                            ? currentArg
-                                .value.partDirection.overViewImages.first.url
+                    imageUrl: overviewImageFiles.isNotEmpty
+                        ? overviewImageFiles.first.file.path
+                        : overviewImages.isNotEmpty
+                            ? overviewImages.first.url
                             : '',
                     onRetake: () => _goToCameraPage(1),
-                    onDelete: () => _deleteImageById(currentArg
-                            .value.partDirection.overViewImageFiles.isNotEmpty
-                        ? currentArg.value.partDirection.overViewImageFiles
-                            .first.imageId
-                            .toString()
-                        : currentArg
-                            .value.partDirection.overViewImages.first.imageId),
+                    onDelete: () => _deleteImageById(
+                        overviewImageFiles.isNotEmpty
+                            ? overviewImageFiles.first.imageId.toString()
+                            : overviewImages.first.imageId),
                   ),
                   const SizedBox(height: 16),
                   Expanded(
                     child: CloseViewSection(
-                      imageFromServers: imageList,
-                      imageFiles: imageFiles,
+                      imageFromServers: middleAndCloseImages,
+                      imageFiles: middleAndCloseImageFiles,
                       onRetake: () => _goToCameraPage(2),
                       onDelete: (imageId) => _deleteImageById(imageId),
                     ),
@@ -136,25 +142,40 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
 
   void _deleteImageById(String imageId) async {
     try {
-      currentArg.value.partDirection.images
-          .removeWhere((element) => element.imageId == imageId);
-      currentArg.value.partDirection.imageFiles
+      var temp = currentArg.value.partDirection;
+      temp.images.removeWhere((element) => element.imageId == imageId);
+      temp.imageFiles
           .removeWhere((element) => element.imageId.toString() == imageId);
       // over view
-      currentArg.value.partDirection.overViewImages
-          .removeWhere((element) => element.imageId == imageId);
-      currentArg.value.partDirection.overViewImageFiles
+      temp.overViewImages.removeWhere((element) => element.imageId == imageId);
+      temp.overViewImageFiles
+          .removeWhere((element) => element.imageId.toString() == imageId);
+      overviewImages.removeWhere((element) => element.imageId == imageId);
+      overviewImageFiles
           .removeWhere((element) => element.imageId.toString() == imageId);
       // middle view
-      currentArg.value.partDirection.middleViewImages
+      temp.middleViewImages
           .removeWhere((element) => element.imageId == imageId);
-      currentArg.value.partDirection.middleViewImageFiles
+      temp.middleViewImageFiles
           .removeWhere((element) => element.imageId.toString() == imageId);
       // close up view
-      currentArg.value.partDirection.closeViewImages
-          .removeWhere((element) => element.imageId == imageId);
-      currentArg.value.partDirection.closeViewImageFiles
+      temp.closeViewImages.removeWhere((element) => element.imageId == imageId);
+      temp.closeViewImageFiles
           .removeWhere((element) => element.imageId.toString() == imageId);
+      middleAndCloseImages.removeWhere((element) => element.imageId == imageId);
+      middleAndCloseImageFiles
+          .removeWhere((element) => element.imageId.toString() == imageId);
+
+      currentArg.value.partDirection = currentArg.value.partDirection.copyWith(
+        imageFiles: temp.imageFiles,
+        images: temp.images,
+        closeViewImageFiles: temp.closeViewImageFiles,
+        closeViewImages: temp.closeViewImages,
+        middleViewImageFiles: temp.middleViewImageFiles,
+        middleViewImages: temp.middleViewImages,
+        overViewImageFiles: temp.overViewImageFiles,
+        overViewImages: temp.overViewImages,
+      );
     } catch (e) {
       widget.onError('Package: Removing image gets error!');
     }
@@ -166,7 +187,7 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
         Endpoints.deleteImageInCLaim(imageId),
         token: widget.token,
       );
-      if (response.statusCode != 200) {
+      if (response.statusCode != 200 && response.statusCode != 204) {
         widget.onError(response.statusMessage ?? 'Package error');
       }
     } catch (e) {
@@ -186,14 +207,31 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
       try {
         RestfulModule restfulModule = RestfulModuleImpl();
         var response = await restfulModule.delete(
-          Endpoints.deleteAllImageInClaim(currentArg.value.claimId),
+          Endpoints.deleteAllImageInClaim(currentArg.value.sessionId),
           token: widget.token,
           query: {
-            'partDirectionId': currentArg.value.partDirection.partDirectionId
+            'partDirectionId':
+                currentArg.value.partDirection.partDirectionId.toString()
           },
         );
-        if (response.statusCode != 200) {
+        if (response.statusCode != 200 && response.statusCode != 204) {
           widget.onError(response.statusMessage ?? 'Package error');
+        } else {
+          currentArg.value.partDirection =
+              currentArg.value.partDirection.copyWith(
+            imageFiles: [],
+            images: [],
+            closeViewImageFiles: [],
+            closeViewImages: [],
+            middleViewImageFiles: [],
+            middleViewImages: [],
+            overViewImageFiles: [],
+            overViewImages: [],
+          );
+          overviewImageFiles.clear();
+          overviewImages.clear();
+          middleAndCloseImageFiles.clear();
+          middleAndCloseImages.clear();
         }
       } catch (e) {
         rethrow;
@@ -211,6 +249,7 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
                 cameraArgument: CameraArgument(
                   partDirection: currentArg.value.partDirection,
                   claimId: currentArg.value.claimId,
+                  sessionId: currentArg.value.sessionId,
                   imageRangeId: rangeId,
                   carBrand: currentArg.value.carBrand,
                 )))).then((value) {

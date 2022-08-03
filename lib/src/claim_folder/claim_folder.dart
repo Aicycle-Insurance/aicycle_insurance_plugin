@@ -1,8 +1,6 @@
 // Copyright © 2022 AICycle. All rights reserved.
 // found in the LICENSE file.
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -61,22 +59,22 @@ class ClaimFolderView extends StatefulWidget {
   final Function(String message)? onError;
 
   /// Hàm call back trả về danh sách ảnh Trái - Trước
-  final Function(List<File>)? onFrontLeftChanged;
+  final Function(PartDirection)? onFrontLeftChanged;
 
   /// Hàm call back trả về danh sách ảnh Phải - Trước
-  final Function(List<File>)? onFrontRightChanged;
+  final Function(PartDirection)? onFrontRightChanged;
 
   /// Hàm call back trả về danh sách ảnh Trước
-  final Function(List<File>)? onFrontChanged;
+  final Function(PartDirection)? onFrontChanged;
 
   /// Hàm call back trả về danh sách ảnh Trái - Sau
-  final Function(List<File>)? onLeftRearChanged;
+  final Function(PartDirection)? onLeftRearChanged;
 
   /// Hàm call back trả về danh sách ảnh Phải - Sau
-  final Function(List<File>)? onRightRearChanged;
+  final Function(PartDirection)? onRightRearChanged;
 
   /// Hàm call back trả về danh sách ảnh Sau
-  final Function(List<File>)? onRearChanged;
+  final Function(PartDirection)? onRearChanged;
 
   @override
   State<ClaimFolderView> createState() => _ClaimFolderViewState();
@@ -127,6 +125,36 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
     super.initState();
     initPartDirection();
     _summaryImages = [];
+    _front45Left.listen((p0) {
+      if (widget.onFrontLeftChanged != null) {
+        widget.onFrontLeftChanged!(p0);
+      }
+    });
+    _frontStraight.listen((p0) {
+      if (widget.onFrontChanged != null) {
+        widget.onFrontChanged!(p0);
+      }
+    });
+    _front45Right.listen((p0) {
+      if (widget.onFrontRightChanged != null) {
+        widget.onFrontRightChanged!(p0);
+      }
+    });
+    _leftRear.listen((p0) {
+      if (widget.onLeftRearChanged != null) {
+        widget.onLeftRearChanged!(p0);
+      }
+    });
+    _rightRear.listen((p0) {
+      if (widget.onRightRearChanged != null) {
+        widget.onRightRearChanged!(p0);
+      }
+    });
+    _rear.listen((p0) {
+      if (widget.onRearChanged != null) {
+        widget.onRearChanged!(p0);
+      }
+    });
     // _createClaimFolder();
   }
 
@@ -479,6 +507,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                     carBrand: widget.carBrand,
                     partDirection: partDirection.value,
                     claimId: claimId.value,
+                    sessionId: widget.sessionId,
                     imageRangeId: 1,
                   ),
                   token: widget.uTokenKey,
@@ -504,6 +533,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                 cameraArgument: CameraArgument(
                   partDirection: partDirection.value,
                   claimId: claimId.value,
+                  sessionId: widget.sessionId,
                   imageRangeId: 1,
                   carBrand: widget.carBrand,
                 )))).then((value) {
