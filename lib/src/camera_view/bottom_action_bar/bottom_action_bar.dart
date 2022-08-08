@@ -24,7 +24,7 @@ class BottomActionBar extends StatelessWidget {
 
   final barHeight = 108.0;
 
-  final Rx<XFile> previewFile;
+  final Rx<PickedFile> previewFile;
   final RxInt currentTabIndex;
   final Rx<CameraArgument> currentArg;
   final ValueNotifier<CameraFlashes> flashMode;
@@ -88,7 +88,7 @@ class BottomActionBar extends StatelessWidget {
               ),
               Obx(
                 () {
-                  var imageFileList = <XFileWithId>[];
+                  var imageFileList = <PickedFileWithId>[];
                   var imageNetworkList = <AiImage>[];
                   switch (currentTabIndex.value) {
                     case 0:

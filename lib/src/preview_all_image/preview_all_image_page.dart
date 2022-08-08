@@ -84,7 +84,7 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
               imageList.addAll(currentArg.value.partDirection.middleViewImages);
               imageList.addAll(currentArg.value.partDirection.closeViewImages);
               // image file
-              var imageFiles = <XFileWithId>[];
+              var imageFiles = <PickedFileWithId>[];
               imageFiles
                   .addAll(currentArg.value.partDirection.middleViewImageFiles);
               imageFiles

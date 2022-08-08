@@ -18,7 +18,7 @@ class PreviewImageWithMask extends StatelessWidget {
     this.previewUserMaskImagesBuffer,
   }) : super(key: key);
 
-  final Rx<XFile> previewFile;
+  final Rx<PickedFile> previewFile;
   final Rx<DamageAssessmentModel> damageAssess;
   final RxList<Uint8List> previewUserMaskImagesBuffer;
 

@@ -16,7 +16,7 @@ class CloseViewSection extends StatelessWidget {
     this.onDelete,
   }) : super(key: key);
 
-  final List<XFileWithId> imageFiles;
+  final List<PickedFileWithId> imageFiles;
   final List<AiImage> imageFromServers;
   final Function() onRetake;
   final Function(String imageId) onDelete;

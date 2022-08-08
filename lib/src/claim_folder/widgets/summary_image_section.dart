@@ -229,7 +229,7 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
 
     if (source != null) {
       final ImagePicker imagePicker = ImagePicker();
-      var file = await imagePicker.pickImage();
+      var file = await imagePicker.getImage(source: ImageSource.camera);
       if (file != null) {
         SummaryImage temp = SummaryImage(localFilePath: file.path);
         _images.add(temp);
@@ -262,7 +262,7 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
   }
 
   // Thêm ảnh toàn cảnh (summary images)
-  Future<int> _addSummaryImage(XFile file) async {
+  Future<int> _addSummaryImage(PickedFile file) async {
     final RestfulModule restfulModule = RestfulModuleImpl();
     try {
       var result =

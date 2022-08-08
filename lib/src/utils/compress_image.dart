@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 
 class ImageUtils {
   ImageUtils._();
-  static Future<XFile> compressImage(File img) async {
+  static Future<PickedFile> compressImage(File img) async {
     File compressedFile;
     try {
       final Directory extDir = await getTemporaryDirectory();
@@ -23,12 +23,12 @@ class ImageUtils {
         // format: CompressFormat.png,
       );
       if (compressedFile == null) {
-        return XFile(img.path);
+        return PickedFile(img.path);
       }
 
-      return XFile(compressedFile.path);
+      return PickedFile(compressedFile.path);
     } catch (e) {
-      return XFile(img.path);
+      return PickedFile(img.path);
     }
   }
 }

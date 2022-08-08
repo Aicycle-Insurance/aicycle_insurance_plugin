@@ -9,20 +9,20 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../aicycle_insurance.dart';
 import '../../types/car_part.dart';
 import '../../types/damage_assessment.dart';
-import '../../aicycle_insurance.dart';
 import '../camera_view/widgets/drawing_tool_layer.dart';
-import '../constants/shot_range.dart';
+import '../common/dialog/process_dialog.dart';
 import '../common/snack_bar/snack_bar.dart';
+import '../constants/colors.dart';
 import '../constants/endpoints.dart';
-import '../utils/upload_image_to_s3.dart';
+import '../constants/shot_range.dart';
+import '../constants/strings.dart';
 import '../modules/resful_module.dart';
 import '../modules/resful_module_impl.dart';
-import '../constants/colors.dart';
 import '../utils/compress_image.dart';
-import '../constants/strings.dart';
-import '../common/dialog/process_dialog.dart';
+import '../utils/upload_image_to_s3.dart';
 import 'bottom_action_bar/bottom_action_bar.dart';
 import 'camera_argument.dart';
 import 'widgets/preview_with_mask.dart';
@@ -50,7 +50,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
 
   Rx<CameraArgument> _currentArg;
   TabController _tabController;
-  Rx<XFile> _previewFile;
+  Rx<PickedFile> _previewFile;
   Rx<DamageAssessmentModel> _damageAssessment;
   var listCarPartFromMiddleView = <String, CarPart>{}.obs;
   Rx<CarPart> _carPartOnSelected;
@@ -71,7 +71,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
     super.initState();
     _currentArg = Rx<CameraArgument>(widget.cameraArgument);
     _tabController = TabController(length: 3, vsync: this);
-    _previewFile = Rx<XFile>(null);
+    _previewFile = Rx<PickedFile>(null);
     _damageAssessment = Rx<DamageAssessmentModel>(null);
   }
 
@@ -337,6 +337,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                                 ),
                               ),
                             ),
+
                           if (_damageAssessment.value != null &&
                               _previewFile.value != null)
                             DrawingToolLayer(
@@ -444,7 +445,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
 
   void _galleryPicker() async {
     final ImagePicker _picker = ImagePicker();
-    XFile file = await _picker.pickImage();
+    PickedFile file = await _picker.getImage(source: ImageSource.gallery);
     if (file != null) {
       /// Tạo đường dẫn tạm
       final Directory extDir = await getTemporaryDirectory();
@@ -455,7 +456,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
 
       /// compress ảnh -> full HD
       var _resizeFile = await ImageUtils.compressImage(File(file.path));
-      _resizeFile.saveTo(filePath);
+      // _resizeFile.saveTo(filePath);  todo
       _previewFile.value = _resizeFile;
 
       /// Call engine
@@ -476,8 +477,8 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
 
     /// compress ảnh -> full HD
     final file = await ImageUtils.compressImage(File(filePath));
-    file.saveTo(filePath);
-    _previewFile.value = XFile(filePath);
+    // file.saveTo(filePath); todo
+    _previewFile.value = PickedFile(filePath);
 
     /// Call engine
     await _callAiEngine(filePath);
@@ -513,7 +514,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
           /// gán ảnh cho part direction
           var temp = _currentArg.value.partDirection.imageFiles.toList();
           temp.add(
-            XFileWithId(
+            PickedFileWithId(
               imageId: _damageAssessment.value.imageId,
               file: _previewFile.value,
             ),
@@ -527,7 +528,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
               var temp =
                   _currentArg.value.partDirection.overViewImageFiles.toList();
               temp.assignAll([
-                XFileWithId(
+                PickedFileWithId(
                   imageId: _damageAssessment.value.imageId,
                   file: _previewFile.value,
                 )
@@ -539,7 +540,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
             case 1:
               var temp =
                   _currentArg.value.partDirection.middleViewImageFiles.toList();
-              temp.add(XFileWithId(
+              temp.add(PickedFileWithId(
                 imageId: _damageAssessment.value.imageId,
                 file: _previewFile.value,
               ));
@@ -562,7 +563,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
             case 2:
               var temp =
                   _currentArg.value.partDirection.closeViewImageFiles.toList();
-              temp.add(XFileWithId(
+              temp.add(PickedFileWithId(
                 imageId: _damageAssessment.value.imageId,
                 file: _previewFile.value,
               ));

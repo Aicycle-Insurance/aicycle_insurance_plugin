@@ -9,22 +9,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_painter/flutter_painter.dart';
 import 'package:flutter_phosphor_icons/flutter_phosphor_icons.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as imageplugin;
 import 'package:mime/mime.dart' as mime;
-import 'package:http/http.dart' as http;
 import 'package:nanoid/nanoid.dart';
 
-import '../../../types/user_corrected_damage.dart';
-import '../../../types/damage_type.dart';
 import '../../../types/damage_assessment.dart';
+import '../../../types/damage_type.dart';
+import '../../../types/user_corrected_damage.dart';
 import '../../common/dialog/process_dialog.dart';
-import '../../constants/endpoints.dart';
-import '../../modules/resful_module.dart';
-import '../../modules/resful_module_impl.dart';
 import '../../constants/colors.dart';
 import '../../constants/damage_types.dart';
+import '../../constants/endpoints.dart';
 import '../../constants/strings.dart';
 import '../../extensions/hex_color_extension.dart';
+import '../../modules/resful_module.dart';
+import '../../modules/resful_module_impl.dart';
 
 enum DrawStatus {
   none,
@@ -71,13 +71,13 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
         color: HexColor.fromHex(DamageTypeConstant.typeDent.colorHex)
             .withOpacity(damageBaseOpacity),
         strokeWidth: 10,
-        mode: FreeStyleMode.draw,
+        // mode: FreeStyleMode.draw,
       ),
-      scale: const ScaleSettings(
-        enabled: true,
-        minScale: 0.1,
-        maxScale: 10,
-      ),
+      // scale: const ScaleSettings(
+      //   enabled: true,
+      //   minScale: 0.1,
+      //   maxScale: 10,
+      // ),
     ),
   );
 
@@ -108,14 +108,14 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
               element.damageTypeGuid ==
               widget.damageAssess.value.carDamages.first.uuid);
       currentDamageType = Rx<DamageTypes>(currentType);
-      paintController.freeStyleColor =
-          HexColor.fromHex(currentType.colorHex).withOpacity(damageBaseOpacity);
+      // paintController.freeStyleColor =
+      //     HexColor.fromHex(currentType.colorHex).withOpacity(damageBaseOpacity);
     } else {
       currentDamageType = Rx<DamageTypes>(DamageTypeConstant.typeDent);
     }
     currentDamageType.listen((p0) {
-      paintController.freeStyleColor =
-          HexColor.fromHex(p0.colorHex).withOpacity(damageBaseOpacity);
+      // paintController.freeStyleColor =
+      //     HexColor.fromHex(p0.colorHex).withOpacity(damageBaseOpacity);
     });
     drawStatus = Rx<DrawStatus>(DrawStatus.none);
   }
@@ -142,10 +142,10 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
   Future<void> setDamageMask() async {
     var drawables = <ImageDrawable>[];
     var currentDamageClass = currentDamageType.value;
-    paintController.freeStyleMode = FreeStyleMode.draw;
-
-    paintController.performedActions.clear();
-    paintController.unperformedActions.clear();
+    // paintController.freeStyleMode = FreeStyleMode.draw;
+    //
+    // paintController.performedActions.clear();
+    // paintController.unperformedActions.clear();
 
     if (damageMaskDrawables.containsKey(currentDamageClass.damageTypeName)) {
       // Get the existing mask
@@ -192,15 +192,15 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
         drawables.add(drawable);
       }
     }
-    paintController.value =
-        paintController.value.copyWith(drawables: drawables);
+    // paintController.value =
+    // paintController.value.copyWith(drawables: drawables);
     await saveDamageMask();
   }
 
   Future<void> saveDamageMask() async {
     var currentDamageClass = currentDamageType.value;
-    paintController.groupDrawables(newAction: false);
-    paintController.performedActions.removeLast();
+    // paintController.groupDrawables(newAction: false);
+    // paintController.performedActions.removeLast();
     var groupedDrawable = paintController.drawables[0];
     damageMaskDrawables[currentDamageClass.damageTypeName] = groupedDrawable;
   }

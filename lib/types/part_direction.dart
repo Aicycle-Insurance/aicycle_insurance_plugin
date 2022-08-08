@@ -10,10 +10,10 @@ class PartDirection {
   List<AiImage> overViewImages;
   List<AiImage> middleViewImages;
   List<AiImage> closeViewImages;
-  List<XFileWithId> imageFiles;
-  List<XFileWithId> overViewImageFiles;
-  List<XFileWithId> middleViewImageFiles;
-  List<XFileWithId> closeViewImageFiles;
+  List<PickedFileWithId> imageFiles;
+  List<PickedFileWithId> overViewImageFiles;
+  List<PickedFileWithId> middleViewImageFiles;
+  List<PickedFileWithId> closeViewImageFiles;
   int imagesCount;
   PartDirectionMeta meta;
 
@@ -39,10 +39,10 @@ class PartDirection {
     List<AiImage> overViewImages,
     List<AiImage> middleViewImages,
     List<AiImage> closeViewImages,
-    List<XFileWithId> imageFiles,
-    List<XFileWithId> overViewImageFiles,
-    List<XFileWithId> middleViewImageFiles,
-    List<XFileWithId> closeViewImageFiles,
+    List<PickedFileWithId> imageFiles,
+    List<PickedFileWithId> overViewImageFiles,
+    List<PickedFileWithId> middleViewImageFiles,
+    List<PickedFileWithId> closeViewImageFiles,
     int imagesCount,
     PartDirectionMeta meta,
   }) =>
@@ -61,9 +61,9 @@ class PartDirection {
       );
 }
 
-class XFileWithId {
+class PickedFileWithId {
   final int imageId;
-  final XFile file;
+  final PickedFile file;
 
-  XFileWithId({this.imageId, this.file});
+  PickedFileWithId({this.imageId, this.file});
 }
