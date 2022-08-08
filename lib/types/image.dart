@@ -90,7 +90,7 @@ class AiImage {
         imageName: json["imageName"],
         claimId: json["claimId"],
         url: json["url"],
-        imageSize: json["imageSize"] != null
+        imageSize: json["imageSize"] != null && json["imageSize"] is List
             ? List<double>.from(json["imageSize"].map((x) => x.toDouble()))
             : [],
         partDirectionName: json["partDirectionName"] ?? json["directionName"],
