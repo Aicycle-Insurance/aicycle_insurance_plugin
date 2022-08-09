@@ -20,6 +20,8 @@ class ImageUtils {
         img.absolute.path,
         targetPath,
         quality: 100,
+        minHeight: 1200,
+        minWidth: 1600,
         // format: CompressFormat.png,
       );
       if (compressedFile == null) {
