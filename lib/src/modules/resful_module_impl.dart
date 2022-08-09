@@ -12,17 +12,18 @@ class RestfulModuleImpl implements RestfulModule {
     maxRedirects: 3,
   );
 
-  Future<Map<String, String>> _getHeaders({
+  Map<String, String> _getHeaders({
     String token,
     Map<String, String> headers,
-  }) async {
-    var finalHeaders = <String, String>{};
+  }) {
+    var finalHeaders = Map<String, String>();
 
     if (headers != null) finalHeaders = headers;
 
     if (!(finalHeaders.containsKey('authorization'))) {
       finalHeaders['authorization'] = 'Bearer ' + token;
     }
+    print(finalHeaders);
     return finalHeaders;
   }
 
@@ -34,12 +35,28 @@ class RestfulModuleImpl implements RestfulModule {
     Map<String, dynamic> query,
     CommonRequestOptions options,
   }) async {
-    var result = await getConnect.delete<T>(
-      uri,
-      query: query,
-      headers: (await _getHeaders(headers: options?.headers, token: token)),
-      contentType: options?.contentType,
-    );
+    Map<String, String> header;
+    if (options == null || options.headers == null) {
+      header = (_getHeaders(token: token));
+    } else {
+      header = (_getHeaders(headers: options.headers, token: token));
+    }
+    Response<T> result;
+    if (query == null) {
+      result = await getConnect.delete<T>(
+        uri,
+        headers: header, // remove header null
+        // contentType: options?.contentType, remove contentType
+      );
+    } else {
+      result = await getConnect.delete<T>(
+        uri,
+        query: query,
+        headers: header, // remove header null
+        // contentType: options?.contentType, remove contentType
+      );
+    }
+
     if (result.statusCode == 500) {
       String message = 'Internal Server Error';
       if (result.body is Map) {
@@ -66,12 +83,28 @@ class RestfulModuleImpl implements RestfulModule {
     Map<String, dynamic> query,
     CommonRequestOptions options,
   }) async {
-    var result = await getConnect.get<T>(
-      uri,
-      query: query,
-      headers: (await _getHeaders(headers: options.headers, token: token)),
-      contentType: options.contentType,
-    );
+    Map<String, String> header;
+    if (options == null || options.headers == null) {
+      header = (_getHeaders(token: token));
+    } else {
+      header = (_getHeaders(headers: options.headers, token: token));
+    }
+    Response<T> result;
+    if (query == null) {
+      result = await getConnect.get<T>(
+        uri,
+        headers: header, //remove header null
+        // contentType: options.contentType, remove contentType null
+      );
+    } else {
+      result = await getConnect.get<T>(
+        uri,
+        query: query,
+        headers: header, //remove header null
+        // contentType: options.contentType, remove contentType null
+      );
+    }
+
     if (result.statusCode == 500) {
       String message = 'Internal Server Error';
       if (result.body is Map) {
@@ -99,13 +132,30 @@ class RestfulModuleImpl implements RestfulModule {
     Map<String, dynamic> query,
     CommonRequestOptions options,
   }) async {
-    var result = await getConnect.patch<T>(
-      uri,
-      data,
-      query: query,
-      headers: (await _getHeaders(headers: options.headers, token: token)),
-      contentType: options.contentType,
-    );
+    Map<String, String> header;
+    if (options == null || options.headers == null) {
+      header = (_getHeaders(token: token));
+    } else {
+      header = (_getHeaders(headers: options.headers, token: token));
+    }
+    Response<T> result;
+    if (query == null) {
+      result = await getConnect.patch<T>(
+        uri,
+        data,
+        headers: header,
+        // contentType: options.contentType,
+      );
+    } else {
+      result = await getConnect.patch<T>(
+        uri,
+        data,
+        query: query,
+        headers: header,
+        // contentType: options.contentType,
+      );
+    }
+
     if (result.statusCode == 500) {
       String message = 'Internal Server Error';
       if (result.body is Map) {
@@ -133,13 +183,33 @@ class RestfulModuleImpl implements RestfulModule {
     Map<String, dynamic> query,
     CommonRequestOptions options,
   }) async {
-    var result = await getConnect.post<T>(
-      uri,
-      data,
-      query: query,
-      headers: (await _getHeaders(headers: options.headers, token: token)),
-      contentType: options.contentType,
-    );
+    print("running post");
+    Map<String, String> header;
+    if (options == null || options.headers == null) {
+      header = (_getHeaders(token: token));
+    } else {
+      header = (_getHeaders(headers: options.headers, token: token));
+    }
+
+    Response<T> result;
+    if (query == null) {
+      result = await getConnect.post<T>(
+        uri,
+        data,
+        headers: header,
+        // contentType: ,
+      );
+    } else {
+      result = await getConnect.post<T>(
+        uri,
+        data,
+        query: query,
+        headers: header,
+        // contentType: ,
+      );
+    }
+
+    print(result);
     if (result.statusCode == 500) {
       String message = 'Internal Server Error';
       if (result.body is Map) {
@@ -167,13 +237,30 @@ class RestfulModuleImpl implements RestfulModule {
     Map<String, dynamic> query,
     CommonRequestOptions options,
   }) async {
-    var result = await getConnect.put<T>(
-      uri,
-      data,
-      query: query,
-      headers: (await _getHeaders(headers: options.headers, token: token)),
-      contentType: options.contentType,
-    );
+    Map<String, String> header = {};
+    if (options == null || options.headers == null) {
+      header = (_getHeaders(token: token));
+    } else {
+      header = (_getHeaders(headers: options.headers, token: token));
+    }
+    Response<T> result;
+    if (query == null) {
+      result = await getConnect.put<T>(
+        uri,
+        data,
+        headers: header,
+        // contentType: options.contentType,
+      );
+    } else {
+      result = await getConnect.put<T>(
+        uri,
+        data,
+        query: query,
+        headers: header,
+        // contentType: options.contentType,
+      );
+    }
+
     if (result.statusCode == 500) {
       String message = 'Internal Server Error';
       if (result.body is Map) {

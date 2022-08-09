@@ -388,7 +388,9 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
         'claimName': 'PTI folder - ${widget.sessionId}',
         'vehicleBrandId': CarBrand.carBrandIds[widget.carBrand].toString(),
         'externalSessionId': widget.sessionId,
+        'isClaim': true,
       };
+      print("data: $data");
 
       var response = await restfulModule.post(
         Endpoints.createClaimFolder,
