@@ -1,3 +1,6 @@
+## 0.0.4
+ - Hạ phiên bản của SDK sử dụng flutter 1.22.6
+ - Bỏ hỗ trợ null-safety
 ## 0.0.3
  - Cập nhật công cụ sửa mask thiệt hại
  - Cập nhật api lấy danh sách ảnh trong claim folder

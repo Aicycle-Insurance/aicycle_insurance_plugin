@@ -454,7 +454,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
       final String filePath =
           '${appImageDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
 
-      /// compress ảnh -> full HD
+      /// compress ảnh -> 1600x1200
       var _resizeFile = await ImageUtils.compressImage(File(file.path));
       // _resizeFile.saveTo(filePath);  todo
       _previewFile.value = _resizeFile;

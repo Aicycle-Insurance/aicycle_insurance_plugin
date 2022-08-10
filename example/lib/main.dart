@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'DEmo'),
+      home: const MyHomePage(title: 'Demo'),
     );
   }
 }
@@ -45,7 +45,8 @@ class _MyHomePageState extends State<MyHomePage> {
           // handle error here.
           print(message);
         },
-        uTokenKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMyIsImlhdCI6MTY2MDA1Mjk1NSwiZXhwIjoxNjYwMTM5MzU1fQ.lqvSOMlVYM9C_lS-cGvev1ICSUFcc_uVEgrV5X8zoLs', // Liên hệ để có token key
+        uTokenKey:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMyIsImlhdCI6MTY2MDA1Mjk1NSwiZXhwIjoxNjYwMTM5MzU1fQ.lqvSOMlVYM9C_lS-cGvev1ICSUFcc_uVEgrV5X8zoLs', // Liên hệ để có token key
       ),
     );
   }
