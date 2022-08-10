@@ -218,7 +218,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                                         min: 0.5,
                                         max: 1,
                                         activeColor: Colors.white,
-                                        thumbColor: Colors.white,
+                                        // thumbColor: Colors.white,
                                         inactiveColor: Colors.white38,
                                         value: scaleImageValue.value,
                                         onChanged: (value) {
@@ -338,21 +338,21 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                               ),
                             ),
 
-                          if (_damageAssessment.value != null &&
-                              _previewFile.value != null)
-                            DrawingToolLayer(
-                              damageAssess: Rx<DamageAssessmentModel>(
-                                  _damageAssessment.value),
-                              imageUrl: _previewFile.value.path,
-                              onCancelCallBack: () {
-                                _damageAssessment.value = null;
-                                _previewFile.value = null;
-                              },
-                              onSaveCallBack: (buffer) {
-                                previewUserMaskImagesBuffer.assignAll(buffer);
-                              },
-                              token: widget.token,
-                            )
+                          // if (_damageAssessment.value != null &&
+                          //     _previewFile.value != null)
+                          //   DrawingToolLayer(
+                          //     damageAssess: Rx<DamageAssessmentModel>(
+                          //         _damageAssessment.value),
+                          //     imageUrl: _previewFile.value.path,
+                          //     onCancelCallBack: () {
+                          //       _damageAssessment.value = null;
+                          //       _previewFile.value = null;
+                          //     },
+                          //     onSaveCallBack: (buffer) {
+                          //       previewUserMaskImagesBuffer.assignAll(buffer);
+                          //     },
+                          //     token: widget.token,
+                          //   )
                         ],
                       );
                     }),
@@ -392,7 +392,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                   (e) => ListTile(
                     contentPadding: EdgeInsets.zero,
                     onTap: () => Get.back(result: e),
-                    minLeadingWidth: 30,
+                    // minLeadingWidth: 30,
                     leading: SizedBox(
                       width: 24,
                       child: e.uuid == _carPartOnSelected.value.uuid

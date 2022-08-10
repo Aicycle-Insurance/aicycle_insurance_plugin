@@ -11,7 +11,7 @@ class CommonSnackbar {
     SnackbarType type,
     String message,
   }) {
-    ScaffoldMessenger.of(context).showSnackBar(
+    Scaffold.of(context).showSnackBar(
       SnackBar(
         content: Row(
           children: [

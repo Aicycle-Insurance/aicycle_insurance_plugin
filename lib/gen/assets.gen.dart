@@ -512,7 +512,7 @@ class AssetGenImage {
       width: width,
       height: height,
       color: color,
-      opacity: opacity,
+      // opacity: opacity,
       colorBlendMode: colorBlendMode,
       fit: fit,
       alignment: alignment,
