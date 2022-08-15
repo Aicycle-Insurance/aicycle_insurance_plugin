@@ -1,5 +1,7 @@
 import 'dart:io';
-
+import 'dart:ui' as ui;
+import 'package:image/image.dart' as image;
+import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -30,5 +32,14 @@ class ImageUtils {
     } catch (e) {
       return PickedFile(img.path);
     }
+  }
+
+  static Future<ui.Image> getUiImage(String imageAssetPath) async {
+    final ByteData assetImageByteData = await rootBundle.load(imageAssetPath);
+    image.Image baseSizeImage = image.decodeImage(assetImageByteData.buffer.asUint8List());
+    image.Image resizeImage = image.copyResize(baseSizeImage, height: baseSizeImage.height, width: baseSizeImage.width);
+    ui.Codec codec = await ui.instantiateImageCodec(image.encodePng(resizeImage));
+    ui.FrameInfo frameInfo = await codec.getNextFrame();
+    return frameInfo.image;
   }
 }

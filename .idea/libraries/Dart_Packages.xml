@@ -308,6 +308,13 @@
             </list>
           </value>
         </entry>
+        <entry key="flutter">
+          <value>
+            <list>
+              <option value="$USER_HOME$/fvm/versions/1.22.6/packages/flutter/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="flutter_blurhash">
           <value>
             <list>
@@ -368,6 +375,13 @@
           <value>
             <list>
               <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dartlang.org/flutter_template_images-1.0.1/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="flutter_test">
+          <value>
+            <list>
+              <option value="$USER_HOME$/fvm/versions/1.22.6/packages/flutter_test/lib" />
             </list>
           </value>
         </entry>
@@ -532,6 +546,14 @@
           <value>
             <list>
               <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dartlang.org/mustache_template-1.0.0+1/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="my_painter">
+          <value>
+            <list>
+              <option value="$USER_HOME$/AppData/Local/Pub/Cache/git/painter_flutter_1-423880df0d2141028b839d172445f06e0103c7c2/lib" />
+              <option value="$USER_HOME$/AppData/Local/Pub/Cache/git/painter_flutter_1-9c6abbbde9d34cf4050176d026422cba6a64ffdd/lib" />
             </list>
           </value>
         </entry>
@@ -759,6 +781,13 @@
             <list>
               <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dartlang.org/shelf_web_socket-0.2.4+1/lib" />
               <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dartlang.org/shelf_web_socket-0.2.3/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="sky_engine">
+          <value>
+            <list>
+              <option value="$USER_HOME$/fvm/versions/1.22.6/bin/cache/pkg/sky_engine/lib" />
             </list>
           </value>
         </entry>
@@ -990,6 +1019,8 @@
       </option>
     </properties>
     <CLASSES>
+      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/git/painter_flutter_1-423880df0d2141028b839d172445f06e0103c7c2/lib" />
+      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/git/painter_flutter_1-9c6abbbde9d34cf4050176d026422cba6a64ffdd/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dartlang.org/_fe_analyzer_shared-14.0.0/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dartlang.org/_fe_analyzer_shared-7.0.0/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dartlang.org/analyzer-0.39.17/lib" />
@@ -1147,6 +1178,9 @@
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dartlang.org/xdg_directories-0.1.2/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dartlang.org/xml-4.5.1/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dartlang.org/yaml-2.2.1/lib" />
+      <root url="file://$USER_HOME$/fvm/versions/1.22.6/bin/cache/pkg/sky_engine/lib" />
+      <root url="file://$USER_HOME$/fvm/versions/1.22.6/packages/flutter/lib" />
+      <root url="file://$USER_HOME$/fvm/versions/1.22.6/packages/flutter_test/lib" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
