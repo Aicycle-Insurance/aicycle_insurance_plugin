@@ -1,3 +1,4 @@
+import 'package:aicycle_insurance/src/utils/functions.dart';
 import 'package:flutter/material.dart';
 
 class ColorItem extends StatelessWidget {
@@ -13,15 +14,23 @@ class ColorItem extends StatelessWidget {
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Container(
-          padding: const EdgeInsets.all(2),
-          decoration: BoxDecoration(
-              color: isSelected ? Colors.white70 : Colors.transparent,
-              shape: BoxShape.circle,
-              border: Border.all(
-                  color: isSelected ? Colors.black : Colors.grey[200])),
-          child: CircleAvatar(
-              radius: isSelected ? 16 : 12, backgroundColor: color),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                  color: isSelected ? Colors.white70 : Colors.transparent,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                      color: isSelected ? Colors.black : Colors.grey[200])),
+              child: CircleAvatar(
+                  radius: isSelected ? 8 : 6, backgroundColor: color),
+            ),
+            const SizedBox(
+              width: 8,
+            ),
+            Text(getTitleFromColor(color))
+          ],
         ),
       ),
     );

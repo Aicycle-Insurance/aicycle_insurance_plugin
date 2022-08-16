@@ -65,6 +65,10 @@ class DrawingToolLayer extends StatefulWidget {
 }
 
 class _DrawingToolLayerState extends State<DrawingToolLayer> {
+  ///transparent image
+  String transparentImage =
+      "https://upload.wikimedia.org/wikipedia/commons/8/89/HD_transparent_picture.png";
+
   /// Trạng thái thay đổi độ rộng bút
   var isStrokeWidthChanged = false.obs;
 
@@ -86,30 +90,13 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
   @override
   void initState() {
     initBackground();
-    super.initState();
-    if (widget.damageAssess.value.carDamages.isNotEmpty) {
-      var currentType = DamageTypeConstant.listDamageType.firstWhere(
-          (element) =>
-              element.damageTypeGuid ==
-              widget.damageAssess.value.carDamages.first.uuid);
-      currentDamageType = Rx<DamageTypes>(currentType);
-      // paintController.freeStyleColor =
-      //     HexColor.fromHex(currentType.colorHex).withOpacity(damageBaseOpacity);
-    } else {
-      currentDamageType = Rx<DamageTypes>(DamageTypeConstant.typeDent);
-    }
-    currentDamageType.listen((p0) {
-      // paintController.freeStyleColor =
-      //     HexColor.fromHex(p0.colorHex).withOpacity(damageBaseOpacity);
-    });
     drawStatus = Rx<DrawStatus>(DrawStatus.none);
+    super.initState();
   }
 
   /// Khởi tạo background vẽ
   Future<void> initBackground() async {
     backgroundImage = Rx<File>(File(widget.imageUrl));
-    // Rx<ui.Image>(await (FileImage(File(widget.imageUrl)).image));
-    // paintController.background = backgroundImage.value.backgroundDrawable;
     await initMask();
   }
 
@@ -117,105 +104,33 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
   Future<void> initMask() async {
     for (var part in widget.damageAssess.value.carParts) {
       for (var mask in part.carPartDamages) {
-        initNetworkMask[mask.maskUrl] = mask.maskUrl;
+        initNetworkMask[mask.uuid] = mask.maskUrl;
       }
     }
+    print(initNetworkMask);
   }
 
-  /// Tạo mask
-  Future<void> setDamageMask() async {
-    var drawables = <ui.Image>[];
-    var currentDamageClass = currentDamageType.value;
-    // paintController.freeStyleMode = FreeStyleMode.draw;
-    //
-    // paintController.performedActions.clear();
-    // paintController.unperformedActions.clear();gi
-
-    if (damageMaskDrawables.containsKey(currentDamageClass.damageTypeName)) {
-      // Get the existing mask
-      // paintController.value = paintController.value.copyWith(
-      //     drawables: [damageMaskDrawables[currentDamageClass.damageTypeName]]); //todo
-      return;
-    }
-
-    // Init mask
-    var viewWidth = painterSize.width;
-    var viewHeight = painterSize.height;
-    for (var part in widget.damageAssess.value.carParts) {
-      for (var mask in part.carPartDamages) {
-        if (mask.uuid != currentDamageClass.damageTypeGuid) continue;
-        var img = initNetworkMask[mask.maskUrl];
-        // var tImg = imageplugin.decodePng(
-        //     (await img.toByteData(format: ui.ImageByteFormat.png))
-        //         .buffer
-        //         .asUint8List());
-
-        var _color = HexColor.fromHex(currentDamageClass.colorHex)
-            .withOpacity(damageBaseOpacity);
-        // tImg = imageplugin.colorOffset(
-        //   tImg,
-        //   alpha: -256 + _color.alpha,
-        //   red: -255 + _color.red,
-        //   blue: -255 + _color.blue,
-        //   green: -255 + _color.green,
-        // );
-
-        var maskW = mask.boxes[2] - mask.boxes[0];
-        var maskH = mask.boxes[3] - mask.boxes[1];
-
-        // var finalImg =
-        //     await MemoryImage(Uint8List.fromList(imageplugin.encodePng(tImg)))
-        //         .image;
-        //
-        // var drawable = ImageDrawable.fittedToSize(
-        //     // image: finalImg,
-        //     // position: Offset(viewWidth * (mask.boxes[0] + maskW / 2),
-        //     //     viewHeight * (mask.boxes[1] + maskH / 2)),
-        //     // size: Size(viewWidth * maskW, viewHeight * maskH),
-        //     );
-        // drawables.add(drawable);
-      }
-    }
-    // paintController.value =
-    // paintController.value.copyWith(drawables: drawables);
-    await saveDamageMask();
-  }
-
-  Future<void> saveDamageMask() async {
-    // var currentDamageClass = currentDamageType.value;
-    // // paintController.groupDrawables(newAction: false);
-    // // paintController.performedActions.removeLast();
-    // var groupedDrawable = paintController.drawables[0];
-    // damageMaskDrawables[currentDamageClass.damageTypeName] = groupedDrawable;
+  ///order by: break, dent, crack, scratch
+  List<String> get getMarkUrls {
+    return [
+      initNetworkMask.containsKey(DamageTypeConstant.typeCrack.damageTypeGuid)
+          ? initNetworkMask[DamageTypeConstant.typeCrack.damageTypeGuid]
+          : transparentImage,
+      initNetworkMask.containsKey(DamageTypeConstant.typeBreak.damageTypeGuid)
+          ? initNetworkMask[DamageTypeConstant.typeBreak.damageTypeGuid]
+          : transparentImage,
+      initNetworkMask.containsKey(DamageTypeConstant.typeDent.damageTypeGuid)
+          ? initNetworkMask[DamageTypeConstant.typeDent.damageTypeGuid]
+          : transparentImage,
+      initNetworkMask.containsKey(DamageTypeConstant.typeScratch.damageTypeGuid)
+          ? initNetworkMask[DamageTypeConstant.typeScratch.damageTypeGuid]
+          : transparentImage,
+    ];
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // key: controller.painterKey,
-      color: Colors.black,
-      child: Center(
-        child: ImagePainter.network(
-           "https://upload.wikimedia.org/wikipedia/commons/8/89/HD_transparent_picture.png",
-          key: painterKey,
-          backgroundImage: backgroundImage.value,
-          colors: [
-            HexColor.fromHex(DamageTypeConstant.typeDent.colorHex)
-                .withOpacity(damageBaseOpacity),
-            HexColor.fromHex(
-                DamageTypeConstant.typeBreak.colorHex)
-                .withOpacity(damageBaseOpacity),
-            HexColor.fromHex(
-                DamageTypeConstant.typeCrack.colorHex)
-                .withOpacity(damageBaseOpacity),
-            HexColor.fromHex(
-                DamageTypeConstant.typeScratch.colorHex)
-                .withOpacity(damageBaseOpacity),
-          ],
-        ),
-      ),
-    );
-    FutureBuilder<void>(
+    return FutureBuilder<void>(
         future: initBackground(),
         builder: (context, snap) {
           if (snap.connectionState == ConnectionState.done) {
@@ -224,425 +139,401 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
             return Obx(() {
               return Stack(
                 children: [
-                  Container(
-                    // key: controller.painterKey,
-                    color: Colors.black,
-                    child: Center(
-                      child: ImagePainter.network(
-                        initNetworkMask.values.first,
-                        key: painterKey,
-                        backgroundImage: backgroundImage.value,
-                        colors: [
-                          HexColor.fromHex(DamageTypeConstant.typeDent.colorHex)
-                              .withOpacity(damageBaseOpacity),
-                          HexColor.fromHex(
-                                  DamageTypeConstant.typeBreak.colorHex)
-                              .withOpacity(damageBaseOpacity),
-                          HexColor.fromHex(
-                                  DamageTypeConstant.typeCrack.colorHex)
-                              .withOpacity(damageBaseOpacity),
-                          HexColor.fromHex(
-                                  DamageTypeConstant.typeScratch.colorHex)
-                              .withOpacity(damageBaseOpacity),
-                        ],
+                  if (drawStatus.value == DrawStatus.drawing)
+                    Container(
+                      color: Colors.black,
+                      child: Center(
+                        child: ImagePainter(
+                          networkUrls: getMarkUrls,
+                          key: painterKey,
+                          backgroundImage: backgroundImage.value,
+                          colors: [
+                            //order by: break, dent, crack, scratch
+                            Color(0xFFBD10E0),
+                            Color(0xFFA2FF43),
+                            Color(0xFF0B7CFF),
+                            Color(0xFFFFEC05),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  // if (drawStatus.value == DrawStatus.drawing)
-                  //   Container(
-                  //     // key: controller.painterKey,
-                  //     color: Colors.black,
-                  //     child: Center(
-                  //       child: ImagePainter.network(
-                  //         "0",
-                  //         key: painterKey,
-                  //         backgroundImage: backgroundImage.value,
-                  //         colors: [
-                  //           HexColor.fromHex(
-                  //                   DamageTypeConstant.typeDent.colorHex)
-                  //               .withOpacity(damageBaseOpacity)
-                  //         ],
-                  //       ),
-                  //     ),
-                  //   ),
-                  // if (drawStatus.value == DrawStatus.ready ||
-                  //     drawStatus.value == DrawStatus.end)
-                  //   SafeArea(
-                  //     child: Align(
-                  //       alignment: Alignment.bottomLeft,
-                  //       child: Padding(
-                  //         padding: const EdgeInsets.only(bottom: 16, left: 16),
-                  //         child: RotatedBox(
-                  //           quarterTurns: 1,
-                  //           // child: CarImage3DContainer(),
-                  //           child: Material(
-                  //             color: Colors.transparent,
-                  //             child: Container(
-                  //               padding: const EdgeInsets.symmetric(
-                  //                   horizontal: 12, vertical: 4),
-                  //               decoration: BoxDecoration(
-                  //                 color: Colors.black.withOpacity(0.5),
-                  //                 borderRadius: BorderRadius.circular(4),
-                  //               ),
-                  //               child: Row(
-                  //                 mainAxisSize: MainAxisSize.min,
-                  //                 children: [
-                  //                   const Text(
-                  //                     StringKeys.missingDamage,
-                  //                     style: TextStyle(color: Colors.white),
-                  //                   ),
-                  //                   const SizedBox(width: 8),
-                  //                   CupertinoButton(
-                  //                     padding: EdgeInsets.zero,
-                  //                     minSize: 0,
-                  //                     child: Container(
-                  //                       padding: const EdgeInsets.symmetric(
-                  //                         horizontal: 16,
-                  //                         vertical: 6,
-                  //                       ),
-                  //                       decoration: BoxDecoration(
-                  //                         borderRadius:
-                  //                             BorderRadius.circular(4),
-                  //                         border:
-                  //                             Border.all(color: Colors.white),
-                  //                       ),
-                  //                       child: const Text(
-                  //                         StringKeys.noWord,
-                  //                         style: TextStyle(color: Colors.white),
-                  //                       ),
-                  //                     ),
-                  //                     onPressed: widget.onCancelCallBack,
-                  //                   ),
-                  //                   const SizedBox(width: 8),
-                  //                   CupertinoButton(
-                  //                     padding: EdgeInsets.zero,
-                  //                     minSize: 0,
-                  //                     child: Container(
-                  //                       padding: const EdgeInsets.symmetric(
-                  //                         horizontal: 16,
-                  //                         vertical: 6,
-                  //                       ),
-                  //                       decoration: BoxDecoration(
-                  //                         color: Colors.white,
-                  //                         borderRadius:
-                  //                             BorderRadius.circular(4),
-                  //                       ),
-                  //                       child: Row(
-                  //                         children: const [
-                  //                           Text(
-                  //                             StringKeys.yesWord,
-                  //                             style: TextStyle(
-                  //                               color: DefaultColors.blue,
-                  //                             ),
-                  //                           ),
-                  //                           SizedBox(width: 8),
-                  //                           Icon(
-                  //                             Icons.edit,
-                  //                             color: DefaultColors.blue,
-                  //                           )
-                  //                         ],
-                  //                       ),
-                  //                     ),
-                  //                     onPressed: () {
-                  //                       drawStatus.value = DrawStatus.drawing;
-                  //                       WidgetsBinding.instance
-                  //                           ?.addPostFrameCallback((timeStamp) {
-                  //                         var renderObj = painterKey
-                  //                             .currentContext
-                  //                             ?.findRenderObject() as RenderBox;
-                  //                         // painterSize = renderObj.size;
-                  //                         setDamageMask();
-                  //                       });
-                  //                     },
-                  //                   ),
-                  //                 ],
-                  //               ),
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // if (drawStatus.value == DrawStatus.drawing)
-                  //   Padding(
-                  //     padding: const EdgeInsets.all(16.0),
-                  //     child: RotatedBox(
-                  //       quarterTurns: 1,
-                  //       child: Stack(
-                  //         children: [
-                  //           // Align(
-                  //           //   alignment: Alignment.topRight,
-                  //           //   child: Row(
-                  //           //     crossAxisAlignment: CrossAxisAlignment.center,
-                  //           //     mainAxisAlignment: MainAxisAlignment.end,
-                  //           //     mainAxisSize: MainAxisSize.min,
-                  //           //     children: [
-                  //           //       Container(
-                  //           //         decoration: BoxDecoration(
-                  //           //           borderRadius: BorderRadius.circular(4),
-                  //           //           color: Colors.transparent,
-                  //           //           border: Border.all(
-                  //           //               width: 1, color: Colors.white),
-                  //           //         ),
-                  //           //         child: Row(
-                  //           //           mainAxisSize: MainAxisSize.min,
-                  //           //           children: [
-                  //           //             GestureDetector(
-                  //           //               onTap: toggleDrawing,
-                  //           //               child: Container(
-                  //           //                 height: 32,
-                  //           //                 width: 48,
-                  //           //                 decoration: BoxDecoration(
-                  //           //                   borderRadius:
-                  //           //                       BorderRadius.circular(4),
-                  //           //                   color: isDrawing()
-                  //           //                       ? Colors.white
-                  //           //                       : Colors.black54,
-                  //           //                 ),
-                  //           //                 child: Center(
-                  //           //                   child: Icon(
-                  //           //                     Icons.gesture,
-                  //           //                     color: isDrawing()
-                  //           //                         ? DefaultColors.blue
-                  //           //                         : Colors.white54,
-                  //           //                   ),
-                  //           //                 ),
-                  //           //               ),
-                  //           //             ),
-                  //           //             GestureDetector(
-                  //           //               onTap: toggleEraser,
-                  //           //               child: Container(
-                  //           //                 height: 32,
-                  //           //                 width: 48,
-                  //           //                 decoration: BoxDecoration(
-                  //           //                   borderRadius:
-                  //           //                       BorderRadius.circular(4),
-                  //           //                   color:
-                  //           //                   // isErasing()
-                  //           //                   //     ? Colors.white
-                  //           //                   //     :
-                  //           //                   Colors.black54,
-                  //           //                 ),
-                  //           //                 child: Center(
-                  //           //                   child: Icon(
-                  //           //                     PhosphorIcons.eraser,
-                  //           //                     color:
-                  //           //                     // isErasing()
-                  //           //                     //     ? DefaultColors.blue
-                  //           //                     //     :
-                  //           //                     Colors.white54,
-                  //           //                   ),
-                  //           //                 ),
-                  //           //               ),
-                  //           //             ),
-                  //           //           ],
-                  //           //         ),
-                  //           //       ),
-                  //           //       const SizedBox(width: 16),
-                  //           //       GestureDetector(
-                  //           //         onTap: changeDamageType,
-                  //           //         child: Container(
-                  //           //           height: 32,
-                  //           //           padding: const EdgeInsets.symmetric(
-                  //           //               horizontal: 8),
-                  //           //           decoration: BoxDecoration(
-                  //           //             borderRadius:
-                  //           //                 BorderRadius.circular(8),
-                  //           //             color: Colors.black54,
-                  //           //           ),
-                  //           //           child: Row(
-                  //           //             mainAxisSize: MainAxisSize.min,
-                  //           //             children: [
-                  //           //               CircleAvatar(
-                  //           //                 backgroundColor: HexColor.fromHex(
-                  //           //                     currentDamageType
-                  //           //                         .value.colorHex),
-                  //           //                 radius: 4,
-                  //           //               ),
-                  //           //               const SizedBox(width: 8),
-                  //           //               Text(
-                  //           //                 currentDamageType
-                  //           //                     .value.damageTypeName,
-                  //           //                 style: const TextStyle(
-                  //           //                     color: Colors.white,
-                  //           //                     fontWeight: FontWeight.w500),
-                  //           //               ),
-                  //           //               const SizedBox(width: 8),
-                  //           //               const Icon(
-                  //           //                 Icons.keyboard_arrow_down_rounded,
-                  //           //                 color: Colors.white,
-                  //           //               )
-                  //           //             ],
-                  //           //           ),
-                  //           //         ),
-                  //           //       ),
-                  //           //     ],
-                  //           //   ),
-                  //           // ),
-                  //           // Align(
-                  //           //   alignment: Alignment.centerRight,
-                  //           //   child: RotatedBox(
-                  //           //     quarterTurns: -1,
-                  //           //     child: Column(
-                  //           //       mainAxisSize: MainAxisSize.min,
-                  //           //       crossAxisAlignment: CrossAxisAlignment.center,
-                  //           //       children: [
-                  //           //         SizedBox(
-                  //           //           width: Get.width / 2,
-                  //           //           child: Slider.adaptive(
-                  //           //             min: 1,
-                  //           //             max: 50,
-                  //           //             activeColor: Colors.white,
-                  //           //             // thumbColor: Colors.white,
-                  //           //             inactiveColor: Colors.white38,
-                  //           //             // value: paintController
-                  //           //             //     .freeStyleStrokeWidth,
-                  //           //             onChangeStart: (value) =>
-                  //           //                 isStrokeWidthChanged.value = true,
-                  //           //             onChangeEnd: (value) =>
-                  //           //                 isStrokeWidthChanged.value = false,
-                  //           //             onChanged: (double value) {},
-                  //           //             // onChanged: setFreeStyleStrokeWidth,
-                  //           //           ),
-                  //           //         ),
-                  //           //       ],
-                  //           //     ),
-                  //           //   ),
-                  //           // ),
-                  //           Align(
-                  //             alignment: Alignment.bottomCenter,
-                  //             child: Row(
-                  //               mainAxisAlignment: MainAxisAlignment.start,
-                  //               children: [
-                  //                 Visibility(
-                  //                   visible: true, // undoable(),
-                  //                   child: GestureDetector(
-                  //                     onTap: undo,
-                  //                     child: Container(
-                  //                       height: 48,
-                  //                       width: 48,
-                  //                       decoration: BoxDecoration(
-                  //                         color: Colors.black54,
-                  //                         borderRadius:
-                  //                             BorderRadius.circular(8),
-                  //                       ),
-                  //                       child: const Center(
-                  //                         child: Icon(
-                  //                           Icons.replay_rounded,
-                  //                           color: Colors.white,
-                  //                         ),
-                  //                       ),
-                  //                     ),
-                  //                   ),
-                  //                 ),
-                  //                 const SizedBox(width: 8),
-                  //                 Visibility(
-                  //                   visible: true, // redoable(),
-                  //                   child: GestureDetector(
-                  //                     onTap: redo,
-                  //                     child: Container(
-                  //                       height: 48,
-                  //                       width: 48,
-                  //                       decoration: BoxDecoration(
-                  //                         color: Colors.black54,
-                  //                         borderRadius:
-                  //                             BorderRadius.circular(8),
-                  //                       ),
-                  //                       child: Center(
-                  //                         child: Transform(
-                  //                           alignment: Alignment.center,
-                  //                           transform:
-                  //                               Matrix4.rotationY(math.pi),
-                  //                           child: const Icon(
-                  //                             Icons.replay_rounded,
-                  //                             color: Colors.white,
-                  //                           ),
-                  //                         ),
-                  //                       ),
-                  //                     ),
-                  //                   ),
-                  //                 ),
-                  //                 const Expanded(child: SizedBox()),
-                  //                 Container(
-                  //                   padding: const EdgeInsets.all(8),
-                  //                   decoration: BoxDecoration(
-                  //                     color: Colors.black54,
-                  //                     borderRadius: BorderRadius.circular(8),
-                  //                   ),
-                  //                   child: Row(
-                  //                     children: [
-                  //                       CupertinoButton(
-                  //                         padding: EdgeInsets.zero,
-                  //                         minSize: 0,
-                  //                         child: Container(
-                  //                           padding: const EdgeInsets.symmetric(
-                  //                             horizontal: 16,
-                  //                             vertical: 6,
-                  //                           ),
-                  //                           decoration: BoxDecoration(
-                  //                             borderRadius:
-                  //                                 BorderRadius.circular(4),
-                  //                             border: Border.all(
-                  //                                 color: Colors.white),
-                  //                           ),
-                  //                           child: const Text(
-                  //                             StringKeys.cancel,
-                  //                             style: TextStyle(
-                  //                                 color: Colors.white),
-                  //                           ),
-                  //                         ),
-                  //                         onPressed: () {
-                  //                           drawStatus.value = DrawStatus.end;
-                  //                           // paintController.clearDrawables();
-                  //                           widget.onCancelCallBack();
-                  //                         },
-                  //                       ),
-                  //                       const SizedBox(width: 8),
-                  //                       CupertinoButton(
-                  //                         padding: EdgeInsets.zero,
-                  //                         minSize: 0,
-                  //                         child: Container(
-                  //                           padding: const EdgeInsets.symmetric(
-                  //                             horizontal: 32,
-                  //                             vertical: 6,
-                  //                           ),
-                  //                           decoration: BoxDecoration(
-                  //                             color: Colors.white,
-                  //                             borderRadius:
-                  //                                 BorderRadius.circular(4),
-                  //                           ),
-                  //                           child: const Text(
-                  //                             StringKeys.save,
-                  //                             style: TextStyle(
-                  //                                 color: DefaultColors.blue),
-                  //                           ),
-                  //                         ),
-                  //                         onPressed: finishAnnotate,
-                  //                       ),
-                  //                     ],
-                  //                   ),
-                  //                 ),
-                  //               ],
-                  //             ),
-                  //           ),
-                  //           Obx(
-                  //             () => Visibility(
-                  //               visible: isStrokeWidthChanged.value,
-                  //               child: Align(
-                  //                 alignment: Alignment.center,
-                  //                 child: CircleAvatar(
-                  //                   // radius:
-                  //                   //     paintController.freeStyleStrokeWidth /
-                  //                   //         2,
-                  //                   backgroundColor: Colors.white,
-                  //                 ),
-                  //               ),
-                  //             ),
-                  //           )
-                  //         ],
-                  //       ),
-                  //     ),
-                  //   ),
+                  if (drawStatus.value == DrawStatus.ready ||
+                      drawStatus.value == DrawStatus.end)
+                    SafeArea(
+                      child: Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 16, left: 16),
+                          child: RotatedBox(
+                            quarterTurns: 1,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.5),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Text(
+                                      StringKeys.missingDamage,
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    CupertinoButton(
+                                      padding: EdgeInsets.zero,
+                                      minSize: 0,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 6,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                          border:
+                                              Border.all(color: Colors.white),
+                                        ),
+                                        child: const Text(
+                                          StringKeys.noWord,
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                      onPressed: widget.onCancelCallBack,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    CupertinoButton(
+                                      padding: EdgeInsets.zero,
+                                      minSize: 0,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 6,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        child: Row(
+                                          children: const [
+                                            Text(
+                                              StringKeys.yesWord,
+                                              style: TextStyle(
+                                                color: DefaultColors.blue,
+                                              ),
+                                            ),
+                                            SizedBox(width: 8),
+                                            Icon(
+                                              Icons.edit,
+                                              color: DefaultColors.blue,
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        drawStatus.value = DrawStatus.drawing;
+                                        // WidgetsBinding.instance
+                                        //     ?.addPostFrameCallback((timeStamp) {
+                                        //   var renderObj = painterKey
+                                        //       .currentContext
+                                        //       ?.findRenderObject() as RenderBox;
+                                        //   // painterSize = renderObj.size;
+                                        //   setDamageMask();
+                                        // });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (drawStatus.value == DrawStatus.drawing)
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: RotatedBox(
+                        quarterTurns: 1,
+                        child: Stack(
+                          children: [
+                            // Align(
+                            //   alignment: Alignment.topRight,
+                            //   child: Row(
+                            //     crossAxisAlignment: CrossAxisAlignment.center,
+                            //     mainAxisAlignment: MainAxisAlignment.end,
+                            //     mainAxisSize: MainAxisSize.min,
+                            //     children: [
+                            //       Container(
+                            //         decoration: BoxDecoration(
+                            //           borderRadius: BorderRadius.circular(4),
+                            //           color: Colors.transparent,
+                            //           border: Border.all(
+                            //               width: 1, color: Colors.white),
+                            //         ),
+                            //         child: Row(
+                            //           mainAxisSize: MainAxisSize.min,
+                            //           children: [
+                            //             GestureDetector(
+                            //               onTap: toggleDrawing,
+                            //               child: Container(
+                            //                 height: 32,
+                            //                 width: 48,
+                            //                 decoration: BoxDecoration(
+                            //                   borderRadius:
+                            //                       BorderRadius.circular(4),
+                            //                   color: isDrawing()
+                            //                       ? Colors.white
+                            //                       : Colors.black54,
+                            //                 ),
+                            //                 child: Center(
+                            //                   child: Icon(
+                            //                     Icons.gesture,
+                            //                     color: isDrawing()
+                            //                         ? DefaultColors.blue
+                            //                         : Colors.white54,
+                            //                   ),
+                            //                 ),
+                            //               ),
+                            //             ),
+                            //             GestureDetector(
+                            //               onTap: toggleEraser,
+                            //               child: Container(
+                            //                 height: 32,
+                            //                 width: 48,
+                            //                 decoration: BoxDecoration(
+                            //                   borderRadius:
+                            //                       BorderRadius.circular(4),
+                            //                   color:
+                            //                   // isErasing()
+                            //                   //     ? Colors.white
+                            //                   //     :
+                            //                   Colors.black54,
+                            //                 ),
+                            //                 child: Center(
+                            //                   child: Icon(
+                            //                     PhosphorIcons.eraser,
+                            //                     color:
+                            //                     // isErasing()
+                            //                     //     ? DefaultColors.blue
+                            //                     //     :
+                            //                     Colors.white54,
+                            //                   ),
+                            //                 ),
+                            //               ),
+                            //             ),
+                            //           ],
+                            //         ),
+                            //       ),
+                            //       const SizedBox(width: 16),
+                            //       GestureDetector(
+                            //         onTap: changeDamageType,
+                            //         child: Container(
+                            //           height: 32,
+                            //           padding: const EdgeInsets.symmetric(
+                            //               horizontal: 8),
+                            //           decoration: BoxDecoration(
+                            //             borderRadius:
+                            //                 BorderRadius.circular(8),
+                            //             color: Colors.black54,
+                            //           ),
+                            //           child: Row(
+                            //             mainAxisSize: MainAxisSize.min,
+                            //             children: [
+                            //               CircleAvatar(
+                            //                 backgroundColor: HexColor.fromHex(
+                            //                     currentDamageType
+                            //                         .value.colorHex),
+                            //                 radius: 4,
+                            //               ),
+                            //               const SizedBox(width: 8),
+                            //               Text(
+                            //                 currentDamageType
+                            //                     .value.damageTypeName,
+                            //                 style: const TextStyle(
+                            //                     color: Colors.white,
+                            //                     fontWeight: FontWeight.w500),
+                            //               ),
+                            //               const SizedBox(width: 8),
+                            //               const Icon(
+                            //                 Icons.keyboard_arrow_down_rounded,
+                            //                 color: Colors.white,
+                            //               )
+                            //             ],
+                            //           ),
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
+                            // Align(
+                            //   alignment: Alignment.centerRight,
+                            //   child: RotatedBox(
+                            //     quarterTurns: -1,
+                            //     child: Column(
+                            //       mainAxisSize: MainAxisSize.min,
+                            //       crossAxisAlignment: CrossAxisAlignment.center,
+                            //       children: [
+                            //         SizedBox(
+                            //           width: Get.width / 2,
+                            //           child: Slider.adaptive(
+                            //             min: 1,
+                            //             max: 50,
+                            //             activeColor: Colors.white,
+                            //             // thumbColor: Colors.white,
+                            //             inactiveColor: Colors.white38,
+                            //             // value: paintController
+                            //             //     .freeStyleStrokeWidth,
+                            //             onChangeStart: (value) =>
+                            //                 isStrokeWidthChanged.value = true,
+                            //             onChangeEnd: (value) =>
+                            //                 isStrokeWidthChanged.value = false,
+                            //             onChanged: (double value) {},
+                            //             // onChanged: setFreeStyleStrokeWidth,
+                            //           ),
+                            //         ),
+                            //       ],
+                            //     ),
+                            //   ),
+                            // ),
+                            // Align(
+                            //   alignment: Alignment.bottomCenter,
+                            //   child: Row(
+                            //     mainAxisAlignment: MainAxisAlignment.start,
+                            //     children: [
+                            //       Visibility(
+                            //         visible: true, // undoable(),
+                            //         child: GestureDetector(
+                            //           onTap: undo,
+                            //           child: Container(
+                            //             height: 48,
+                            //             width: 48,
+                            //             decoration: BoxDecoration(
+                            //               color: Colors.black54,
+                            //               borderRadius:
+                            //                   BorderRadius.circular(8),
+                            //             ),
+                            //             child: const Center(
+                            //               child: Icon(
+                            //                 Icons.replay_rounded,
+                            //                 color: Colors.white,
+                            //               ),
+                            //             ),
+                            //           ),
+                            //         ),
+                            //       ),
+                            //       const SizedBox(width: 8),
+                            //       Visibility(
+                            //         visible: true, // redoable(),
+                            //         child: GestureDetector(
+                            //           onTap: redo,
+                            //           child: Container(
+                            //             height: 48,
+                            //             width: 48,
+                            //             decoration: BoxDecoration(
+                            //               color: Colors.black54,
+                            //               borderRadius:
+                            //                   BorderRadius.circular(8),
+                            //             ),
+                            //             child: Center(
+                            //               child: Transform(
+                            //                 alignment: Alignment.center,
+                            //                 transform:
+                            //                     Matrix4.rotationY(math.pi),
+                            //                 child: const Icon(
+                            //                   Icons.replay_rounded,
+                            //                   color: Colors.white,
+                            //                 ),
+                            //               ),
+                            //             ),
+                            //           ),
+                            //         ),
+                            //       ),
+                            //       const Expanded(child: SizedBox()),
+                            //       Container(
+                            //         padding: const EdgeInsets.all(8),
+                            //         decoration: BoxDecoration(
+                            //           color: Colors.black54,
+                            //           borderRadius: BorderRadius.circular(8),
+                            //         ),
+                            //         child: Row(
+                            //           children: [
+                            //             CupertinoButton(
+                            //               padding: EdgeInsets.zero,
+                            //               minSize: 0,
+                            //               child: Container(
+                            //                 padding: const EdgeInsets.symmetric(
+                            //                   horizontal: 16,
+                            //                   vertical: 6,
+                            //                 ),
+                            //                 decoration: BoxDecoration(
+                            //                   borderRadius:
+                            //                       BorderRadius.circular(4),
+                            //                   border: Border.all(
+                            //                       color: Colors.white),
+                            //                 ),
+                            //                 child: const Text(
+                            //                   StringKeys.cancel,
+                            //                   style: TextStyle(
+                            //                       color: Colors.white),
+                            //                 ),
+                            //               ),
+                            //               onPressed: () {
+                            //                 drawStatus.value = DrawStatus.end;
+                            //                 // paintController.clearDrawables();
+                            //                 widget.onCancelCallBack();
+                            //               },
+                            //             ),
+                            //             const SizedBox(width: 8),
+                            //             CupertinoButton(
+                            //               padding: EdgeInsets.zero,
+                            //               minSize: 0,
+                            //               child: Container(
+                            //                 padding: const EdgeInsets.symmetric(
+                            //                   horizontal: 32,
+                            //                   vertical: 6,
+                            //                 ),
+                            //                 decoration: BoxDecoration(
+                            //                   color: Colors.white,
+                            //                   borderRadius:
+                            //                       BorderRadius.circular(4),
+                            //                 ),
+                            //                 child: const Text(
+                            //                   StringKeys.save,
+                            //                   style: TextStyle(
+                            //                       color: DefaultColors.blue),
+                            //                 ),
+                            //               ),
+                            //               onPressed: finishAnnotate,
+                            //             ),
+                            //           ],
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
+                            Obx(
+                              () => Visibility(
+                                visible: isStrokeWidthChanged.value,
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: CircleAvatar(
+                                    // radius:
+                                    //     paintController.freeStyleStrokeWidth /
+                                    //         2,
+                                    backgroundColor: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
                 ],
               );
             });
@@ -652,51 +543,10 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
         });
   }
 
-  void changeDamageType() async {
-    var result = await showDialog(
-      context: context,
-      builder: (context) => RotatedBox(
-        quarterTurns: 1,
-        child: AlertDialog(
-          scrollable: true,
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: DamageTypeConstant.listDamageType
-                .map(
-                  (e) => ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    onTap: () => Navigator.pop(context, e),
-                    // minLeadingWidth: 0,
-                    title: Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: HexColor.fromHex(e.colorHex),
-                          radius: 4,
-                        ),
-                        const SizedBox(width: 16),
-                        Text(e.damageTypeName),
-                      ],
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
-        ),
-      ),
-      useSafeArea: true,
-      barrierDismissible: true,
-    );
-    if (result != null) {
-      await saveDamageMask();
-      currentDamageType.value = result;
-      await setDamageMask();
-    }
-  }
-
   void finishAnnotate() async {
     // paintController.mode = FreeStyleMode.none;
     ProgressDialog.showWithCircleIndicator(context, isLandScape: true);
-    await saveDamageMask();
+    // await saveDamageMask();
 
     // final size = Size(backgroundImage.value.width.toDouble(),
     //     backgroundImage.value.height.toDouble());

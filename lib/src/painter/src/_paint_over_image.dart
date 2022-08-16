@@ -3,9 +3,12 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:aicycle_insurance/gen/assets.gen.dart';
+import 'package:aicycle_insurance/src/utils/functions.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '_image_painter.dart';
 import '_ported_interactive_viewer.dart';
@@ -18,185 +21,11 @@ export '_image_painter.dart';
 ///[ImagePainter] widget.
 @immutable
 class ImagePainter extends StatefulWidget {
-  const ImagePainter._({
-    Key key,
-    this.assetPath,
-    this.networkUrl,
-    this.byteArray,
-    this.file,
-    this.height,
-    this.backgroundUrl,
-    this.controller,
-    this.width,
-    this.placeHolder,
-    this.isScalable,
-    this.brushIcon,
-    this.clearAllIcon,
-    this.colorIcon,
-    this.undoIcon,
-    this.isSignature = false,
-    this.controlsAtTop = true,
-    this.signatureBackgroundColor,
-    this.colors,
-    this.backgroundImage,
-  }) : super(key: key);
-
-  ///Constructor for loading image from network url.
-  factory ImagePainter.network(String url,
-      {@required Key key,
-      double height,
-      double width,
-      String backgroundUrl,
-      Widget placeholderWidget,
-      bool scalable,
-      File backgroundImage,
-      PaintController controller,
-      List<Color> colors,
-      Widget brushIcon,
-      Widget undoIcon,
-      Widget clearAllIcon,
-      Widget colorIcon}) {
-    return ImagePainter._(
-      key: key,
-      networkUrl: url,
-      height: height,
-      controller: controller,
-      backgroundImage: backgroundImage,
-      width: width,
-      isScalable: scalable ?? false,
-      placeHolder: placeholderWidget,
-      backgroundUrl: backgroundUrl,
-      colors: colors,
-      brushIcon: brushIcon,
-      undoIcon: undoIcon,
-      colorIcon: colorIcon,
-      clearAllIcon: clearAllIcon,
-    );
-  }
-
-  ///Constructor for loading image from assetPath.
-  factory ImagePainter.asset(String path,
-      {@required Key key,
-      double height,
-      double width,
-      bool scalable,
-      Widget placeholderWidget,
-      List<Color> colors,
-      Widget brushIcon,
-      Widget undoIcon,
-      Widget clearAllIcon,
-      PaintController controller,
-      Widget colorIcon}) {
-    return ImagePainter._(
-      key: key,
-      assetPath: path,
-      controller: controller,
-      height: height,
-      width: width,
-      isScalable: scalable ?? false,
-      placeHolder: placeholderWidget,
-      colors: colors,
-      brushIcon: brushIcon,
-      undoIcon: undoIcon,
-      colorIcon: colorIcon,
-      clearAllIcon: clearAllIcon,
-    );
-  }
-
-  ///Constructor for loading image from [File].
-  factory ImagePainter.file(File file,
-      {@required Key key,
-      double height,
-      double width,
-      bool scalable,
-      File backgroundImage,
-      PaintController controller,
-      Widget placeholderWidget,
-      List<Color> colors,
-      Widget brushIcon,
-      Widget undoIcon,
-      Widget clearAllIcon,
-      Widget colorIcon}) {
-    return ImagePainter._(
-      key: key,
-      file: file,
-      height: height,
-      width: width,
-      placeHolder: placeholderWidget,
-      colors: colors,
-      isScalable: scalable ?? false,
-      controller: controller,
-      brushIcon: brushIcon,
-      undoIcon: undoIcon,
-      colorIcon: colorIcon,
-      clearAllIcon: clearAllIcon,
-    );
-  }
-
-  ///Constructor for loading image from memory.
-  factory ImagePainter.memory(Uint8List byteArray,
-      {@required Key key,
-      double height,
-      double width,
-      bool scalable,
-      Widget placeholderWidget,
-      File backgroundImage,
-      List<Color> colors,
-      PaintController controller,
-      Widget brushIcon,
-      Widget undoIcon,
-      Widget clearAllIcon,
-      Widget colorIcon}) {
-    return ImagePainter._(
-      key: key,
-      byteArray: byteArray,
-      backgroundImage: backgroundImage,
-      controller: controller,
-      height: height,
-      width: width,
-      placeHolder: placeholderWidget,
-      isScalable: scalable ?? false,
-      colors: colors,
-      brushIcon: brushIcon,
-      undoIcon: undoIcon,
-      colorIcon: colorIcon,
-      clearAllIcon: clearAllIcon,
-    );
-  }
-
-  ///Constructor for signature painting.
-  factory ImagePainter.signature(
-      {@required Key key,
-      Color signatureBgColor,
-      double height,
-      double width,
-      List<Color> colors,
-      Widget brushIcon,
-      Widget undoIcon,
-      Widget clearAllIcon,
-      PaintController controller,
-      Widget colorIcon}) {
-    return ImagePainter._(
-      key: key,
-      height: height,
-      width: width,
-      isSignature: true,
-      controller: controller,
-      isScalable: false,
-      colors: colors,
-      signatureBackgroundColor: signatureBgColor ?? Colors.white,
-      brushIcon: brushIcon,
-      undoIcon: undoIcon,
-      colorIcon: colorIcon,
-      clearAllIcon: clearAllIcon,
-    );
-  }
-
   ///Controller of the Painter
   final PaintController controller;
 
   ///Only accessible through [ImagePainter.network] constructor.
-  final String networkUrl;
+  final List<String> networkUrls;
 
   ///Only accessible through [ImagePainter.network] constructor.
   final String backgroundUrl;
@@ -251,6 +80,29 @@ class ImagePainter extends StatefulWidget {
   ///`true` represents top.
   final bool controlsAtTop;
 
+  const ImagePainter(
+      {Key key,
+      this.controller,
+      this.networkUrls,
+      this.backgroundUrl,
+      this.byteArray,
+      this.file,
+      this.assetPath,
+      this.backgroundImage,
+      this.height,
+      this.width,
+      this.placeHolder,
+      this.isScalable = true,
+      this.isSignature,
+      this.signatureBackgroundColor,
+      this.colors,
+      this.brushIcon,
+      this.colorIcon,
+      this.undoIcon,
+      this.clearAllIcon,
+      this.controlsAtTop})
+      : super(key: key);
+
   @override
   ImagePainterState createState() => ImagePainterState();
 }
@@ -269,14 +121,15 @@ class ImagePainterState extends State<ImagePainter> {
   TextEditingController _textController;
   Offset _start, _end;
   int _strokeMultiplier = 1;
+  int currentColorIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _resolveAndConvertBackgroundImage();
-    _resolveAndConvertImage();
     _controller.value =
         widget.controller ?? PaintController(color: widget.colors.first);
+    _resolveAndConvertBackgroundImage();
+    _resolveAndConvertImage();
     _textController = TextEditingController();
   }
 
@@ -306,81 +159,28 @@ class ImagePainterState extends State<ImagePainter> {
         : _controller.value.paintStyle;
 
   Future<void> _resolveAndConvertBackgroundImage() async {
-    if (widget.backgroundUrl != null) {
-      _backgroundImage = widget.backgroundImage;
-      if (_backgroundImage == null) {
-        throw ("${widget.networkUrl} couldn't be resolved.");
-      } else {}
-    } else if (widget.assetPath != null) {
-      final img = await rootBundle.load(widget.assetPath);
-      if (_backgroundImage == null) {
-        throw ("${widget.assetPath} couldn't be resolved.");
-      } else {}
-    } else if (widget.backgroundImage != null) {
-      _backgroundImage = widget.backgroundImage;
-      if (_backgroundImage == null) {
-        throw ("Image couldn't be resolved from provided file.");
-      } else {}
-    } else if (widget.byteArray != null) {
-      // _backgroundImage = await _convertImage(widget.byteArray);
-      if (_backgroundImage == null) {
-        throw ("Image couldn't be resolved from provided byteArray.");
-      } else {}
-    } else {
-      _isLoaded.value = true;
-    }
-    final img = await widget.file.readAsBytes();
+    _backgroundImage = widget.backgroundImage;
+    final img = await widget.backgroundImage.readAsBytes();
     _backgroundImageUI = await _convertImage(img);
-    if (_backgroundImageUI == null) {
-      throw ("Image couldn't be resolved from provided byteArray.");
-    } else {
-      _setStrokeMultiplier();
-    }
-
+    _setStrokeMultiplier();
   }
 
-  ///Converts the incoming image type from constructor to [ui.Image]
+  ///Converts the image from Controller
   Future<void> _resolveAndConvertImage() async {
-    if (widget.networkUrl != null) {
-      _image = await _loadNetworkImage(widget.networkUrl);
-      if (_image == null) {
-        throw ("${widget.networkUrl} couldn't be resolved.");
-      } else {
-        // _setStrokeMultiplier();
-      }
-    } else if (widget.assetPath != null) {
-      final img = await rootBundle.load(widget.assetPath);
-      _image = await _convertImage(Uint8List.view(img.buffer));
-      if (_image == null) {
-        throw ("${widget.assetPath} couldn't be resolved.");
-      } else {
-        // _setStrokeMultiplier();
-      }
-    } else if (widget.file != null) {
-      final img = await widget.file.readAsBytes();
-      _image = await _convertImage(img);
-      if (_image == null) {
-        throw ("Image couldn't be resolved from provided file.");
-      } else {
-        // _setStrokeMultiplier();
-      }
-    } else if (widget.byteArray != null) {
-      _image = await _convertImage(widget.byteArray);
-      if (_image == null) {
-        throw ("Image couldn't be resolved from provided byteArray.");
-      } else {
-        // _setStrokeMultiplier();
-      }
-    } else {
-      _isLoaded.value = true;
+    _image = await _loadNetworkImage(widget.networkUrls[currentColorIndex]);
+    if (_image == null) {
+      throw ("${widget.networkUrls[currentColorIndex]} couldn't be resolved.");
     }
+    _controller.value = _controller.value.copyWith(image: _image);
+    _isLoaded.value = _image != null;
   }
 
   ///Dynamically sets stroke multiplier on the basis of widget size.
   ///Implemented to avoid thin stroke on high res images.
   _setStrokeMultiplier() {
     if ((_backgroundImageUI.height + _backgroundImageUI.width) > 1000) {
-      _strokeMultiplier = (_backgroundImageUI.height + _backgroundImageUI.width) ~/ 1000;
+      _strokeMultiplier =
+          (_backgroundImageUI.height + _backgroundImageUI.width) ~/ 1000;
     }
   }
 
@@ -411,7 +211,7 @@ class ImagePainterState extends State<ImagePainter> {
       valueListenable: _isLoaded,
       builder: (_, loaded, __) {
         if (loaded) {
-          return widget.isSignature ? _paintSignature() : _paintImage();
+          return _paintImage();
         } else {
           return Container(
             height: widget.height ?? double.maxFinite,
@@ -427,128 +227,72 @@ class ImagePainterState extends State<ImagePainter> {
 
   ///paints image on given constrains for drawing if image is not null.
   Widget _paintImage() {
-    return Container(
-      height: widget.height ?? double.maxFinite,
-      width: widget.width ?? double.maxFinite,
-      child: Column(
-        children: [
-          if (widget.controlsAtTop) _buildControls(),
-          Expanded(
-            child: FittedBox(
-              alignment: FractionalOffset.center,
-              child: ClipRect(
-                child: ValueListenableBuilder<PaintController>(
-                  valueListenable: _controller,
-                  builder: (_, controller, __) {
-                    return ImagePainterTransformer(
-                      maxScale: 2.4,
-                      minScale: 1,
-                      panEnabled: controller.mode == PaintMode.none,
-                      scaleEnabled: widget.isScalable,
-                      onInteractionUpdate: (details) =>
-                          _scaleUpdateGesture(details, controller),
-                      onInteractionEnd: (details) =>
-                          _scaleEndGesture(details, controller),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: FileImage(_backgroundImage),
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                        child: Opacity(
-                          opacity: .99,
-                          child: CustomPaint(
-                            size: Size(_image.width.toDouble(),
-                                _image.height.toDouble()),
-                            willChange: true,
-                            isComplex: true,
-                            painter: DrawImage(
-                              image: _image,
-                              points: _points,
-                              paintHistory: _paintHistory,
-                              isDragging: _inDrag,
-                              update: UpdatePoints(
-                                  start: _start,
-                                  end: _end,
-                                  painter: _painter,
-                                  mode: controller.mode),
+    return Stack(
+      alignment: Alignment.topCenter,
+      children: [
+        Container(
+          height: widget.height ?? double.maxFinite,
+          width: widget.width ?? double.maxFinite,
+          child: Column(
+            children: [
+              Expanded(
+                child: FittedBox(
+                  alignment: FractionalOffset.center,
+                  child: ClipRect(
+                    child: ValueListenableBuilder<PaintController>(
+                      valueListenable: _controller,
+                      builder: (_, controller, __) {
+                        return ImagePainterTransformer(
+                          maxScale: 2.4,
+                          minScale: 1,
+                          panEnabled: controller.mode == PaintMode.none,
+                          scaleEnabled: widget.isScalable,
+                          onInteractionUpdate: (details) =>
+                              _scaleUpdateGesture(details, controller),
+                          onInteractionEnd: (details) =>
+                              _scaleEndGesture(details, controller),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: FileImage(_backgroundImage),
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+                            child: Opacity(
+                              opacity: 0.5,
+                              child: CustomPaint(
+                                size: Size(_backgroundImageUI.width.toDouble(),
+                                    _backgroundImageUI.height.toDouble()),
+                                willChange: true,
+                                isComplex: true,
+                                painter: DrawImage(
+                                  image: controller.image,
+                                  backgroundColor: widget.colors[currentColorIndex],
+                                  points: _points,
+                                  paintHistory: _paintHistory,
+                                  isDragging: _inDrag,
+                                  update: UpdatePoints(
+                                      start: _start,
+                                      end: _end,
+                                      painter: _painter,
+                                      mode: controller.mode),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    );
-                  },
+                        );
+                      },
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          if (!widget.controlsAtTop) _buildControls(),
-          SizedBox(height: MediaQuery.of(context).padding.bottom)
-        ],
-      ),
-    );
-  }
-
-  Widget _paintSignature() {
-    return RepaintBoundary(
-      key: _repaintKey,
-      child: ClipRect(
-        child: Container(
-          width: widget.width ?? double.maxFinite,
-          height: widget.height ?? double.maxFinite,
-          child: ValueListenableBuilder<PaintController>(
-            valueListenable: _controller,
-            builder: (_, controller, __) {
-              return ImagePainterTransformer(
-                panEnabled: false,
-                scaleEnabled: false,
-                onInteractionStart: (details) =>
-                    _scaleStartGesture(details, controller),
-                onInteractionUpdate: (details) =>
-                    _scaleUpdateGesture(details, controller),
-                onInteractionEnd: (details) =>
-                    _scaleEndGesture(details, controller),
-                child: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: FileImage(_backgroundImage),
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                  child: Opacity(
-                    opacity: .99,
-                    child: CustomPaint(
-                      willChange: true,
-                      isComplex: true,
-                      painter: DrawImage(
-                        isSignature: true,
-                        backgroundColor: widget.signatureBackgroundColor,
-                        points: _points,
-                        paintHistory: _paintHistory,
-                        isDragging: _inDrag,
-                        update: UpdatePoints(
-                            start: _start,
-                            end: _end,
-                            painter: _painter,
-                            mode: controller.mode),
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
+              SizedBox(height: MediaQuery.of(context).padding.bottom)
+            ],
           ),
         ),
-      ),
+        _buildControls(),
+      ],
     );
-  }
-
-  _scaleStartGesture(ScaleStartDetails onStart, PaintController controller) {
-    setState(() {
-      _start = onStart.focalPoint;
-      _points.add(_start);
-    });
   }
 
   ///Fires while user is interacting with the screen to record painting.
@@ -619,30 +363,6 @@ class ImagePainterState extends State<ImagePainter> {
         .toImage(size.width.floor(), size.height.floor());
   }
 
-  PopupMenuItem _showOptionsRow(PaintController controller) {
-    return PopupMenuItem(
-      enabled: false,
-      child: Center(
-        child: SizedBox(
-          child: Wrap(
-            children: paintModes
-                .map(
-                  (item) => SelectionItems(
-                    data: item,
-                    isSelected: controller.mode == item.mode,
-                    onTap: () {
-                      _controller.value = controller.copyWith(mode: item.mode);
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                )
-                .toList(),
-          ),
-        ),
-      ),
-    );
-  }
-
   PopupMenuItem _showRangeSlider() {
     return PopupMenuItem(
       enabled: false,
@@ -670,12 +390,17 @@ class ImagePainterState extends State<ImagePainter> {
             alignment: WrapAlignment.center,
             spacing: 10,
             runSpacing: 10,
-            children: (widget.colors ?? editorColors).map((color) {
+            children:
+                (widget.colors ?? editorColors).asMap().entries.map((color) {
               return ColorItem(
                 isSelected: color == controller.color,
-                color: color,
+                color: color.value,
                 onTap: () {
-                  _controller.value = controller.copyWith(color: color);
+                  _controller.value = controller.copyWith(
+                    color: color.value,
+                  );
+                  currentColorIndex = color.key;
+                  _resolveAndConvertImage(); //reload image
                   Navigator.pop(context);
                 },
               );
@@ -762,46 +487,9 @@ class ImagePainterState extends State<ImagePainter> {
   Widget _buildControls() {
     return Container(
       padding: const EdgeInsets.all(4),
-      color: Colors.grey[200],
+      color: Colors.transparent,
       child: Row(
         children: [
-          ValueListenableBuilder<PaintController>(
-              valueListenable: _controller,
-              builder: (_, _ctrl, __) {
-                return PopupMenuButton(
-                  tooltip: "Change mode",
-                  shape: ContinuousRectangleBorder(
-                    borderRadius: BorderRadius.circular(40),
-                  ),
-                  icon: Icon(
-                      paintModes
-                          .firstWhere((item) => item.mode == _ctrl.mode)
-                          .icon,
-                      color: Colors.grey[700]),
-                  itemBuilder: (_) => [_showOptionsRow(_ctrl)],
-                );
-              }),
-          ValueListenableBuilder<PaintController>(
-              valueListenable: _controller,
-              builder: (_, controller, __) {
-                return PopupMenuButton(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  shape: ContinuousRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  tooltip: "Change color",
-                  icon: widget.colorIcon ??
-                      Container(
-                        padding: EdgeInsets.all(2.0),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.grey),
-                          color: controller.color,
-                        ),
-                      ),
-                  itemBuilder: (_) => [_showColorPicker(controller)],
-                );
-              }),
           PopupMenuButton(
             tooltip: "Change Brush Size",
             shape: ContinuousRectangleBorder(
@@ -812,7 +500,7 @@ class ImagePainterState extends State<ImagePainter> {
             itemBuilder: (_) => [_showRangeSlider()],
           ),
           // IconButton(icon: Icon(Icons.text_format), onPressed: _openTextDialog),
-          const Spacer(),
+
           IconButton(
               tooltip: "Undo",
               icon:
@@ -828,6 +516,103 @@ class ImagePainterState extends State<ImagePainter> {
                 Icon(Icons.clear, color: Colors.grey[700]),
             onPressed: () => setState(_paintHistory.clear),
           ),
+          const Spacer(),
+          ValueListenableBuilder<PaintController>(
+            valueListenable: _controller,
+            builder: (_, _ctrl, __) => Container(
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                border: Border.all(color: Colors.white),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Row(
+                children: [
+                  InkWell(
+                    onTap: () {
+                      _controller.value =
+                          _ctrl.copyWith(mode: PaintMode.freeStyle);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        color: _ctrl.mode == PaintMode.freeStyle
+                            ? Colors.white
+                            : Colors.transparent,
+                      ),
+                      padding: const EdgeInsets.all(4),
+                      child: Icon(
+                        Icons.swipe,
+                        color: _ctrl.mode == PaintMode.freeStyle
+                            ? Color(0xFF5768FF)
+                            : Colors.grey,
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      _controller.value = _ctrl.copyWith(mode: PaintMode.erase);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        color: _ctrl.mode == PaintMode.erase
+                            ? Colors.white
+                            : Colors.transparent,
+                      ),
+                      padding: const EdgeInsets.all(4),
+                      child: Icon(
+                        Icons.delete,
+                        color: _ctrl.mode == PaintMode.erase
+                            ? Color(0xFF5768FF)
+                            : Colors.grey,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(
+            width: 16,
+          ),
+          ValueListenableBuilder<PaintController>(
+              valueListenable: _controller,
+              builder: (_, controller, __) {
+                return PopupMenuButton(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  shape: ContinuousRectangleBorder(
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  tooltip: "Change color",
+                  child: Container(
+                    width: 100,
+                    color: Colors.black.withOpacity(0.5),
+                    padding: EdgeInsets.all(2.0),
+                    child: Row(
+                      children: [
+                        Container(
+                          height: 10,
+                          width: 10,
+                          decoration: BoxDecoration(
+                            color: controller.color,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        Expanded(
+                          child: Text(
+                            getTitleFromColor(controller.color),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  itemBuilder: (_) => [_showColorPicker(controller)],
+                );
+              }),
         ],
       ),
     );
@@ -853,16 +638,12 @@ class PaintController {
   final String text;
 
   ///Repaint image url
-  final String imageUrl;
-
-  ///Repaint image
   final ui.Image image;
 
   ///Constructor of the [PaintController] class.
   const PaintController(
       {this.strokeWidth = 4.0,
       this.color = Colors.red,
-      this.imageUrl,
       this.image,
       this.mode = PaintMode.freeStyle,
       this.paintStyle = PaintingStyle.stroke,
@@ -876,7 +657,6 @@ class PaintController {
         o.strokeWidth == strokeWidth &&
         o.color == color &&
         o.image == image &&
-        o.imageUrl == imageUrl &&
         o.paintStyle == paintStyle &&
         o.mode == mode &&
         o.text == text;
@@ -894,7 +674,6 @@ class PaintController {
   ///copyWith Method to access immutable controller.
   PaintController copyWith(
       {double strokeWidth,
-      String imageUrl,
       ui.Image image,
       Color color,
       PaintMode mode,
@@ -904,7 +683,6 @@ class PaintController {
         strokeWidth: strokeWidth ?? this.strokeWidth,
         color: color ?? this.color,
         image: image ?? this.image,
-        imageUrl: imageUrl ?? this.imageUrl,
         mode: mode ?? this.mode,
         paintStyle: paintingStyle ?? paintStyle,
         text: text ?? this.text);
