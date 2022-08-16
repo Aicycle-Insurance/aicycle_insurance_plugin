@@ -338,21 +338,21 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                               ),
                             ),
 
-                          // if (_damageAssessment.value != null &&
-                          //     _previewFile.value != null)
-                          //   DrawingToolLayer(
-                          //     damageAssess: Rx<DamageAssessmentModel>(
-                          //         _damageAssessment.value),
-                          //     imageUrl: _previewFile.value.path,
-                          //     onCancelCallBack: () {
-                          //       _damageAssessment.value = null;
-                          //       _previewFile.value = null;
-                          //     },
-                          //     onSaveCallBack: (buffer) {
-                          //       previewUserMaskImagesBuffer.assignAll(buffer);
-                          //     },
-                          //     token: widget.token,
-                          //   )
+                          if (_damageAssessment.value != null &&
+                              _previewFile.value != null)
+                            DrawingToolLayer(
+                              damageAssess: Rx<DamageAssessmentModel>(
+                                  _damageAssessment.value),
+                              imageUrl: _previewFile.value.path,
+                              onCancelCallBack: () {
+                                _damageAssessment.value = null;
+                                _previewFile.value = null;
+                              },
+                              onSaveCallBack: (buffer) {
+                                previewUserMaskImagesBuffer.assignAll(buffer);
+                              },
+                              token: widget.token,
+                            )
                         ],
                       );
                     }),
