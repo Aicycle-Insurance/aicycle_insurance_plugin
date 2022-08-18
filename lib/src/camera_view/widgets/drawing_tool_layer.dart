@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math' as math;
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -11,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_phosphor_icons/flutter_phosphor_icons.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:image/image.dart' as imageplugin;
+import 'package:image/image.dart' as imagePlugin;
 import 'package:mime/mime.dart' as mime;
 import 'package:nanoid/nanoid.dart';
 
@@ -76,9 +77,11 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
   Rx<File> backgroundImage;
   Rx<DrawStatus> drawStatus;
 
+  imagePlugin.Image backgroundImageUI;
+
   /// map mask url với dữ liệu mask tương ứng
-  var initNetworkMask = <String, String>{};
-  var damageMaskDrawables = <String, String>{};
+  var initNetworkMask = <String, List<String>>{};
+  var damageMaskDrawables = <String, Uint8List>{};
 
   /// lưu mask vừa vẽ để hiển thị preview
   var previewUserMaskImagesBuffer = <Uint8List>[].obs;
@@ -97,27 +100,109 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
   /// Khởi tạo background vẽ
   Future<void> initBackground() async {
     backgroundImage = Rx<File>(File(widget.imageUrl));
+    backgroundImageUI =
+        imagePlugin.decodeImage(backgroundImage.value.readAsBytesSync());
     await initMask();
   }
 
   /// Khởi tạo mask đã có
   Future<void> initMask() async {
+    for (var key
+        in DamageTypeConstant.listDamageType.map((e) => e.damageTypeGuid)) {
+      initNetworkMask[key] = [];
+    }
     for (var part in widget.damageAssess.value.carParts) {
       for (var mask in part.carPartDamages) {
-        initNetworkMask[mask.uuid] = mask.maskUrl;
+        if (initNetworkMask[mask.uuid] == null) {
+          initNetworkMask[mask.uuid] = [];
+        }
+        initNetworkMask[mask.uuid].add(mask.maskUrl);
       }
     }
+    // for (var key in initNetworkMask.keys) {
+    //   if (initNetworkMask[key].isEmpty) {
+    //     initNetworkMask[key].add(transparentImage);
+    //   }
+    // }
     print(initNetworkMask);
+
+    await mergeDamageLinkToFile();
+  }
+
+  Future<void> mergeDamageLinkToFile() async {
+    for (var key in initNetworkMask.keys) {
+      Color _color;
+      //set color
+      final index = DamageTypeConstant.listDamageType
+          .indexWhere((element) => element.damageTypeGuid == key);
+      if (index != -1) {
+        final colorHex =
+            DamageTypeConstant.listDamageType.elementAt(index).colorHex;
+        _color = HexColor.fromHex(colorHex).withOpacity(damageBaseOpacity);
+      }
+
+      Uint8List finalBytes;
+
+      if (initNetworkMask[key].isNotEmpty) {
+        final firstUrl = initNetworkMask[key].first;
+        http.Response response = await http.get(firstUrl);
+        final image1 = imagePlugin.decodePng(response.bodyBytes);
+        var mergedImage = imagePlugin.Image(
+            backgroundImageUI.width, backgroundImageUI.height);
+        imagePlugin.copyInto(mergedImage, image1, blend: false);
+
+        mergedImage = imagePlugin.colorOffset(
+          mergedImage,
+          alpha: -256 + _color.alpha,
+          red: -255 + _color.red,
+          blue: -255 + _color.blue,
+          green: -255 + _color.green,
+        );
+        finalBytes = imagePlugin.encodePng(mergedImage);
+
+        if (initNetworkMask[key].length > 1) {
+          for (var url in initNetworkMask[key].sublist(1)) {
+            //get image
+            http.Response response = await http.get(url);
+            //join two image
+
+            final image1 = imagePlugin.decodePng(finalBytes);
+            var image2 = imagePlugin.decodePng(response.bodyBytes);
+            image2 = imagePlugin.colorOffset(
+              image2,
+              alpha: -256 + _color.alpha,
+              red: -255 + _color.red,
+              blue: -255 + _color.blue,
+              green: -255 + _color.green,
+            );
+            var mergedImage = imagePlugin.Image(
+                backgroundImageUI.width, backgroundImageUI.height);
+            imagePlugin.copyInto(mergedImage, image1, blend: false);
+            imagePlugin.copyInto(mergedImage, image2, dstX: image1.width);
+
+            finalBytes = imagePlugin.encodePng(mergedImage);
+          }
+        }
+      } else {
+        http.Response response = await http.get(transparentImage);
+        var trans = imagePlugin.decodeImage(response.bodyBytes);
+        trans = imagePlugin.copyResize(trans,
+            width: backgroundImageUI.width, height: backgroundImageUI.height);
+        finalBytes = imagePlugin.encodePng(trans);
+      }
+
+      damageMaskDrawables[key] = Uint8List.fromList(finalBytes);
+    }
   }
 
   ///order by: break, dent, crack, scratch
   List<String> get getMarkUrls {
     return [
-      initNetworkMask.containsKey(DamageTypeConstant.typeCrack.damageTypeGuid)
-          ? initNetworkMask[DamageTypeConstant.typeCrack.damageTypeGuid]
-          : transparentImage,
       initNetworkMask.containsKey(DamageTypeConstant.typeBreak.damageTypeGuid)
           ? initNetworkMask[DamageTypeConstant.typeBreak.damageTypeGuid]
+          : transparentImage,
+      initNetworkMask.containsKey(DamageTypeConstant.typeCrack.damageTypeGuid)
+          ? initNetworkMask[DamageTypeConstant.typeCrack.damageTypeGuid]
           : transparentImage,
       initNetworkMask.containsKey(DamageTypeConstant.typeDent.damageTypeGuid)
           ? initNetworkMask[DamageTypeConstant.typeDent.damageTypeGuid]
@@ -144,9 +229,17 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
                       color: Colors.black,
                       child: Center(
                         child: ImagePainter(
-                          networkUrls: getMarkUrls,
+                          drawables: damageMaskDrawables.values.toList(),
                           key: painterKey,
                           backgroundImage: backgroundImage.value,
+                          onCancelCallBack: (){
+                            widget.onCancelCallBack();
+                            drawStatus.value = DrawStatus.end;
+                          },
+                          onSaveCallBack: (data){
+                            widget.onSaveCallBack(data);
+                            drawStatus.value = DrawStatus.end;
+                          },
                           colors: [
                             //order by: break, dent, crack, scratch
                             Color(0xFFBD10E0),
@@ -544,15 +637,13 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
   }
 
   void finishAnnotate() async {
-    // paintController.mode = FreeStyleMode.none;
     ProgressDialog.showWithCircleIndicator(context, isLandScape: true);
-    // await saveDamageMask();
 
-    // final size = Size(backgroundImage.value.width.toDouble(),
-    //     backgroundImage.value.height.toDouble());
+    final size = Size(backgroundImageUI.width.toDouble(),
+        backgroundImageUI.height.toDouble());
 
     List<UserCorrectedDamageItem> correctedItems = [];
-    for (var drawableItem in damageMaskDrawables.entries) {
+    for (var drawableItem in damageMaskDrawables.values) {
       // var renderedImage = await renderDamageMask(
       //     drawableItem.value, size, damageClassColors[drawableItem.key]);
       // var pngImageBuffer = (await renderedImage.pngBytes);
