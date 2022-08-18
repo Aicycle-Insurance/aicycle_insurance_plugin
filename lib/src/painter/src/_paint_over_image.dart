@@ -161,6 +161,8 @@ class ImagePainterState extends State<ImagePainter> {
     if (_backgroundImageUI == null) {
       throw ("_backgroundImage couldn't be resolved.");
     }
+    _controller.value =
+        _controller.value.copyWith(backgroundImageUI: _backgroundImageUI);
     _setStrokeMultiplier();
   }
 
@@ -261,46 +263,51 @@ class ImagePainterState extends State<ImagePainter> {
                     child: ValueListenableBuilder<PaintController>(
                       valueListenable: _controller,
                       builder: (_, controller, __) {
-                        return ImagePainterTransformer(
-                          maxScale: 2.4,
-                          minScale: 1,
-                          panEnabled: controller.mode == PaintMode.none,
-                          scaleEnabled: widget.isScalable,
-                          onInteractionUpdate: (details) =>
-                              _scaleUpdateGesture(details, controller),
-                          onInteractionEnd: (details) =>
-                              _scaleEndGesture(details, controller),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: FileImage(_backgroundImage),
-                                fit: BoxFit.fill,
-                              ),
-                            ),
-                            child: Opacity(
-                              opacity: 0.5,
-                              child: CustomPaint(
-                                size: Size(_backgroundImageUI.width.toDouble(),
-                                    _backgroundImageUI.height.toDouble()),
-                                willChange: true,
-                                isComplex: true,
-                                painter: DrawImage(
-                                  image: controller.image,
-                                  backgroundColor:
-                                      widget.colors[currentColorIndex],
-                                  points: _points,
-                                  paintHistory: _paintHistory,
-                                  isDragging: _inDrag,
-                                  update: UpdatePoints(
-                                      start: _start,
-                                      end: _end,
-                                      painter: _painter,
-                                      mode: controller.mode),
+                        return controller.backgroundImageUI == null
+                            ? const SizedBox(height: 200,width: 200,)
+                            : ImagePainterTransformer(
+                                maxScale: 2.4,
+                                minScale: 1,
+                                panEnabled: controller.mode == PaintMode.none,
+                                scaleEnabled: widget.isScalable,
+                                onInteractionUpdate: (details) =>
+                                    _scaleUpdateGesture(details, controller),
+                                onInteractionEnd: (details) =>
+                                    _scaleEndGesture(details, controller),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: FileImage(_backgroundImage),
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                  child: Opacity(
+                                    opacity: 0.5,
+                                    child: CustomPaint(
+                                      size: Size(
+                                          controller.backgroundImageUI.width
+                                              .toDouble(),
+                                          controller.backgroundImageUI.height
+                                              .toDouble()),
+                                      willChange: true,
+                                      isComplex: true,
+                                      painter: DrawImage(
+                                        image: controller.image,
+                                        backgroundColor:
+                                            widget.colors[currentColorIndex],
+                                        points: _points,
+                                        paintHistory: _paintHistory,
+                                        isDragging: _inDrag,
+                                        update: UpdatePoints(
+                                            start: _start,
+                                            end: _end,
+                                            painter: _painter,
+                                            mode: controller.mode),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ),
-                        );
+                              );
                       },
                     ),
                   ),
@@ -681,12 +688,14 @@ class PaintController {
 
   ///Repaint image url
   final ui.Image image;
+  final ui.Image backgroundImageUI;
 
   ///Constructor of the [PaintController] class.
   const PaintController(
       {this.strokeWidth = 4.0,
       this.color = Colors.red,
       this.image,
+      this.backgroundImageUI,
       this.mode = PaintMode.freeStyle,
       this.paintStyle = PaintingStyle.stroke,
       this.text = ""});
@@ -699,6 +708,7 @@ class PaintController {
         o.strokeWidth == strokeWidth &&
         o.color == color &&
         o.image == image &&
+        o.backgroundImageUI == backgroundImageUI &&
         o.paintStyle == paintStyle &&
         o.mode == mode &&
         o.text == text;
@@ -717,12 +727,14 @@ class PaintController {
   PaintController copyWith(
       {double strokeWidth,
       ui.Image image,
+      ui.Image backgroundImageUI,
       Color color,
       PaintMode mode,
       PaintingStyle paintingStyle,
       String text}) {
     return PaintController(
         strokeWidth: strokeWidth ?? this.strokeWidth,
+        backgroundImageUI: backgroundImageUI ?? this.backgroundImageUI,
         color: color ?? this.color,
         image: image ?? this.image,
         mode: mode ?? this.mode,
