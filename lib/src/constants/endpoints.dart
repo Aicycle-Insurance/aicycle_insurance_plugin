@@ -30,4 +30,7 @@ class Endpoints {
       baseUrl + '/claimimages/run_engine_percentage/';
   static String callEngineAfterUserEdit(String imageId) =>
       baseUrl + '/claimimages/$imageId/damage-reassessment';
+
+  // Truyền thông tin từ phía API tới BE
+  static String postPTIInformation = baseUrl + '/session/session-info';
 }

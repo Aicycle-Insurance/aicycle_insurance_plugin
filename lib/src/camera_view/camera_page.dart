@@ -239,7 +239,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                               top: 0,
                               bottom: 0,
                               child: RotatedBox(
-                                quarterTurns: 0,
+                                quarterTurns: 1,
                                 child: PreviewImageWithMask(
                                   damageAssess: _damageAssessment,
                                   previewFile: _previewFile,
@@ -340,18 +340,21 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
 
                           if (_damageAssessment.value != null &&
                               _previewFile.value != null)
-                            DrawingToolLayer(
-                              damageAssess: Rx<DamageAssessmentModel>(
-                                  _damageAssessment.value),
-                              imageUrl: _previewFile.value.path,
-                              onCancelCallBack: () {
-                                _damageAssessment.value = null;
-                                _previewFile.value = null;
-                              },
-                              onSaveCallBack: (buffer) {
-                                previewUserMaskImagesBuffer.assignAll(buffer);
-                              },
-                              token: widget.token,
+                            RotatedBox(
+                              quarterTurns: 1,
+                              child: DrawingToolLayer(
+                                damageAssess: Rx<DamageAssessmentModel>(
+                                    _damageAssessment.value),
+                                imageUrl: _previewFile.value.path,
+                                onCancelCallBack: () {
+                                  _damageAssessment.value = null;
+                                  _previewFile.value = null;
+                                },
+                                onSaveCallBack: (buffer) {
+                                  previewUserMaskImagesBuffer.assignAll(buffer);
+                                },
+                                token: widget.token,
+                              ),
                             )
                         ],
                       );

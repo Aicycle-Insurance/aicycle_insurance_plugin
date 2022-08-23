@@ -39,14 +39,23 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: ClaimFolderView(
-        sessionId: '288', // fake session id
+        sessionId: '20220405110579', // fake session id
         carBrand: CarBrandType.mazdaCX5,
+        maDonVi: '016',
+        phoneNumber: '0972795635',
+        kieuCongViec: 'G',
+        loaiCongViec: 'G',
+        deviceId: '5EC1BDF2B4D1FD7B',
+        maDonViNguoiDangNhap: '0',
+        maGiamDinhVien: 'LDH',
+        bienSoXe: '30A11214',
         onError: (message) {
           // handle error here.
           print(message);
         },
+        // Liên hệ để có token key
         uTokenKey:
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMyIsImlhdCI6MTY2MTIyNDEyMSwiZXhwIjoxNjYxMzEwNTIxfQ.1ERCsU7XxPVjbtBYsBeMRQP0DsJPFYiIJajWVqf6kBY', // Liên hệ để có token key
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMyIsImlhdCI6MTY2MTIyNDEyMSwiZXhwIjoxNjYxMzEwNTIxfQ.1ERCsU7XxPVjbtBYsBeMRQP0DsJPFYiIJajWVqf6kBY',
       ),
     );
   }

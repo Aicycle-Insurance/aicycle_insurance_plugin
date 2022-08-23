@@ -37,15 +37,26 @@ class ClaimFolderView extends StatefulWidget {
     this.uTokenKey,
     this.loadingWidget,
     this.onError,
-    this.onFrontLeftChanged,
-    this.onFrontRightChanged,
-    this.onFrontChanged,
-    this.onLeftRearChanged,
-    this.onRightRearChanged,
-    this.onRearChanged,
+    // this.onFrontLeftChanged,
+    // this.onFrontRightChanged,
+    // this.onFrontChanged,
+    // this.onLeftRearChanged,
+    // this.onRightRearChanged,
+    // this.onRearChanged,
+    this.maDonVi,
+    this.kieuCongViec,
+    this.loaiCongViec,
+    this.deviceId,
+    // this.noiDungSuVu,
+    this.maDonViNguoiDangNhap,
+    this.maGiamDinhVien,
+    this.phoneNumber,
+    this.bienSoXe,
+    // this.soIdCongViec,
   }) : super(key: key);
 
   /// ID hồ sơ
+  /// PTI key: so_id
   final String sessionId;
 
   /// Hãng xe hỗ trợ
@@ -61,22 +72,53 @@ class ClaimFolderView extends StatefulWidget {
   final Function(String message) onError;
 
   /// Hàm call back trả về danh sách ảnh Trái - Trước
-  final Function(List<File>) onFrontLeftChanged;
+  // final Function(List<File>) onFrontLeftChanged;
 
   /// Hàm call back trả về danh sách ảnh Phải - Trước
-  final Function(List<File>) onFrontRightChanged;
+  // final Function(List<File>) onFrontRightChanged;
 
   /// Hàm call back trả về danh sách ảnh Trước
-  final Function(List<File>) onFrontChanged;
+  // final Function(List<File>) onFrontChanged;
 
   /// Hàm call back trả về danh sách ảnh Trái - Sau
-  final Function(List<File>) onLeftRearChanged;
+  // final Function(List<File>) onLeftRearChanged;
 
   /// Hàm call back trả về danh sách ảnh Phải - Sau
-  final Function(List<File>) onRightRearChanged;
+  // final Function(List<File>) onRightRearChanged;
 
   /// Hàm call back trả về danh sách ảnh Sau
-  final Function(List<File>) onRearChanged;
+  // final Function(List<File>) onRearChanged;
+
+  /// Các thông tin cần cung cấp từ phía PTI
+  /// PTI key: ma_id
+  final String maDonVi;
+
+  /// PTI key: KIEU_CV
+  final String kieuCongViec;
+
+  /// PTI key: loai
+  final String loaiCongViec;
+
+  /// PTI key: deviceId
+  final String deviceId;
+
+  /// PTI key: nd
+  // final String noiDungSuVu;
+
+  /// PTI key: ma_dvi_nh
+  final String maDonViNguoiDangNhap;
+
+  /// PTI key: nsd_nh
+  final String maGiamDinhVien;
+
+  /// PTI key: bien_xe
+  final String bienSoXe;
+
+  /// PTI key: so_id
+  // final String soIdCongViec;
+
+  /// PTI key: phone
+  final String phoneNumber;
 
   @override
   State<ClaimFolderView> createState() => _ClaimFolderViewState();
@@ -241,11 +283,6 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                       height: 303,
                       package: packageName,
                     ),
-                    // child: Assets.images.vertical3dCar.image(
-                    //   width: 204,
-                    //   height: 303,
-                    //   // package: packageName,
-                    // ),
                   ),
                 ),
                 Positioned.fill(
@@ -405,12 +442,47 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
       );
       if (response.body != null) {
         claimId.value = response.body['data'][0]['claimId'].toString();
+        _uploadPTIInfomation();
         return response.body['data'][0]['claimId'].toString();
       } else {
         if (widget.onError != null) {
           widget.onError(response.statusMessage ?? 'Package error');
         }
         return null;
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// Cung cấp thông tin về phía BE
+  Future<void> _uploadPTIInfomation() async {
+    RestfulModule restfulModule = RestfulModuleImpl();
+    try {
+      Map<String, dynamic> data = {
+        "ma_dvi": widget.maDonVi,
+        "phone": widget.phoneNumber,
+        "KIEU_CV": widget.kieuCongViec,
+        "loai": widget.loaiCongViec,
+        "so_id": widget.sessionId,
+        "deviceId": widget.deviceId,
+        "ma_dvi_nh": widget.maDonViNguoiDangNhap,
+        "nsd_nh": widget.maGiamDinhVien,
+        "bien_xe": widget.bienSoXe,
+      };
+      print("data: $data");
+
+      var response = await restfulModule.post(
+        Endpoints.postPTIInformation,
+        data,
+        token: widget.uTokenKey,
+      );
+      if (response.body != null) {
+        return;
+      } else {
+        if (widget.onError != null) {
+          widget.onError(response.statusMessage ?? 'Package error');
+        }
       }
     } catch (e) {
       rethrow;
@@ -504,17 +576,20 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
 
   void _goToCameraPage(Rx<PartDirection> partDirection) async {
     await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => CameraPage(
-                token: widget.uTokenKey,
-                onError: widget.onError ?? (message) {},
-                cameraArgument: CameraArgument(
-                  partDirection: partDirection.value,
-                  claimId: claimId.value,
-                  imageRangeId: 1,
-                  carBrand: widget.carBrand,
-                )))).then((value) {
+      context,
+      MaterialPageRoute(
+        builder: (context) => CameraPage(
+          token: widget.uTokenKey,
+          onError: widget.onError ?? (message) {},
+          cameraArgument: CameraArgument(
+            partDirection: partDirection.value,
+            claimId: claimId.value,
+            imageRangeId: 1,
+            carBrand: widget.carBrand,
+          ),
+        ),
+      ),
+    ).then((value) {
       if (value is CameraArgument) {
         partDirection.value = value.partDirection;
       }
