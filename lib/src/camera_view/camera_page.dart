@@ -87,7 +87,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
             elevation: 0,
             backgroundColor: Colors.black,
             leadingWidth: 0,
-            toolbarHeight: toolbarHeight,
+            toolbarHeight: toolbarHeight + MediaQuery.of(context).padding.top,
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[

@@ -235,11 +235,17 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                   height: _carHeight,
                   width: _carWidth,
                   child: Center(
-                    child: Assets.images.vertical3dCar.image(
+                    child: Image.asset(
+                      Assets.images.vertical3dCar.path,
                       width: 204,
                       height: 303,
-                      // package: packageName,
+                      package: packageName,
                     ),
+                    // child: Assets.images.vertical3dCar.image(
+                    //   width: 204,
+                    //   height: 303,
+                    //   // package: packageName,
+                    // ),
                   ),
                 ),
                 Positioned.fill(
