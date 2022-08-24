@@ -40,7 +40,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: ClaimFolderView(
         sessionId: '20220405110579', // fake session id
-        carBrand: CarBrandType.mazdaCX5,
         maDonVi: '016',
         phoneNumber: '0972795635',
         kieuCongViec: 'G',

@@ -33,7 +33,7 @@ class ClaimFolderView extends StatefulWidget {
   const ClaimFolderView({
     Key key,
     this.sessionId,
-    this.carBrand,
+    // this.carBrand,
     this.uTokenKey,
     this.loadingWidget,
     this.onError,
@@ -60,7 +60,7 @@ class ClaimFolderView extends StatefulWidget {
   final String sessionId;
 
   /// Hãng xe hỗ trợ
-  final CarBrandType carBrand;
+  // final CarBrandType carBrand;
 
   /// Token key khi đăng nhập phía AICycle
   final String uTokenKey;
@@ -125,6 +125,7 @@ class ClaimFolderView extends StatefulWidget {
 }
 
 class _ClaimFolderViewState extends State<ClaimFolderView> {
+  final carBrand = CarBrandType.kiaMorning;
   // 3d car height
   final double _carHeight = 448.0;
   // 3d car width
@@ -429,7 +430,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
     try {
       Map<String, dynamic> data = {
         'claimName': 'PTI folder - ${widget.sessionId}',
-        'vehicleBrandId': CarBrand.carBrandIds[widget.carBrand].toString(),
+        'vehicleBrandId': CarBrand.carBrandIds[carBrand].toString(),
         'externalSessionId': widget.sessionId,
         'isClaim': true,
       };
@@ -556,7 +557,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
         MaterialPageRoute(
             builder: (context) => PreviewAllImagePage(
                   cameraArgument: CameraArgument(
-                    carBrand: widget.carBrand,
+                    carBrand: carBrand,
                     partDirection: partDirection.value,
                     claimId: claimId.value,
                     imageRangeId: 1,
@@ -585,7 +586,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
             partDirection: partDirection.value,
             claimId: claimId.value,
             imageRangeId: 1,
-            carBrand: widget.carBrand,
+            carBrand: carBrand,
           ),
         ),
       ),
