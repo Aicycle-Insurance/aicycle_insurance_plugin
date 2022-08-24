@@ -1,4 +1,4 @@
-import 'package:aicycle_insurance/src/constants/strings.dart';
+import 'strings.dart';
 
 final Map<String, int> imageRangeIds = {
   StringKeys.overViewShot: 1,

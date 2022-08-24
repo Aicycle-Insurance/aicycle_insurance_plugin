@@ -1,6 +1,6 @@
-import 'package:aicycle_insurance/src/constants/damage_types.dart';
 import 'package:flutter/material.dart';
 
+import '../src/constants/damage_types.dart';
 import '../src/extensions/hex_color_extension.dart';
 
 class DamageModel {

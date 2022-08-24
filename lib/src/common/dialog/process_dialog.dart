@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:aicycle_insurance/aicycle_insurance.dart';
 import 'package:flutter/material.dart';
 
+import '../../../aicycle_insurance.dart';
 import '../../constants/colors.dart';
 import '../../constants/strings.dart';
 

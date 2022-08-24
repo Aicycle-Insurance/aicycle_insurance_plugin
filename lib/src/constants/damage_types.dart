@@ -1,7 +1,7 @@
-import 'package:aicycle_insurance/src/extensions/hex_color_extension.dart';
 import 'package:flutter/material.dart';
 
 import '../../types/damage_type.dart';
+import '../extensions/hex_color_extension.dart';
 
 class DamageTypeConstant {
   DamageTypeConstant._();

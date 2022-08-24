@@ -9,7 +9,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.0
-  aicycle_insurance:
+  aicycle_insurance_non_null_safety:
     path: ../
 
 dev_dependencies:

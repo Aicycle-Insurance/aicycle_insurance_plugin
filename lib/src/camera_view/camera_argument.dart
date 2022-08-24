@@ -1,6 +1,5 @@
-import 'package:aicycle_insurance/src/constants/car_brand.dart';
-
 import '../../types/part_direction.dart';
+import '../constants/car_brand.dart';
 
 class CameraArgument {
   PartDirection partDirection;

@@ -2,17 +2,17 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'package:aicycle_insurance/gen/assets.gen.dart';
-import 'package:aicycle_insurance/src/utils/functions.dart';
+// import 'package:aicycle_insurance/gen/assets.gen.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:flutter/services.dart';
+// import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../utils/functions.dart';
 import '_image_painter.dart';
 import '_ported_interactive_viewer.dart';
 import 'widgets/_color_widget.dart';
-import 'widgets/_mode_widget.dart';
+// import 'widgets/_mode_widget.dart';
 import 'widgets/_range_slider.dart';
 
 export '_image_painter.dart';
@@ -264,7 +264,10 @@ class ImagePainterState extends State<ImagePainter> {
                       valueListenable: _controller,
                       builder: (_, controller, __) {
                         return controller.backgroundImageUI == null
-                            ? const SizedBox(height: 200,width: 200,)
+                            ? const SizedBox(
+                                height: 200,
+                                width: 200,
+                              )
                             : ImagePainterTransformer(
                                 maxScale: 2.4,
                                 minScale: 1,

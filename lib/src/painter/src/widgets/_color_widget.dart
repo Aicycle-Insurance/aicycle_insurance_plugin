@@ -1,5 +1,5 @@
-import 'package:aicycle_insurance/src/utils/functions.dart';
 import 'package:flutter/material.dart';
+import '../../../utils/functions.dart';
 
 class ColorItem extends StatelessWidget {
   const ColorItem({Key key, this.onTap, this.isSelected, this.color})
