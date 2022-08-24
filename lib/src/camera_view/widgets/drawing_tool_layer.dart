@@ -630,22 +630,22 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
   void finishAnnotate() async {
     ProgressDialog.showWithCircleIndicator(context, isLandScape: true);
 
-    final size = Size(backgroundImageUI.width.toDouble(),
-        backgroundImageUI.height.toDouble());
+    // final size = Size(backgroundImageUI.width.toDouble(),
+    //     backgroundImageUI.height.toDouble());
 
     List<UserCorrectedDamageItem> correctedItems = [];
-    for (var drawableItem in damageMaskDrawables.values) {
-      // var renderedImage = await renderDamageMask(
-      //     drawableItem.value, size, damageClassColors[drawableItem.key]);
-      // var pngImageBuffer = (await renderedImage.pngBytes);
-      // correctedItems.add(
-      //   UserCorrectedDamageItem(
-      //       maskData: pngImageBuffer,
-      //       damageClass: drawableItem.key,
-      //       maskImgName: nanoid() + '.png'),
-      // );
-      // previewUserMaskImagesBuffer.add(pngImageBuffer);
-    }
+    // for (var drawableItem in damageMaskDrawables.values) {
+    // var renderedImage = await renderDamageMask(
+    //     drawableItem.value, size, damageClassColors[drawableItem.key]);
+    // var pngImageBuffer = (await renderedImage.pngBytes);
+    // correctedItems.add(
+    //   UserCorrectedDamageItem(
+    //       maskData: pngImageBuffer,
+    //       damageClass: drawableItem.key,
+    //       maskImgName: nanoid() + '.png'),
+    // );
+    // previewUserMaskImagesBuffer.add(pngImageBuffer);
+    // }
     await userCorrectDamage(
       UserCorrectedDamages(
         imageId: widget.damageAssess.value.imageId.toString(),

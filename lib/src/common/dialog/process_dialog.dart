@@ -50,19 +50,19 @@ class ProgressDialog {
           ),
           // alignment: Alignment.center,
           titlePadding: const EdgeInsets.only(top: 24, bottom: 0),
-          actions: [
-            Center(
-              child: SizedBox(
-                height: 72,
-                child: Image.asset(
-                  'assets/icons/loading_$i.gif',
-                  fit: BoxFit.cover,
-                  height: 72,
-                  package: packageName,
-                ),
-              ),
-            )
-          ],
+          contentPadding: const EdgeInsets.only(bottom: 20),
+          actionsPadding: EdgeInsets.zero,
+          content: SizedBox(
+            height: 72,
+            width: 156,
+            child: Image.asset(
+              'assets/icons/loading_$i.gif',
+              fit: BoxFit.contain,
+              height: 72,
+              width: 156,
+              package: packageName,
+            ),
+          ),
         ),
       ),
       barrierDismissible: false,

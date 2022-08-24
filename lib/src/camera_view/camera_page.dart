@@ -5,8 +5,10 @@ import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+// import 'package:gallery_saver/gallery_saver.dart';
 
 import '../../types/part_direction.dart';
 import '../../aicycle_insurance.dart';
@@ -451,11 +453,11 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
     PickedFile file = await _picker.getImage(source: ImageSource.gallery);
     if (file != null) {
       /// Tạo đường dẫn tạm
-      final Directory extDir = await getTemporaryDirectory();
-      final appImageDir =
-          await Directory('${extDir.path}/app_images').create(recursive: true);
-      final String filePath =
-          '${appImageDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
+      // final Directory extDir = await getTemporaryDirectory();
+      // final appImageDir =
+      //     await Directory('${extDir.path}/app_images').create(recursive: true);
+      // final String filePath =
+      //     '${appImageDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
 
       /// compress ảnh -> 1600x1200
       var _resizeFile = await ImageUtils.compressImage(File(file.path));
@@ -478,10 +480,14 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
     /// chụp ảnh
     await pictureController.takePicture(filePath);
 
+    /// lưu ảnh
+    // GallerySaver.saveImage(filePath);
+    ImageGallerySaver.saveFile(filePath);
+
     /// compress ảnh -> full HD
     final file = await ImageUtils.compressImage(File(filePath));
     // file.saveTo(filePath); todo
-    _previewFile.value = PickedFile(filePath);
+    _previewFile.value = PickedFile(file.path);
 
     /// Call engine
     await _callAiEngine(filePath);

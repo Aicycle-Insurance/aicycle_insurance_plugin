@@ -25,6 +25,10 @@ dependencies:
   image: ^2.1.19
   nanoid: ^0.1.0
   vector_math: ^2.1.0-nullsafety.3
+  image_gallery_saver: ^1.6.8
+
+# dependency_overrides:
+#   gallery_saver: ^2.0.3
 
 
 dev_dependencies:

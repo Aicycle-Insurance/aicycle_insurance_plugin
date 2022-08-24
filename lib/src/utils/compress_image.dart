@@ -21,7 +21,7 @@ class ImageUtils {
       compressedFile = await FlutterImageCompress.compressAndGetFile(
         img.absolute.path,
         targetPath,
-        quality: 100,
+        quality: 100, minHeight: 1200, minWidth: 1600,
         // format: CompressFormat.png,
       );
       if (compressedFile == null) {
@@ -36,9 +36,12 @@ class ImageUtils {
 
   static Future<ui.Image> getUiImage(String imageAssetPath) async {
     final ByteData assetImageByteData = await rootBundle.load(imageAssetPath);
-    image.Image baseSizeImage = image.decodeImage(assetImageByteData.buffer.asUint8List());
-    image.Image resizeImage = image.copyResize(baseSizeImage, height: baseSizeImage.height, width: baseSizeImage.width);
-    ui.Codec codec = await ui.instantiateImageCodec(image.encodePng(resizeImage));
+    image.Image baseSizeImage =
+        image.decodeImage(assetImageByteData.buffer.asUint8List());
+    image.Image resizeImage = image.copyResize(baseSizeImage,
+        height: baseSizeImage.height, width: baseSizeImage.width);
+    ui.Codec codec =
+        await ui.instantiateImageCodec(image.encodePng(resizeImage));
     ui.FrameInfo frameInfo = await codec.getNextFrame();
     return frameInfo.image;
   }
