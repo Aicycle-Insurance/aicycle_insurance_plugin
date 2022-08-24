@@ -284,6 +284,7 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
         }
       }
     } catch (e) {
+      widget.onError(e.toString());
       rethrow;
     }
   }

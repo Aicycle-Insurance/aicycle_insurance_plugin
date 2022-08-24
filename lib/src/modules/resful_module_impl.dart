@@ -65,8 +65,7 @@ class RestfulModuleImpl implements RestfulModule {
       return CommonResponse(statusCode: 500, statusMessage: message);
     }
     if (result.statusCode == 401) {
-      return CommonResponse(
-          statusCode: 401, statusMessage: 'Your AiCycle token has expired!');
+      return CommonResponse(statusCode: 401, statusMessage: '401 Unauthorized');
     }
     return CommonResponse(
       body: result.body,
@@ -113,9 +112,9 @@ class RestfulModuleImpl implements RestfulModule {
       return CommonResponse(statusCode: 500, statusMessage: message);
     }
     if (result.statusCode == 401) {
-      return CommonResponse(
-          statusCode: 401, statusMessage: 'Your AiCycle token has expired!');
+      return CommonResponse(statusCode: 401, statusMessage: '401 Unauthorized');
     }
+
     return CommonResponse(
       body: result.body,
       headers: result.headers,
@@ -164,8 +163,7 @@ class RestfulModuleImpl implements RestfulModule {
       return CommonResponse(statusCode: 500, statusMessage: message);
     }
     if (result.statusCode == 401) {
-      return CommonResponse(
-          statusCode: 401, statusMessage: 'Your AiCycle token has expired!');
+      return CommonResponse(statusCode: 401, statusMessage: '401 Unauthorized');
     }
     return CommonResponse(
       body: result.body,
@@ -218,8 +216,7 @@ class RestfulModuleImpl implements RestfulModule {
       return CommonResponse(statusCode: 500, statusMessage: message);
     }
     if (result.statusCode == 401) {
-      return CommonResponse(
-          statusCode: 401, statusMessage: 'Your AiCycle token has expired!');
+      return CommonResponse(statusCode: 401, statusMessage: '401 Unauthorized');
     }
     return CommonResponse(
       body: result.body,
@@ -269,8 +266,7 @@ class RestfulModuleImpl implements RestfulModule {
       return CommonResponse(statusCode: 500, statusMessage: message);
     }
     if (result.statusCode == 401) {
-      return CommonResponse(
-          statusCode: 401, statusMessage: 'Your AiCycle token has expired!');
+      return CommonResponse(statusCode: 401, statusMessage: '401 Unauthorized');
     }
 
     return CommonResponse(

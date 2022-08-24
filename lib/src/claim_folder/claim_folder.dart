@@ -3,6 +3,8 @@
 
 // import 'dart:io';
 
+import 'package:aicycle_insurance_non_null_safety/src/modules/module_types/common_response.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -22,6 +24,7 @@ import '../constants/endpoints.dart';
 import '../modules/resful_module.dart';
 import '../modules/resful_module_impl.dart';
 import '../preview_all_image/preview_all_image_page.dart';
+import '../common/dialog/process_dialog.dart';
 import '../camera_view/camera_page.dart';
 import 'photo_taken_point.dart';
 import 'widgets/summary_image_section.dart';
@@ -37,6 +40,7 @@ class ClaimFolderView extends StatefulWidget {
     this.uTokenKey,
     this.loadingWidget,
     this.onError,
+    this.onGetResultCallBack,
     // this.onFrontLeftChanged,
     // this.onFrontRightChanged,
     // this.onFrontChanged,
@@ -70,6 +74,9 @@ class ClaimFolderView extends StatefulWidget {
 
   /// Khi xử lý lỗi
   final Function(String message) onError;
+
+  /// Khi trả về kết quả
+  final Function(Map<String, dynamic>) onGetResultCallBack;
 
   /// Hàm call back trả về danh sách ảnh Trái - Trước
   // final Function(List<File>) onFrontLeftChanged;
@@ -230,27 +237,69 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
             if (snapShot.data == null) {
               return Container();
             }
-            return SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SummaryImagesSection(
-                    claimId: snapShot.data,
-                    token: widget.uTokenKey,
-                    sessionId: widget.sessionId,
-                    images: _summaryImages,
-                    onError: (message) {
-                      if (widget.onError != null) {
-                        widget.onError(message);
-                      }
-                    },
-                    imagesOnChanged: (images) {
-                      _summaryImages = images;
-                    },
+            return Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SummaryImagesSection(
+                          claimId: snapShot.data,
+                          token: widget.uTokenKey,
+                          sessionId: widget.sessionId,
+                          images: _summaryImages,
+                          onError: (message) {
+                            if (widget.onError != null) {
+                              widget.onError(message);
+                            }
+                          },
+                          imagesOnChanged: (images) {
+                            _summaryImages = images;
+                          },
+                        ),
+                        _partDirectionsSection(),
+                      ],
+                    ),
                   ),
-                  _partDirectionsSection(),
-                ],
-              ),
+                ),
+                Obx(() {
+                  bool isHaveImage = _listPartDirections.any((element) {
+                    if (element.value.images.isNotEmpty ||
+                        element.value.imageFiles.isNotEmpty) {
+                      return true;
+                    } else {
+                      return false;
+                    }
+                  });
+                  if (isHaveImage) {
+                    return SafeArea(
+                      minimum: const EdgeInsets.all(16),
+                      child: CupertinoButton(
+                        // minSize: 0,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.primaries[5], //blue
+                        child: Text(
+                          'Kết quả giám định tổn thất',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        onPressed: () async {
+                          var result = await _getDamageAssessment();
+                          if (widget.onGetResultCallBack != null) {
+                            widget.onGetResultCallBack(result);
+                          }
+                        },
+                      ),
+                    );
+                  } else {
+                    return const SizedBox();
+                  }
+                }),
+              ],
             );
           } else {
             return Container();
@@ -486,6 +535,31 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
         }
       }
     } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> _getDamageAssessment() async {
+    RestfulModule restfulModule = RestfulModuleImpl();
+    try {
+      ProgressDialog.showWithCircleIndicator(context);
+      CommonResponse response = await restfulModule.get(
+        Endpoints.getDamageAssessmentResult(widget.sessionId),
+        token: widget.uTokenKey,
+      );
+      ProgressDialog.hide(context);
+      if (response.body != null) {
+        return response.body as Map<String, dynamic>;
+      } else {
+        if (widget.onError != null) {
+          widget.onError('Package error: ${response.statusCode}');
+        }
+      }
+    } catch (e) {
+      // ProgressDialog.hide(context);
+      if (widget.onError != null) {
+        widget.onError('Package error: $e');
+      }
       rethrow;
     }
   }

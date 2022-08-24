@@ -45,9 +45,12 @@ class _MyHomePageState extends State<MyHomePage> {
         kieuCongViec: 'G',
         loaiCongViec: 'G',
         deviceId: '5EC1BDF2B4D1FD7B',
-        maDonViNguoiDangNhap: '0',
+        maDonViNguoiDangNhap: '000',
         maGiamDinhVien: 'LDH',
         bienSoXe: '30A11214',
+        onGetResultCallBack: (data) {
+          print(data.toString());
+        },
         onError: (message) {
           // handle error here.
           print(message);

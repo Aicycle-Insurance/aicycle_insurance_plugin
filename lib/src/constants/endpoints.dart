@@ -33,4 +33,8 @@ class Endpoints {
 
   // Truyền thông tin từ phía API tới BE
   static String postPTIInformation = baseUrl + '/session/session-info';
+
+  // Lấy kết quả giám định
+  static String getDamageAssessmentResult(String sessionId) =>
+      baseUrl + '/session/$sessionId/results';
 }
