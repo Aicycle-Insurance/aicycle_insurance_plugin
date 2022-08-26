@@ -23,7 +23,6 @@ class RestfulModuleImpl implements RestfulModule {
     if (!(finalHeaders.containsKey('authorization'))) {
       finalHeaders['authorization'] = 'Bearer ' + token;
     }
-    print(finalHeaders);
     return finalHeaders;
   }
 
@@ -181,7 +180,6 @@ class RestfulModuleImpl implements RestfulModule {
     Map<String, dynamic> query,
     CommonRequestOptions options,
   }) async {
-    print("running post");
     Map<String, String> header;
     if (options == null || options.headers == null) {
       header = (_getHeaders(token: token));
@@ -207,7 +205,6 @@ class RestfulModuleImpl implements RestfulModule {
       );
     }
 
-    print(result);
     if (result.statusCode == 500) {
       String message = 'Internal Server Error';
       if (result.body is Map) {

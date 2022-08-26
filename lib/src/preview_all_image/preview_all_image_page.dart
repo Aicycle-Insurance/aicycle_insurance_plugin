@@ -103,13 +103,16 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
                                 .value.partDirection.overViewImages.first.url
                             : '',
                     onRetake: () => _goToCameraPage(1),
-                    onDelete: () => _deleteImageById(currentArg
-                            .value.partDirection.overViewImageFiles.isNotEmpty
-                        ? currentArg.value.partDirection.overViewImageFiles
-                            .first.imageId
-                            .toString()
-                        : currentArg
-                            .value.partDirection.overViewImages.first.imageId),
+                    onDelete: () => _deleteImageById(
+                      currentArg
+                              .value.partDirection.overViewImageFiles.isNotEmpty
+                          ? currentArg.value.partDirection.overViewImageFiles
+                              .first.imageId
+                              .toString()
+                          : currentArg
+                              .value.partDirection.overViewImages.first.imageId,
+                      rangeId: 1,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Expanded(
@@ -117,7 +120,8 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
                       imageFromServers: imageList,
                       imageFiles: imageFiles,
                       onRetake: () => _goToCameraPage(2),
-                      onDelete: (imageId) => _deleteImageById(imageId),
+                      onDelete: (imageId) =>
+                          _deleteImageById(imageId, rangeId: 2),
                     ),
                   ),
                 ],
@@ -130,31 +134,39 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
   }
 
   Future<bool> _willPop() async {
-    Navigator.pop<CameraArgument>(context, currentArg.value);
+    Navigator.pop<PartDirection>(context, currentArg.value.partDirection);
     return false;
   }
 
-  void _deleteImageById(String imageId) async {
+  void _deleteImageById(String imageId, {int rangeId}) async {
+    var _partDirection = currentArg.value.partDirection;
     try {
-      currentArg.value.partDirection.images
+      _partDirection.images
           .removeWhere((element) => element.imageId == imageId);
-      currentArg.value.partDirection.imageFiles
+      _partDirection.imageFiles
           .removeWhere((element) => element.imageId.toString() == imageId);
-      // over view
-      currentArg.value.partDirection.overViewImages
-          .removeWhere((element) => element.imageId == imageId);
-      currentArg.value.partDirection.overViewImageFiles
-          .removeWhere((element) => element.imageId.toString() == imageId);
-      // middle view
-      currentArg.value.partDirection.middleViewImages
-          .removeWhere((element) => element.imageId == imageId);
-      currentArg.value.partDirection.middleViewImageFiles
-          .removeWhere((element) => element.imageId.toString() == imageId);
-      // close up view
-      currentArg.value.partDirection.closeViewImages
-          .removeWhere((element) => element.imageId == imageId);
-      currentArg.value.partDirection.closeViewImageFiles
-          .removeWhere((element) => element.imageId.toString() == imageId);
+      if (rangeId == 1) {
+        // over view
+        _partDirection.overViewImages
+            .removeWhere((element) => element.imageId == imageId);
+        _partDirection.overViewImageFiles
+            .removeWhere((element) => element.imageId.toString() == imageId);
+      }
+      if (rangeId == 2) {
+        // middle view
+        _partDirection.middleViewImages
+            .removeWhere((element) => element.imageId == imageId);
+        _partDirection.middleViewImageFiles
+            .removeWhere((element) => element.imageId.toString() == imageId);
+        // close up view
+        _partDirection.closeViewImages
+            .removeWhere((element) => element.imageId == imageId);
+        _partDirection.closeViewImageFiles
+            .removeWhere((element) => element.imageId.toString() == imageId);
+      }
+      setState(() {
+        currentArg.value.partDirection = _partDirection;
+      });
     } catch (e) {
       widget.onError('Package: Removing image gets error!');
     }
@@ -170,6 +182,7 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
         widget.onError(response.statusMessage ?? 'Package error');
       }
     } catch (e) {
+      widget.onError(e.toString());
       rethrow;
     }
   }
@@ -189,33 +202,55 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
           Endpoints.deleteAllImageInClaim(currentArg.value.claimId),
           token: widget.token,
           query: {
-            'partDirectionId': currentArg.value.partDirection.partDirectionId
+            'partDirectionId':
+                currentArg.value.partDirection.partDirectionId.toString(),
           },
         );
         if (response.statusCode != 200) {
           widget.onError(response.statusMessage ?? 'Package error');
+        } else {
+          setState(() {
+            currentArg.value.partDirection =
+                currentArg.value.partDirection.copyWith(
+              images: [],
+              imageFiles: [],
+              closeViewImageFiles: [],
+              closeViewImages: [],
+              imagesCount: 0,
+              middleViewImageFiles: [],
+              middleViewImages: [],
+              overViewImageFiles: [],
+              overViewImages: [],
+            );
+          });
         }
       } catch (e) {
+        widget.onError(e.toString());
         rethrow;
       }
     }
   }
 
   void _goToCameraPage(int rangeId) async {
-    await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => CameraPage(
-                token: widget.token,
-                onError: widget.onError,
-                cameraArgument: CameraArgument(
-                  partDirection: currentArg.value.partDirection,
-                  claimId: currentArg.value.claimId,
-                  imageRangeId: rangeId,
-                  carBrand: currentArg.value.carBrand,
-                )))).then((value) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CameraPage(
+          token: widget.token,
+          onError: widget.onError,
+          cameraArgument: CameraArgument(
+            partDirection: currentArg.value.partDirection,
+            claimId: currentArg.value.claimId,
+            imageRangeId: rangeId,
+            carBrand: currentArg.value.carBrand,
+          ),
+        ),
+      ),
+    ).then((value) {
       if (value is CameraArgument) {
-        currentArg.value.partDirection = value.partDirection;
+        setState(() {
+          currentArg.value.partDirection = value.partDirection;
+        });
       }
     });
   }

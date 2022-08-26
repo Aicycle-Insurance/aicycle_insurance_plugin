@@ -49,6 +49,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
   final double toolbarHeight = 80.0;
 
   var currentTabIndex = 0.obs;
+  final scaffoldKey = GlobalKey<ScaffoldState>();
 
   Rx<CameraArgument> _currentArg;
   TabController _tabController;
@@ -84,6 +85,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
       child: DefaultTabController(
         length: 3,
         child: Scaffold(
+          key: scaffoldKey,
           appBar: AppBar(
             automaticallyImplyLeading: false,
             elevation: 0,
@@ -341,7 +343,8 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                             ),
 
                           if (_damageAssessment.value != null &&
-                              _previewFile.value != null)
+                              _previewFile.value != null &&
+                              currentTabIndex.value != 2)
                             RotatedBox(
                               quarterTurns: 1,
                               child: DrawingToolLayer(
@@ -435,10 +438,11 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
 
   void _changeTab(int index) {
     if (index == 2 && listCarPartFromMiddleView.isEmpty) {
-      CommonSnackbar.show(
-        context,
-        type: SnackbarType.warning,
-        message: 'Bạn cần chụp ảnh trung cảnh hợp lệ trước.',
+      scaffoldKey.currentState.showSnackBar(
+        CommonSnackbar.snackBarWidget(
+          type: SnackbarType.warning,
+          message: 'Bạn cần chụp ảnh trung cảnh hợp lệ trước.',
+        ),
       );
       _changeTab(1);
     } else {
@@ -490,7 +494,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
     _previewFile.value = PickedFile(file.path);
 
     /// Call engine
-    await _callAiEngine(filePath);
+    await _callAiEngine(file.path);
   }
 
   Future<void> _callAiEngine(String imageFilePath) async {
@@ -517,8 +521,18 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
           token: widget.token,
         );
         if (callEngineResponse.statusCode == 200) {
-          _damageAssessment.value =
-              DamageAssessmentModel.fromJson(callEngineResponse.body);
+          if (currentTabIndex.value != 2) {
+            _damageAssessment.value =
+                DamageAssessmentModel.fromJson(callEngineResponse.body);
+          } else {
+            _damageAssessment.value = DamageAssessmentModel(
+              carDamages: [],
+              carParts: [],
+              imageId: int.parse(callEngineResponse.body['imageId'].toString()),
+              imageSize: [],
+              imgUrl: '',
+            );
+          }
 
           /// gán ảnh cho part direction
           var temp = _currentArg.value.partDirection.imageFiles.toList();
@@ -576,17 +590,15 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                 imageId: _damageAssessment.value.imageId,
                 file: _previewFile.value,
               ));
-              // print(temp);
               _currentArg.value.partDirection = _currentArg.value.partDirection
                   .copyWith(closeViewImageFiles: temp);
-              // _currentArg.value.partDirection.closeViewImageFiles = temp;
               break;
           }
         }
       }
       ProgressDialog.hide(context);
     } catch (e) {
-      widget.onError('Package: System error!');
+      widget.onError('Package error: $e');
       ProgressDialog.hide(context);
     }
   }

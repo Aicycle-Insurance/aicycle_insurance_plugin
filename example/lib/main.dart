@@ -45,9 +45,9 @@ class _MyHomePageState extends State<MyHomePage> {
         kieuCongViec: 'G',
         loaiCongViec: 'G',
         deviceId: '5EC1BDF2B4D1FD7B',
-        maDonViNguoiDangNhap: '000',
+        maDonViNguoiDangNhap: '090',
         maGiamDinhVien: 'LDH',
-        bienSoXe: '30A11214',
+        bienSoXe: '29A1223',
         onGetResultCallBack: (data) {
           print(data.toString());
         },

@@ -76,7 +76,7 @@ class PreviewImageWithMask extends StatelessWidget {
           maxScale: 3,
           minScale: 1,
           child: FittedBox(
-            fit: BoxFit.contain,
+            fit: BoxFit.cover,
             child: Stack(
               children: [
                 Image.file(

@@ -1,3 +1,8 @@
+## 0.0.6
+ - Sửa lỗi cập nhật số lượng ảnh sau khi xoá
+## 0.0.5
+ - Sửa lỗi chụp ảnh tải lên
+ - Sửa lỗi xoá ảnh trong folder 
 ## 0.0.4
  - Sửa lỗi lấy kết quả giám định
 ## 0.0.3

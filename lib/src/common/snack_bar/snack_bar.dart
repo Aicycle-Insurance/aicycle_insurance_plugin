@@ -68,4 +68,28 @@ class CommonSnackbar {
       return Icons.warning_amber_outlined;
     }
   }
+
+  static SnackBar snackBarWidget({
+    SnackbarType type,
+    String message,
+  }) {
+    return SnackBar(
+      content: Row(
+        children: [
+          Icon(_chooseIcon(type), color: textColor),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              '${_chooseTitle(type)}: $message',
+              style: const TextStyle(color: textColor),
+            ),
+          ),
+        ],
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      backgroundColor: _chooseColor(type),
+    );
+  }
 }

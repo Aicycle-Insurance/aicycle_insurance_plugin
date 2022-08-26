@@ -177,7 +177,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
     super.initState();
     initPartDirection();
     _summaryImages = [];
-    // _createClaimFolder();
+    _createAndCallImage();
   }
 
   void initPartDirection() {
@@ -213,98 +213,104 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
     ));
   }
 
-  Future<String> _createAndCallImage() async {
-    var result = await _createClaimFolder().then((value) async {
+  var claimID = ''.obs;
+  var isCreatingClaim = false.obs;
+
+  Future<void> _createAndCallImage() async {
+    isCreatingClaim(true);
+    // _createClaimFolder().whenComplete(() {
+    //   isCreatingClaim(false);
+    // });
+    _createClaimFolder().then((value) async {
       if (value != null) {
+        claimID.value = value;
         await _getAllImageInClaimFolder();
-        return value;
       }
-    });
-    return result;
+    }).whenComplete(() => isCreatingClaim(false));
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: _createAndCallImage(),
-        builder: (context, AsyncSnapshot<String> snapShot) {
-          if (snapShot.connectionState == ConnectionState.waiting) {
-            return Center(
-                child:
-                    widget.loadingWidget ?? const CircularProgressIndicator());
-          }
-          if (snapShot.connectionState == ConnectionState.done) {
-            if (snapShot.data == null) {
-              return Container();
-            }
-            return Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SummaryImagesSection(
-                          claimId: snapShot.data,
-                          token: widget.uTokenKey,
-                          sessionId: widget.sessionId,
-                          images: _summaryImages,
-                          onError: (message) {
-                            if (widget.onError != null) {
-                              widget.onError(message);
-                            }
-                          },
-                          imagesOnChanged: (images) {
-                            _summaryImages = images;
-                          },
-                        ),
-                        _partDirectionsSection(),
-                      ],
+    return Obx(
+        // future: _createAndCallImage(),
+        // builder: (context, AsyncSnapshot<String> snapShot) {
+        () {
+      if (isCreatingClaim.isTrue) {
+        return Center(
+            child: widget.loadingWidget ?? const CircularProgressIndicator());
+      }
+      if (isCreatingClaim.isFalse) {
+        if (claimID.isEmpty) {
+          return Container();
+        }
+        return Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SummaryImagesSection(
+                      claimId: claimID.value,
+                      token: widget.uTokenKey,
+                      sessionId: widget.sessionId,
+                      images: _summaryImages,
+                      onError: (message) {
+                        if (widget.onError != null) {
+                          widget.onError(message);
+                        }
+                      },
+                      imagesOnChanged: (images) {
+                        _summaryImages = images;
+                      },
                     ),
-                  ),
+                    _partDirectionsSection(),
+                  ],
                 ),
-                Obx(() {
-                  bool isHaveImage = _listPartDirections.any((element) {
-                    if (element.value.images.isNotEmpty ||
-                        element.value.imageFiles.isNotEmpty) {
-                      return true;
-                    } else {
-                      return false;
-                    }
-                  });
-                  if (isHaveImage) {
-                    return SafeArea(
-                      minimum: const EdgeInsets.all(16),
-                      child: CupertinoButton(
-                        // minSize: 0,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.primaries[5], //blue
-                        child: Text(
-                          'Kết quả giám định tổn thất',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        onPressed: () async {
-                          var result = await _getDamageAssessment();
-                          if (widget.onGetResultCallBack != null) {
-                            widget.onGetResultCallBack(result);
-                          }
-                        },
-                      ),
-                    );
-                  } else {
-                    return const SizedBox();
-                  }
-                }),
-              ],
-            );
-          } else {
-            return Container();
-          }
-        });
+              ),
+            ),
+            Obx(() {
+              bool isHaveImage = _listPartDirections.any((element) {
+                if (element.value.images.isNotEmpty ||
+                    element.value.imageFiles.isNotEmpty) {
+                  return true;
+                } else {
+                  return false;
+                }
+              });
+              if (isHaveImage) {
+                return SafeArea(
+                  minimum: const EdgeInsets.all(16),
+                  child: CupertinoButton(
+                    // minSize: 0,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.primaries[5], //blue
+                    child: Text(
+                      'Kết quả giám định tổn thất',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onPressed: () async {
+                      var result = await _getDamageAssessment();
+                      if (widget.onGetResultCallBack != null) {
+                        widget.onGetResultCallBack(result);
+                      }
+                    },
+                  ),
+                );
+              } else {
+                return const SizedBox();
+              }
+            }),
+          ],
+        );
+      } else {
+        return Container();
+      }
+    });
   }
 
   Widget _partDirectionsSection() {
@@ -343,9 +349,10 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                           clipBehavior: Clip.none,
                           children: <Widget>[
                             ..._listPartDirections.map((carDirection) {
-                              int allImageLength =
-                                  carDirection.value.images.length +
-                                      carDirection.value.imageFiles.length;
+                              var allImageLength =
+                                  (carDirection.value.images.length +
+                                          carDirection.value.imageFiles.length)
+                                      .obs;
                               return Positioned(
                                 left: carDirection.value.meta
                                         .verticalRelativePosition[0] *
@@ -355,7 +362,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                                     constraints.maxHeight,
                                 child: Obx(
                                   () => PhotoTakenPoint(
-                                    onTap: allImageLength == 0
+                                    onTap: allImageLength.value == 0
                                         ? () => _goToCameraPage(carDirection)
                                         : () => _goToPreviewPage(carDirection),
                                     isTaken:
@@ -388,76 +395,80 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                                   carDirection.value.partDirectionId == 2 ||
                                       carDirection.value.partDirectionId == 5;
 
-                              int allImageLength =
-                                  carDirection.value.images.length +
-                                      carDirection.value.imageFiles.length;
-
-                              return Positioned(
-                                right: isCenterPoint
-                                    ? null
-                                    : isLeftPoint
-                                        ? paddingRight
-                                        : null,
-                                left: isCenterPoint
-                                    ? paddingLeft - 8
-                                    : isLeftPoint
-                                        ? null
-                                        : paddingLeft,
-                                top: paddingTop,
-                                child: Column(
-                                  crossAxisAlignment: isLeftPoint
-                                      ? CrossAxisAlignment.end
-                                      : isCenterPoint
-                                          ? CrossAxisAlignment.center
-                                          : CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(4),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: Text(
-                                        carDirection.value.partDirectionName,
-                                        style: const TextStyle(fontSize: 12),
-                                        maxLines: 2,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    if (allImageLength > 0)
+                              return Obx(() {
+                                var allImageLength = (carDirection
+                                            .value.images.length +
+                                        carDirection.value.imageFiles.length)
+                                    .obs;
+                                return Positioned(
+                                  right: isCenterPoint
+                                      ? null
+                                      : isLeftPoint
+                                          ? paddingRight
+                                          : null,
+                                  left: isCenterPoint
+                                      ? paddingLeft - 8
+                                      : isLeftPoint
+                                          ? null
+                                          : paddingLeft,
+                                  top: paddingTop,
+                                  child: Column(
+                                    crossAxisAlignment: isLeftPoint
+                                        ? CrossAxisAlignment.end
+                                        : isCenterPoint
+                                            ? CrossAxisAlignment.center
+                                            : CrossAxisAlignment.start,
+                                    children: [
                                       Container(
                                         padding: const EdgeInsets.all(4),
                                         decoration: BoxDecoration(
-                                          color: DefaultColors.blue,
+                                          color: Colors.white,
                                           borderRadius:
                                               BorderRadius.circular(4),
                                         ),
-                                        child: Text.rich(
-                                          TextSpan(
-                                            children: [
-                                              TextSpan(
-                                                text: '$allImageLength',
-                                                style: const TextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
+                                        child: Text(
+                                          carDirection.value.partDirectionName,
+                                          style: const TextStyle(fontSize: 12),
+                                          maxLines: 2,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      if (allImageLength.value > 0)
+                                        Container(
+                                          padding: const EdgeInsets.all(4),
+                                          decoration: BoxDecoration(
+                                            color: DefaultColors.blue,
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                          ),
+                                          child: Text.rich(
+                                            TextSpan(
+                                              children: [
+                                                TextSpan(
+                                                  text:
+                                                      '${allImageLength.value}',
+                                                  style: const TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
                                                 ),
-                                              ),
-                                              const TextSpan(
-                                                text:
-                                                    ' ${StringKeys.imageWord}',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 12,
+                                                const TextSpan(
+                                                  text:
+                                                      ' ${StringKeys.imageWord}',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12,
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      )
-                                  ],
-                                ),
-                              );
+                                    ],
+                                  ),
+                                );
+                              });
                             }).toList()
                           ],
                         ),
@@ -483,7 +494,6 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
         'externalSessionId': widget.sessionId,
         'isClaim': true,
       };
-      print("data: $data");
 
       var response = await restfulModule.post(
         Endpoints.createClaimFolder,
@@ -520,7 +530,6 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
         "nsd_nh": widget.maGiamDinhVien,
         "bien_xe": widget.bienSoXe,
       };
-      print("data: $data");
 
       var response = await restfulModule.post(
         Endpoints.postPTIInformation,
@@ -626,31 +635,35 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
   }
 
   void _goToPreviewPage(Rx<PartDirection> partDirection) async {
-    await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => PreviewAllImagePage(
-                  cameraArgument: CameraArgument(
-                    carBrand: carBrand,
-                    partDirection: partDirection.value,
-                    claimId: claimId.value,
-                    imageRangeId: 1,
-                  ),
-                  token: widget.uTokenKey,
-                  onError: (message) {
-                    if (widget.onError != null) {
-                      widget.onError(message);
-                    }
-                  },
-                ))).then((value) {
-      if (value is CameraArgument) {
-        partDirection.value = value.partDirection;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PreviewAllImagePage(
+          cameraArgument: CameraArgument(
+            carBrand: carBrand,
+            partDirection: partDirection.value,
+            claimId: claimId.value,
+            imageRangeId: 1,
+          ),
+          token: widget.uTokenKey,
+          onError: (message) {
+            if (widget.onError != null) {
+              widget.onError(message);
+            }
+          },
+        ),
+      ),
+    ).then((value) {
+      if (value is PartDirection) {
+        setState(() {
+          partDirection.value = value;
+        });
       }
     });
   }
 
   void _goToCameraPage(Rx<PartDirection> partDirection) async {
-    await Navigator.push(
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => CameraPage(
