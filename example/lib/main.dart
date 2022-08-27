@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
           print(message);
         },
         uTokenKey:
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMyIsImlhdCI6MTY2MTIyNDEyMSwiZXhwIjoxNjYxMzEwNTIxfQ.1ERCsU7XxPVjbtBYsBeMRQP0DsJPFYiIJajWVqf6kBY', // Liên hệ để có token key
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjYxNTk1MzgyLCJleHAiOjE2NjE2ODE3ODJ9.PYCCzFyFCwnoUM8Z2ris8znJQ8sI_N6MkDKrw2IxCmI', // Liên hệ để có token key
       ),
     );
   }

@@ -2,17 +2,15 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+
 import 'package:aicycle_insurance/gen/assets.gen.dart';
 import 'package:aicycle_insurance/src/utils/functions.dart';
-import 'package:flutter/material.dart' hide Image;
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '_image_painter.dart';
 import '_ported_interactive_viewer.dart';
 import 'widgets/_color_widget.dart';
-import 'widgets/_mode_widget.dart';
 import 'widgets/_range_slider.dart';
 
 export '_image_painter.dart';
@@ -102,7 +100,6 @@ class ImagePainter extends StatefulWidget {
 
 ///
 class ImagePainterState extends State<ImagePainter> {
-  final _repaintKey = GlobalKey();
   ui.Image _image;
   File _backgroundImage;
   ui.Image _backgroundImageUI;
@@ -110,7 +107,7 @@ class ImagePainterState extends State<ImagePainter> {
   final _controller = ValueNotifier<PaintController>(null);
   final _isLoaded = ValueNotifier<bool>(false);
   final _paintHistory = <PaintInfo>[];
-  final _points = <Offset>[];
+  var _points = <Offset>[];
   TextEditingController _textController;
   Offset _start, _end;
   int _strokeMultiplier = 1;
@@ -264,7 +261,10 @@ class ImagePainterState extends State<ImagePainter> {
                       valueListenable: _controller,
                       builder: (_, controller, __) {
                         return controller.backgroundImageUI == null
-                            ? const SizedBox(height: 200,width: 200,)
+                            ? const SizedBox(
+                                height: 200,
+                                width: 200,
+                              )
                             : ImagePainterTransformer(
                                 maxScale: 2.4,
                                 minScale: 1,
@@ -317,43 +317,66 @@ class ImagePainterState extends State<ImagePainter> {
             ],
           ),
         ),
-        _buildControls(),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Row(
+        RotatedBox(
+          quarterTurns: 1,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              InkWell(
-                onTap: () {
-                  widget.onCancelCallBack();
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.white),
-                  ),
-                  child: Text(
-                    "Hủy",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                width: 12,
-              ),
-              InkWell(
-                onTap: () {
-                  widget.onSaveCallBack(drawables);
-                },
+              _buildControls(),
+              Align(
+                alignment: Alignment.bottomCenter,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(4),
+                    color: Colors.black.withOpacity(0.5),
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                  child: Text("Lưu"),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          widget.onCancelCallBack();
+                        },
+                        child: Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: Colors.white),
+                          ),
+                          child: Text(
+                            "Hủy",
+                            style: TextStyle(fontSize: 14, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 12,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          widget.onSaveCallBack(drawables);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                          child: Text(
+                            "Lưu",
+                            style: TextStyle(
+                                fontSize: 14, color: Color(0xFF5768FF)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+              )
             ],
           ),
         )
@@ -368,7 +391,10 @@ class ImagePainterState extends State<ImagePainter> {
         _inDrag = true;
         _start ??= onUpdate.focalPoint;
         _end = onUpdate.focalPoint;
-        if (ctrl.mode == PaintMode.freeStyle) _points.add(_end);
+        if (ctrl.mode == PaintMode.freeStyle || ctrl.mode == PaintMode.erase) {
+          _points.add(_end);
+        }
+
         if (ctrl.mode == PaintMode.text &&
             _paintHistory
                 .where((element) => element.mode == PaintMode.text)
@@ -387,7 +413,8 @@ class ImagePainterState extends State<ImagePainter> {
       _inDrag = false;
       if (_start != null &&
           _end != null &&
-          (controller.mode == PaintMode.freeStyle)) {
+          (controller.mode == PaintMode.freeStyle ||
+              controller.mode == PaintMode.erase)) {
         _points.add(null);
         _addFreeStylePoints();
         _points.clear();
@@ -413,7 +440,7 @@ class ImagePainterState extends State<ImagePainter> {
         PaintInfo(
           offset: <Offset>[..._points],
           painter: _painter,
-          mode: PaintMode.freeStyle,
+          mode: _controller.value.mode,
         ),
       );
 
@@ -609,12 +636,14 @@ class ImagePainterState extends State<ImagePainter> {
                             : Colors.transparent,
                       ),
                       padding: const EdgeInsets.all(4),
-                      child: Icon(
-                        Icons.delete,
-                        color: _ctrl.mode == PaintMode.erase
-                            ? Color(0xFF5768FF)
-                            : Colors.grey,
-                      ),
+                      child: Assets.icons.iconBack.svg(),
+
+                      // SvgPicture.asset(
+                      //   'assets/icons/ic_erase.svg',
+                      //   color: _ctrl.mode == PaintMode.erase
+                      //       ? Color(0xFF5768FF)
+                      //       : Colors.grey,
+                      // ),
                     ),
                   ),
                 ],
