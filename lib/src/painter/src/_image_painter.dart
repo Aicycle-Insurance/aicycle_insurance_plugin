@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart' hide Image;
-import 'package:flutter/rendering.dart';
 
 ///Handles all the painting ongoing on the canvas.
 class DrawImage extends CustomPainter {
@@ -105,10 +104,18 @@ class DrawImage extends CustomPainter {
               final _path = Path()
                 ..moveTo(_offset[i].dx, _offset[i].dy)
                 ..lineTo(_offset[i + 1].dx, _offset[i + 1].dy);
-              canvas.drawPath(_path, _painter..blendMode = BlendMode.clear);
+              canvas.drawPath(
+                  _path,
+                  _painter
+                    ..strokeCap = StrokeCap.round
+                    ..blendMode = BlendMode.clear);
             } else if (_offset[i] != null && _offset[i + 1] == null) {
-              canvas.drawPoints(PointMode.points, [_offset[i]],
-                  _painter..blendMode = BlendMode.clear);
+              canvas.drawPoints(
+                  PointMode.points,
+                  [_offset[i]],
+                  _painter
+                    ..strokeCap = StrokeCap.round
+                    ..blendMode = BlendMode.clear);
             }
           }
           break;
@@ -183,10 +190,14 @@ class DrawImage extends CustomPainter {
               canvas.drawLine(
                   Offset(points[i].dx, points[i].dy),
                   Offset(points[i + 1].dx, points[i + 1].dy),
-                  _painter..blendMode = BlendMode.clear);
+                  _painter
+                    ..strokeCap = StrokeCap.round
+                    ..blendMode = BlendMode.clear);
             } else if (points[i] != null && points[i + 1] == null) {
-              canvas.drawPoints(PointMode.points,
-                  [Offset(points[i].dx, points[i].dy)], _painter..blendMode = BlendMode.clear);
+              canvas.drawPoints(
+                  PointMode.points,
+                  [Offset(points[i].dx, points[i].dy)],
+                  _painter..blendMode = BlendMode.clear);
             }
           }
           break;
@@ -224,7 +235,7 @@ class DrawImage extends CustomPainter {
     final dashWidth = 10.0 * width / 5;
     final dashSpace = 10.0 * width / 5;
     var distance = 0.0;
-    for (PathMetric pathMetric in path.computeMetrics()) {
+    for (final pathMetric in path.computeMetrics()) {
       while (distance < pathMetric.length) {
         dashPath.addPath(
           pathMetric.extractPath(distance, distance + dashWidth),
@@ -259,11 +270,11 @@ enum PaintMode {
   ///Allows to draw rectangle.
   rect,
 
+  ///Allows to erase
+  erase,
+
   ///Allows to write texts over an image.
   text,
-
-  ///Allows to erase line
-  erase,
 
   ///Allows us to draw line with arrow at the end point.
   arrow,
