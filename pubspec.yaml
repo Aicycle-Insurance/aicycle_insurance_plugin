@@ -47,5 +47,7 @@ flutter_gen:
 
 flutter:
   assets:
+    - assets/
     - assets/images/
     - assets/icons/
+    - assets/icons/ic_erase.svg
