@@ -76,6 +76,30 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
     _tabController = TabController(length: 3, vsync: this);
     _previewFile = Rx<PickedFile>(null);
     _damageAssessment = Rx<DamageAssessmentModel>(null);
+    _checkInitCarPart();
+  }
+
+  _checkInitCarPart() {
+    for (var image in _currentArg.value.partDirection.middleViewImages) {
+      for (var part in image.partsMasks) {
+        var _part = CarPart(
+          uuid: part.vehiclePartExcelId,
+          carPartBoxes: part.boxes,
+          carPartClassName: part.vehiclePartName,
+          carPartDamages: [],
+          carPartIsPart: true,
+          carPartMaskPath: part.masksPath,
+          carPartMaskUrl: part.maskUrl,
+          color: part.color,
+          carPartLocation: '',
+          carPartScore: part.scores,
+        );
+        listCarPartFromMiddleView[part.vehiclePartExcelId] = _part;
+      }
+    }
+    if (listCarPartFromMiddleView.isNotEmpty) {
+      _carPartOnSelected = Rx<CarPart>(listCarPartFromMiddleView.values.first);
+    }
   }
 
   @override
@@ -354,6 +378,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                                 onCancelCallBack: () {
                                   _damageAssessment.value = null;
                                   _previewFile.value = null;
+                                  _autoSwitchTab();
                                 },
                                 onSaveCallBack: (buffer) {
                                   previewUserMaskImagesBuffer.assignAll(buffer);
@@ -381,6 +406,17 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
     );
   }
 
+  void _autoSwitchTab() {
+    switch (currentTabIndex.value) {
+      case 0:
+        _changeTab(1);
+        break;
+      case 1:
+        _changeTab(2);
+        break;
+    }
+  }
+
   Future<bool> _onWillPop() async {
     Navigator.pop<CameraArgument>(context, _currentArg.value);
     return false;
@@ -399,7 +435,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                 .map(
                   (e) => ListTile(
                     contentPadding: EdgeInsets.zero,
-                    onTap: () => Get.back(result: e),
+                    onTap: () => Navigator.pop(context, e),
                     // minLeadingWidth: 30,
                     leading: SizedBox(
                       width: 24,
@@ -470,6 +506,9 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
 
       /// Call engine
       await _callAiEngine(_resizeFile.path);
+      if (currentTabIndex == 2) {
+        _changeTab(2);
+      }
     }
   }
 
@@ -495,10 +534,16 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
 
     /// Call engine
     await _callAiEngine(file.path);
+    if (currentTabIndex == 2) {
+      _changeTab(2);
+    }
   }
 
-  Future<void> _callAiEngine(String imageFilePath) async {
-    ProgressDialog.showWithCircleIndicator(context, isLandScape: true);
+  Future<void> _callAiEngine(String imageFilePath,
+      [bool hasLoading = true]) async {
+    if (hasLoading) {
+      ProgressDialog.showWithCircleIndicator(context, isLandScape: true);
+    }
     try {
       /// upload ảnh lên server AICycle
       var uploadResponse =
@@ -596,10 +641,10 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
           }
         }
       }
-      ProgressDialog.hide(context);
+      if (hasLoading) ProgressDialog.hide(context);
     } catch (e) {
       widget.onError('Package error: $e');
-      ProgressDialog.hide(context);
+      if (hasLoading) ProgressDialog.hide(context);
     }
   }
 

@@ -1,3 +1,5 @@
+## 0.0.7
+ - Sửa lỗi luồng chụp ảnh
 ## 0.0.6
  - Sửa lỗi cập nhật số lượng ảnh sau khi xoá
 ## 0.0.5

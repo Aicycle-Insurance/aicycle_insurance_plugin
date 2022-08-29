@@ -658,6 +658,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
         setState(() {
           partDirection.value = value;
         });
+        _getAllImageInClaimFolder();
       }
     });
   }

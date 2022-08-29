@@ -133,6 +133,7 @@ class PartsMask {
     this.maskUrl,
     this.isPart,
     this.color,
+    this.vehiclePartExcelId,
   });
 
   final String masksPath;
@@ -143,12 +144,14 @@ class PartsMask {
   final String maskUrl;
   final bool isPart;
   final Color color;
+  final String vehiclePartExcelId;
 
   PartsMask copyWith({
     String masksPath,
     String category,
     List<double> boxes,
     String vehiclePartName,
+    String vehiclePartExcelId,
     double scores,
     String maskUrl,
     bool isPart,
@@ -163,6 +166,7 @@ class PartsMask {
         isPart: isPart ?? this.isPart,
         category: category ?? this.category,
         color: color ?? this.color,
+        vehiclePartExcelId: vehiclePartExcelId ?? this.vehiclePartExcelId,
       );
 
   factory PartsMask.fromJson(Map<String, dynamic> json) => PartsMask(
@@ -174,6 +178,7 @@ class PartsMask {
             json["vehiclePartName"] ??
             json["class"] ??
             "Unknown",
+        vehiclePartExcelId: json['vehiclePartExcelId'] ?? '',
         scores: json["scores"] != null ? json["scores"].toDouble() : 0.0,
         maskUrl: json["maskUrl"] ?? '',
         isPart: json["isPart"],
