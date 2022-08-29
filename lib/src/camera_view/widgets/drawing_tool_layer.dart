@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 // import 'dart:ui' as ui;
 
+import 'package:aicycle_insurance/src/painter/image_painter.dart';
 // import 'package:aicycle_insurance/src/utils/compress_image.dart';
 // import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
