@@ -136,6 +136,7 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
 
       Uint8List finalBytes;
 
+      ///Merge image
       if (initNetworkMask[key].isNotEmpty) {
         final firstUrl = initNetworkMask[key].first;
         http.Response response = await http.get(firstUrl);
@@ -177,6 +178,7 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
           }
         }
       } else {
+        ///add transparent image
         http.Response response = await http.get(transparentImage);
         var trans = imagePlugin.decodeImage(response.bodyBytes);
         trans = imagePlugin.copyResize(trans,
@@ -211,6 +213,15 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
     return FutureBuilder<void>(
         future: initBackground(),
         builder: (context, snap) {
+          if (snap.connectionState == ConnectionState.waiting)
+            return Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.75),
+              ),
+              padding: const EdgeInsets.all(8.0),
+              margin: const EdgeInsets.all(16.0),
+              child: CircularProgressIndicator(),
+            );
           if (snap.connectionState == ConnectionState.done) {
             /// Cbi vẽ
             drawStatus.value = DrawStatus.ready;

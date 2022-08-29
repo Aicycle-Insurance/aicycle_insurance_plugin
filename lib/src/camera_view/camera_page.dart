@@ -8,13 +8,13 @@ import 'package:get/get.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-// import 'package:gallery_saver/gallery_saver.dart';
 
-import '../../types/part_direction.dart';
 import '../../aicycle_insurance.dart';
 import '../../types/car_part.dart';
 import '../../types/damage_assessment.dart';
-import '../camera_view/widgets/drawing_tool_layer.dart';
+// import 'package:gallery_saver/gallery_saver.dart';
+
+import '../../types/part_direction.dart';
 import '../common/dialog/process_dialog.dart';
 import '../common/snack_bar/snack_bar.dart';
 import '../constants/colors.dart';
@@ -27,6 +27,7 @@ import '../utils/compress_image.dart';
 import '../utils/upload_image_to_s3.dart';
 import 'bottom_action_bar/bottom_action_bar.dart';
 import 'camera_argument.dart';
+import 'widgets/drawing_tool_layer.dart';
 import 'widgets/preview_with_mask.dart';
 
 class CameraPage extends StatefulWidget {
