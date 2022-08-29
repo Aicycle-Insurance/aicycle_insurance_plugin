@@ -1,20 +1,13 @@
 import 'dart:io';
-import 'dart:math' as math;
-import 'dart:math';
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 
 import 'package:aicycle_insurance/src/painter/image_painter.dart';
-import 'package:aicycle_insurance/src/utils/compress_image.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_phosphor_icons/flutter_phosphor_icons.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as imagePlugin;
 import 'package:mime/mime.dart' as mime;
-import 'package:nanoid/nanoid.dart';
 
 import '../../../types/damage_assessment.dart';
 import '../../../types/damage_type.dart';
@@ -232,11 +225,11 @@ class _DrawingToolLayerState extends State<DrawingToolLayer> {
                           drawables: damageMaskDrawables.values.toList(),
                           key: painterKey,
                           backgroundImage: backgroundImage.value,
-                          onCancelCallBack: (){
+                          onCancelCallBack: () {
                             widget.onCancelCallBack();
                             drawStatus.value = DrawStatus.end;
                           },
-                          onSaveCallBack: (data){
+                          onSaveCallBack: (data) {
                             widget.onSaveCallBack(data);
                             drawStatus.value = DrawStatus.end;
                           },
