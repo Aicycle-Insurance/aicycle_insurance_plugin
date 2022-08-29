@@ -3,10 +3,6 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:aicycle_insurance/aicycle_insurance.dart';
-import 'package:aicycle_insurance/gen/assets.gen.dart';
-import 'package:aicycle_insurance/src/utils/functions.dart';
-// import 'package:aicycle_insurance/gen/assets.gen.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -14,6 +10,9 @@ import 'package:flutter/rendering.dart';
 // import 'package:flutter/services.dart';
 // import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../aicycle_insurance.dart';
+// import 'package:aicycle_insurance/gen/assets.gen.dart';
+import '../../../gen/assets.gen.dart';
 import '../../utils/functions.dart';
 import '_image_painter.dart';
 import '_ported_interactive_viewer.dart';
@@ -325,74 +324,71 @@ class ImagePainterState extends State<ImagePainter> {
             ],
           ),
         ),
-        RotatedBox(
-          quarterTurns: 1,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildControls(),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: Colors.black.withOpacity(0.5),
-                  ),
-                  margin: EdgeInsets.all(16),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          widget.onCancelCallBack();
-                        },
-                        child: Container(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: Colors.white),
-                          ),
-                          child: Text(
-                            "Hủy",
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 12,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          widget.onSaveCallBack(drawables);
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 24, vertical: 6),
-                          child: Text(
-                            "Lưu",
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFF5768FF),
-                                fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildControls(),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: Colors.black.withOpacity(0.5),
                 ),
-              )
-            ],
-          ),
+                margin: EdgeInsets.all(16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        widget.onCancelCallBack();
+                      },
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: Colors.white),
+                        ),
+                        child: Text(
+                          "Hủy",
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 12,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        widget.onSaveCallBack(drawables);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+                        child: Text(
+                          "Lưu",
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFF5768FF),
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ],
         ),
         Align(
           alignment: Alignment.bottomCenter,
@@ -512,27 +508,34 @@ class ImagePainterState extends State<ImagePainter> {
   PopupMenuItem _showColorPicker(PaintController controller) {
     return PopupMenuItem(
         enabled: false,
-        child: Center(
-          child: Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 10,
-            runSpacing: 10,
-            children:
-                (widget.colors ?? editorColors).asMap().entries.map((color) {
-              return ColorItem(
-                isSelected: color == controller.color,
-                color: color.value,
-                onTap: () async {
-                  await updateDrawable();
-                  _controller.value = controller.copyWith(
-                    color: color.value,
-                  );
-                  currentColorIndex = color.key;
-                  _resolveAndConvertImage(); //reload image
-                  Navigator.pop(context);
-                },
-              );
-            }).toList(),
+        child: RotatedBox(
+          quarterTurns: 1,
+          child: Center(
+            child: Wrap(
+              // mainAxisSize: MainAxisSize.min,
+              // crossAxisAlignment: CrossAxisAlignment.start,
+              // mainAxisAlignment: MainAxisAlignment.spaceAround,
+              alignment: WrapAlignment.center,
+              spacing: 10,
+              runSpacing: 10,
+              direction: Axis.vertical,
+              children:
+                  (widget.colors ?? editorColors).asMap().entries.map((color) {
+                return ColorItem(
+                  isSelected: color == controller.color,
+                  color: color.value,
+                  onTap: () async {
+                    await updateDrawable();
+                    _controller.value = controller.copyWith(
+                      color: color.value,
+                    );
+                    currentColorIndex = color.key;
+                    _resolveAndConvertImage(); //reload image
+                    Navigator.pop(context);
+                  },
+                );
+              }).toList(),
+            ),
           ),
         ));
   }
@@ -710,6 +713,7 @@ class ImagePainterState extends State<ImagePainter> {
                     padding:
                         EdgeInsets.symmetric(horizontal: 16, vertical: 3.0),
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
                           height: 10,
@@ -725,6 +729,9 @@ class ImagePainterState extends State<ImagePainter> {
                         Text(
                           getTitleFromColor(controller.color),
                           style: TextStyle(color: Colors.white),
+                        ),
+                        const SizedBox(
+                          width: 16,
                         ),
                         Icon(
                           Icons.keyboard_arrow_down_rounded,

@@ -1,26 +1,17 @@
 import 'dart:io';
-// import 'dart:math' as math;
-// import 'dart:math';
 import 'dart:typed_data';
-// import 'dart:ui' as ui;
 
-import 'package:aicycle_insurance/src/painter/image_painter.dart';
-// import 'package:aicycle_insurance/src/utils/compress_image.dart';
-// import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_phosphor_icons/flutter_phosphor_icons.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as imagePlugin;
 import 'package:mime/mime.dart' as mime;
-// import 'package:nanoid/nanoid.dart';
 
 import '../../../types/damage_assessment.dart';
 import '../../../types/damage_type.dart';
 import '../../../types/user_corrected_damage.dart';
 import '../../common/dialog/process_dialog.dart';
-import '../../painter/image_painter.dart';
 import '../../constants/colors.dart';
 import '../../constants/damage_types.dart';
 import '../../constants/endpoints.dart';
@@ -28,6 +19,7 @@ import '../../constants/strings.dart';
 import '../../extensions/hex_color_extension.dart';
 import '../../modules/resful_module.dart';
 import '../../modules/resful_module_impl.dart';
+import '../../painter/image_painter.dart';
 
 enum DrawStatus {
   none,
