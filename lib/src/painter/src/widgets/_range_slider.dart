@@ -17,6 +17,8 @@ class RangedSlider extends StatelessWidget {
       max: 40,
       min: 2,
       divisions: 19,
+      activeColor: Colors.white,
+      inactiveColor: Colors.white.withOpacity(0.7),
       value: value,
       onChanged: onChanged,
     );
