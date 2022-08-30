@@ -229,7 +229,7 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
 
     if (source != null) {
       final ImagePicker imagePicker = ImagePicker();
-      var file = await imagePicker.getImage(source: ImageSource.camera);
+      var file = await imagePicker.getImage(source: source);
       if (file != null) {
         SummaryImage temp = SummaryImage(localFilePath: file.path);
         _images.add(temp);
