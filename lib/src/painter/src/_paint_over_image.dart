@@ -2,12 +2,17 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-// import 'package:aicycle_insurance/gen/assets.gen.dart';
+
 import 'package:flutter/material.dart' hide Image;
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+
 // import 'package:flutter/services.dart';
 // import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../aicycle_insurance.dart';
+// import 'package:aicycle_insurance/gen/assets.gen.dart';
+import '../../../gen/assets.gen.dart';
 import '../../utils/functions.dart';
 import '_image_painter.dart';
 import '_ported_interactive_viewer.dart';
@@ -102,7 +107,6 @@ class ImagePainter extends StatefulWidget {
 
 ///
 class ImagePainterState extends State<ImagePainter> {
-  final _repaintKey = GlobalKey();
   ui.Image _image;
   File _backgroundImage;
   ui.Image _backgroundImageUI;
@@ -110,7 +114,7 @@ class ImagePainterState extends State<ImagePainter> {
   final _controller = ValueNotifier<PaintController>(null);
   final _isLoaded = ValueNotifier<bool>(false);
   final _paintHistory = <PaintInfo>[];
-  final _points = <Offset>[];
+  var _points = <Offset>[];
   TextEditingController _textController;
   Offset _start, _end;
   int _strokeMultiplier = 1;
@@ -275,8 +279,8 @@ class ImagePainterState extends State<ImagePainter> {
                                 scaleEnabled: widget.isScalable,
                                 onInteractionUpdate: (details) =>
                                     _scaleUpdateGesture(details, controller),
-                                onInteractionEnd: (details) =>
-                                    _scaleEndGesture(details, controller),
+                                onInteractionEnd: (details) async =>
+                                    await _scaleEndGesture(details, controller),
                                 child: Container(
                                   decoration: BoxDecoration(
                                     image: DecorationImage(
@@ -320,44 +324,87 @@ class ImagePainterState extends State<ImagePainter> {
             ],
           ),
         ),
-        _buildControls(),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildControls(),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: Colors.black.withOpacity(0.5),
+                ),
+                margin: EdgeInsets.all(16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        widget.onCancelCallBack();
+                      },
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: Colors.white),
+                        ),
+                        child: Text(
+                          "Hủy",
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 12,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        widget.onSaveCallBack(drawables);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+                        child: Text(
+                          "Lưu",
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFF5768FF),
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
         Align(
           alignment: Alignment.bottomCenter,
-          child: Row(
-            children: [
-              InkWell(
-                onTap: () {
-                  widget.onCancelCallBack();
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.white),
-                  ),
-                  child: Text(
-                    "Hủy",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                width: 12,
-              ),
-              InkWell(
-                onTap: () {
-                  widget.onSaveCallBack(drawables);
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                  child: Text("Lưu"),
-                ),
-              ),
-            ],
+          child: SizedBox(
+            height: 60,
+            width: MediaQuery.of(context).size.width / 2,
+            child: ValueListenableBuilder<PaintController>(
+              valueListenable: _controller,
+              builder: (_, ctrl, __) {
+                return RangedSlider(
+                  value: ctrl.strokeWidth,
+                  onChanged: (value) =>
+                      _controller.value = ctrl.copyWith(strokeWidth: value),
+                );
+              },
+            ),
           ),
         )
       ],
@@ -371,7 +418,10 @@ class ImagePainterState extends State<ImagePainter> {
         _inDrag = true;
         _start ??= onUpdate.focalPoint;
         _end = onUpdate.focalPoint;
-        if (ctrl.mode == PaintMode.freeStyle) _points.add(_end);
+        if (ctrl.mode == PaintMode.freeStyle || ctrl.mode == PaintMode.erase) {
+          _points.add(_end);
+        }
+
         if (ctrl.mode == PaintMode.text &&
             _paintHistory
                 .where((element) => element.mode == PaintMode.text)
@@ -385,12 +435,14 @@ class ImagePainterState extends State<ImagePainter> {
   }
 
   ///Fires when user stops interacting with the screen.
-  void _scaleEndGesture(ScaleEndDetails onEnd, PaintController controller) {
+  Future<void> _scaleEndGesture(
+      ScaleEndDetails onEnd, PaintController controller) async {
     setState(() {
       _inDrag = false;
       if (_start != null &&
           _end != null &&
-          (controller.mode == PaintMode.freeStyle)) {
+          (controller.mode == PaintMode.freeStyle ||
+              controller.mode == PaintMode.erase)) {
         _points.add(null);
         _addFreeStylePoints();
         _points.clear();
@@ -402,6 +454,8 @@ class ImagePainterState extends State<ImagePainter> {
       _start = null;
       _end = null;
     });
+    await updateDrawable();
+    await _resolveAndConvertImage();
   }
 
   void _addEndPoints() => _paintHistory.add(
@@ -416,7 +470,7 @@ class ImagePainterState extends State<ImagePainter> {
         PaintInfo(
           offset: <Offset>[..._points],
           painter: _painter,
-          mode: PaintMode.freeStyle,
+          mode: _controller.value.mode,
         ),
       );
 
@@ -454,27 +508,34 @@ class ImagePainterState extends State<ImagePainter> {
   PopupMenuItem _showColorPicker(PaintController controller) {
     return PopupMenuItem(
         enabled: false,
-        child: Center(
-          child: Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 10,
-            runSpacing: 10,
-            children:
-                (widget.colors ?? editorColors).asMap().entries.map((color) {
-              return ColorItem(
-                isSelected: color == controller.color,
-                color: color.value,
-                onTap: () async {
-                  await updateDrawable();
-                  _controller.value = controller.copyWith(
-                    color: color.value,
-                  );
-                  currentColorIndex = color.key;
-                  _resolveAndConvertImage(); //reload image
-                  Navigator.pop(context);
-                },
-              );
-            }).toList(),
+        child: RotatedBox(
+          quarterTurns: 1,
+          child: Center(
+            child: Wrap(
+              // mainAxisSize: MainAxisSize.min,
+              // crossAxisAlignment: CrossAxisAlignment.start,
+              // mainAxisAlignment: MainAxisAlignment.spaceAround,
+              alignment: WrapAlignment.center,
+              spacing: 10,
+              runSpacing: 10,
+              direction: Axis.vertical,
+              children:
+                  (widget.colors ?? editorColors).asMap().entries.map((color) {
+                return ColorItem(
+                  isSelected: color == controller.color,
+                  color: color.value,
+                  onTap: () async {
+                    await updateDrawable();
+                    _controller.value = controller.copyWith(
+                      color: color.value,
+                    );
+                    currentColorIndex = color.key;
+                    _resolveAndConvertImage(); //reload image
+                    Navigator.pop(context);
+                  },
+                );
+              }).toList(),
+            ),
           ),
         ));
   }
@@ -542,39 +603,39 @@ class ImagePainterState extends State<ImagePainter> {
       color: Colors.transparent,
       child: Row(
         children: [
-          PopupMenuButton(
-            tooltip: "Change Brush Size",
-            shape: ContinuousRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            icon:
-                widget.brushIcon ?? Icon(Icons.brush, color: Colors.grey[700]),
-            itemBuilder: (_) => [_showRangeSlider()],
-          ),
+          // PopupMenuButton(
+          //   tooltip: "Change Brush Size",
+          //   shape: ContinuousRectangleBorder(
+          //     borderRadius: BorderRadius.circular(20),
+          //   ),
+          //   icon:
+          //       widget.brushIcon ?? Icon(Icons.brush, color: Colors.grey[700]),
+          //   itemBuilder: (_) => [_showRangeSlider()],
+          // ),
           // IconButton(icon: Icon(Icons.text_format), onPressed: _openTextDialog),
 
-          IconButton(
-              tooltip: "Undo",
-              icon:
-                  widget.undoIcon ?? Icon(Icons.reply, color: Colors.grey[700]),
-              onPressed: () {
-                if (_paintHistory.isNotEmpty) {
-                  setState(_paintHistory.removeLast);
-                }
-              }),
-          IconButton(
-            tooltip: "Clear all progress",
-            icon: widget.clearAllIcon ??
-                Icon(Icons.clear, color: Colors.grey[700]),
-            onPressed: () => setState(_paintHistory.clear),
-          ),
+          // IconButton(
+          //     tooltip: "Undo",
+          //     icon:
+          //         widget.undoIcon ?? Icon(Icons.reply, color: Colors.grey[700]),
+          //     onPressed: () {
+          //       if (_paintHistory.isNotEmpty) {
+          //         setState(_paintHistory.removeLast);
+          //       }
+          //     }),
+          // IconButton(
+          //   tooltip: "Clear all progress",
+          //   icon: widget.clearAllIcon ??
+          //       Icon(Icons.clear, color: Colors.grey[700]),
+          //   onPressed: () => setState(_paintHistory.clear),
+          // ),
           const Spacer(),
           ValueListenableBuilder<PaintController>(
             valueListenable: _controller,
             builder: (_, _ctrl, __) => Container(
               decoration: BoxDecoration(
                 color: Colors.transparent,
-                border: Border.all(color: Colors.white),
+                border: Border.all(color: Colors.white, width: 2),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Row(
@@ -586,14 +647,15 @@ class ImagePainterState extends State<ImagePainter> {
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(2),
                         color: _ctrl.mode == PaintMode.freeStyle
                             ? Colors.white
                             : Colors.transparent,
                       ),
-                      padding: const EdgeInsets.all(4),
-                      child: Icon(
-                        Icons.swipe,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 12),
+                      child: Assets.icons.icDraw.svg(
+                        package: packageName,
                         color: _ctrl.mode == PaintMode.freeStyle
                             ? Color(0xFF5768FF)
                             : Colors.grey,
@@ -606,17 +668,21 @@ class ImagePainterState extends State<ImagePainter> {
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(2),
                         color: _ctrl.mode == PaintMode.erase
                             ? Colors.white
                             : Colors.transparent,
                       ),
-                      padding: const EdgeInsets.all(4),
-                      child: Icon(
-                        Icons.delete,
-                        color: _ctrl.mode == PaintMode.erase
-                            ? Color(0xFF5768FF)
-                            : Colors.grey,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 12),
+                      child: RotatedBox(
+                        quarterTurns: 3,
+                        child: Assets.icons.icErase.svg(
+                          package: packageName,
+                          color: _ctrl.mode == PaintMode.erase
+                              ? Color(0xFF5768FF)
+                              : Colors.grey,
+                        ),
                       ),
                     ),
                   ),
@@ -637,10 +703,17 @@ class ImagePainterState extends State<ImagePainter> {
                   ),
                   tooltip: "Change color",
                   child: Container(
-                    width: 100,
-                    color: Colors.black.withOpacity(0.5),
-                    padding: EdgeInsets.all(2.0),
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.height * 0.3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.75),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16, vertical: 3.0),
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
                           height: 10,
@@ -653,12 +726,17 @@ class ImagePainterState extends State<ImagePainter> {
                         const SizedBox(
                           width: 8,
                         ),
-                        Expanded(
-                          child: Text(
-                            getTitleFromColor(controller.color),
-                            style: TextStyle(color: Colors.white),
-                          ),
+                        Text(
+                          getTitleFromColor(controller.color),
+                          style: TextStyle(color: Colors.white),
                         ),
+                        const SizedBox(
+                          width: 16,
+                        ),
+                        Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          color: Colors.white,
+                        )
                       ],
                     ),
                   ),
