@@ -382,6 +382,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                                   _autoSwitchTab();
                                 },
                                 onSaveCallBack: (buffer) {
+                                  _damageAssessment.value = null;
                                   previewUserMaskImagesBuffer.assignAll(buffer);
                                 },
                                 token: widget.token,
@@ -505,6 +506,9 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
       // _resizeFile.saveTo(filePath);  todo
       _previewFile.value = _resizeFile;
 
+      ///clear previous mask
+      previewUserMaskImagesBuffer.clear();
+
       /// Call engine
       await _callAiEngine(_resizeFile.path);
       if (currentTabIndex == 2) {
@@ -532,6 +536,9 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
     final file = await ImageUtils.compressImage(File(filePath));
     // file.saveTo(filePath); todo
     _previewFile.value = PickedFile(file.path);
+
+    ///clear previous mask
+    previewUserMaskImagesBuffer.clear();
 
     /// Call engine
     await _callAiEngine(file.path);
