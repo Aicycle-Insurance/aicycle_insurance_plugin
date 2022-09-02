@@ -391,19 +391,22 @@ class ImagePainterState extends State<ImagePainter> {
           ],
         ),
         Align(
-          alignment: Alignment.bottomCenter,
-          child: SizedBox(
-            height: 60,
-            width: MediaQuery.of(context).size.width / 2,
-            child: ValueListenableBuilder<PaintController>(
-              valueListenable: _controller,
-              builder: (_, ctrl, __) {
-                return RangedSlider(
-                  value: ctrl.strokeWidth,
-                  onChanged: (value) =>
-                      _controller.value = ctrl.copyWith(strokeWidth: value),
-                );
-              },
+          alignment: Alignment.centerRight,
+          child: RotatedBox(
+            quarterTurns: 3,
+            child: SizedBox(
+              height: 60,
+              width: MediaQuery.of(context).size.width / 2,
+              child: ValueListenableBuilder<PaintController>(
+                valueListenable: _controller,
+                builder: (_, ctrl, __) {
+                  return RangedSlider(
+                    value: ctrl.strokeWidth,
+                    onChanged: (value) =>
+                        _controller.value = ctrl.copyWith(strokeWidth: value),
+                  );
+                },
+              ),
             ),
           ),
         )
@@ -454,6 +457,7 @@ class ImagePainterState extends State<ImagePainter> {
       _start = null;
       _end = null;
     });
+    ///clear paint history to increase performance
     await updateDrawable();
     await _resolveAndConvertImage();
   }
@@ -484,25 +488,6 @@ class ImagePainterState extends State<ImagePainter> {
     return recorder
         .endRecording()
         .toImage(size.width.floor(), size.height.floor());
-  }
-
-  PopupMenuItem _showRangeSlider() {
-    return PopupMenuItem(
-      enabled: false,
-      child: SizedBox(
-        width: double.maxFinite,
-        child: ValueListenableBuilder<PaintController>(
-          valueListenable: _controller,
-          builder: (_, ctrl, __) {
-            return RangedSlider(
-              value: ctrl.strokeWidth,
-              onChanged: (value) =>
-                  _controller.value = ctrl.copyWith(strokeWidth: value),
-            );
-          },
-        ),
-      ),
-    );
   }
 
   PopupMenuItem _showColorPicker(PaintController controller) {
@@ -538,63 +523,6 @@ class ImagePainterState extends State<ImagePainter> {
             ),
           ),
         ));
-  }
-
-  void _openTextDialog() {
-    _controller.value = _controller.value.copyWith(mode: PaintMode.text);
-    showDialog(
-      context: context,
-      builder: (_) {
-        return Material(
-          color: Colors.transparent,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextField(
-                controller: _textController,
-                autofocus: true,
-                style: TextStyle(
-                    fontSize: 6 * _controller.value.strokeWidth,
-                    fontWeight: FontWeight.bold,
-                    color: _controller.value.color),
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                  border: InputBorder.none,
-                ),
-              ),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: TextButton(
-                    child: Text(
-                      "Done",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onPressed: () {
-                      if (_textController.text != null &&
-                          _textController.text != '') {
-                        setState(() {
-                          _paintHistory.add(
-                            PaintInfo(
-                                mode: PaintMode.text,
-                                text: _textController.text,
-                                painter: _painter,
-                                offset: []),
-                          );
-                        });
-                        _textController.clear();
-                      }
-                      Navigator.pop(context);
-                    }),
-              ),
-            ],
-          ),
-        );
-      },
-    );
   }
 
   Widget _buildControls() {
