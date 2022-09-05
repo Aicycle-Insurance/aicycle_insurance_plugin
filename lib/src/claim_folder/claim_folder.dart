@@ -51,6 +51,8 @@ class ClaimFolderView extends StatefulWidget {
     this.kieuCongViec,
     this.loaiCongViec,
     this.deviceId,
+    this.hangXe,
+    this.hieuXe,
     // this.noiDungSuVu,
     this.maDonViNguoiDangNhap,
     this.maGiamDinhVien,
@@ -108,6 +110,12 @@ class ClaimFolderView extends StatefulWidget {
 
   /// PTI key: deviceId
   final String deviceId;
+
+  /// PTI key: HANG_XE
+  final String hangXe;
+
+  /// PTI key: HIEU_XE
+  final String hieuXe;
 
   /// PTI key: nd
   // final String noiDungSuVu;
@@ -529,6 +537,8 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
         "ma_dvi_nh": widget.maDonViNguoiDangNhap,
         "nsd_nh": widget.maGiamDinhVien,
         "bien_xe": widget.bienSoXe,
+        "HANG_XE": widget.hangXe,
+        "HIEU_XE": widget.hieuXe,
       };
 
       var response = await restfulModule.post(

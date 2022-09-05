@@ -48,6 +48,8 @@ class _MyHomePageState extends State<MyHomePage> {
         maDonViNguoiDangNhap: '090',
         maGiamDinhVien: 'LDH',
         bienSoXe: '29A1223',
+        hangXe: 'test',
+        hieuXe: 'test',
         onGetResultCallBack: (data) {
           print(data.toString());
         },
