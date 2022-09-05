@@ -389,6 +389,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                                 onSaveCallBack: (buffer) {
                                   _damageAssessment.value = null;
                                   previewUserMaskImagesBuffer.assignAll(buffer);
+                                  _autoSwitchTab();
                                 },
                                 token: widget.token,
                               ),
