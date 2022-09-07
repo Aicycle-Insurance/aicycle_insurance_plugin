@@ -1,3 +1,6 @@
+## 0.0.8
+ - Sửa lỗi tool sửa ảnh mask thiệt hại
+ - Thêm trường HANG_XE, HIEU_XE
 ## 0.0.7
  - Sửa lỗi luồng chụp ảnh
 ## 0.0.6

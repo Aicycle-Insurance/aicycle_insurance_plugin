@@ -571,7 +571,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
         return response.body as Map<String, dynamic>;
       } else {
         if (widget.onError != null) {
-          widget.onError('Package error: ${response.statusCode}');
+          widget.onError('Package error: http code ${response.statusCode}');
         }
       }
     } catch (e) {
