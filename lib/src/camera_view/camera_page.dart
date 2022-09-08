@@ -80,6 +80,11 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
     _checkInitCarPart();
   }
 
+  @override
+  dispose() {
+    super.dispose();
+  }
+
   _checkInitCarPart() {
     for (var image in _currentArg.value.partDirection.middleViewImages) {
       for (var part in image.partsMasks) {
