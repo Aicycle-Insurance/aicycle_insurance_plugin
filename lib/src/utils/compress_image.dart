@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 
 class ImageUtils {
   ImageUtils._();
-  static Future<PickedFile> compressImage(File img) async {
+  static Future<PickedFile> compressImage(File img, [int quality = 100]) async {
     File compressedFile;
     try {
       final Directory extDir = await getTemporaryDirectory();
@@ -21,9 +21,13 @@ class ImageUtils {
       compressedFile = await FlutterImageCompress.compressAndGetFile(
         img.absolute.path,
         targetPath,
-        quality: 100, minHeight: 1200, minWidth: 1600,
+        quality: quality, minHeight: 1200, minWidth: 1600,
         // format: CompressFormat.png,
       );
+      // Nếu vẫn lớn hơn 2MB thì giảm chất lượng ảnh
+      if (compressedFile.readAsBytesSync().lengthInBytes > 2000000) {
+        return await compressImage(compressedFile, 90);
+      }
       if (compressedFile == null) {
         return PickedFile(img.path);
       }
