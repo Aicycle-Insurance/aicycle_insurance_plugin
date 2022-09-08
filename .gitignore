@@ -5,6 +5,7 @@
 .packages
 .fvm/
 .idea/
+.idea/*
 .flutter-plugins
 .flutter-plugins-dependencies
 example/android/*
