@@ -74,7 +74,9 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _currentArg = Rx<CameraArgument>(widget.cameraArgument);
-    _tabController = TabController(length: 3, vsync: this);
+    currentTabIndex.value = widget.cameraArgument.imageRangeId - 1;
+    _tabController = TabController(
+        length: 3, vsync: this, initialIndex: currentTabIndex.value);
     _previewFile = Rx<PickedFile>(null);
     _damageAssessment = Rx<DamageAssessmentModel>(null);
     _checkInitCarPart();
