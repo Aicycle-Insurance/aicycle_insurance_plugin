@@ -74,7 +74,7 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
         mode: FreeStyleMode.draw,
       ),
       scale: const ScaleSettings(
-        enabled: true,
+        enabled: false,
         minScale: 0.1,
         maxScale: 10,
       ),
