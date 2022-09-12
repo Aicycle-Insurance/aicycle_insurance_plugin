@@ -26,6 +26,7 @@ dependencies:
   nanoid: ^0.1.0
   vector_math: ^2.1.0-nullsafety.3
   image_gallery_saver: ^1.6.8
+  another_flushbar: ^1.10.11
   # flutter_painter:
   #   git:
   #     url: https://github.com/quyenpham6841/flutter_painter

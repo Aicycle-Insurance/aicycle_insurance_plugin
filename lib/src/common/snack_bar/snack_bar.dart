@@ -1,3 +1,4 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 
 import '../../constants/colors.dart';
@@ -11,26 +12,23 @@ class CommonSnackbar {
     SnackbarType type,
     String message,
   }) {
-    Scaffold.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(_chooseIcon(type), color: textColor),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                '${_chooseTitle(type)}: $message',
-                style: const TextStyle(color: textColor),
-              ),
-            ),
-          ],
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        backgroundColor: _chooseColor(type),
+    Flushbar(
+      flushbarPosition: FlushbarPosition.TOP,
+      backgroundColor: _chooseColor(type),
+      duration: const Duration(seconds: 2),
+      // margin: EdgeInsets.symmetric(horizontal: 16),
+      // borderRadius: 8,
+      messageText: Row(
+        children: [
+          Icon(_chooseIcon(type), color: textColor),
+          SizedBox(width: 8),
+          Text(
+            '${_chooseTitle(type)}: $message',
+            style: const TextStyle(color: textColor),
+          ),
+        ],
       ),
-    );
+    )..show(context);
   }
 
   static String _chooseTitle(SnackbarType type) {

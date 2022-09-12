@@ -38,4 +38,5 @@ class StringKeys {
   static const String noWord = 'Không';
   static const String yesWord = 'Có';
   static const String missingDamage = 'Thiếu vết hỏng?';
+  static const String saveSuccessfuly = 'Lưu kết quả thành công';
 }

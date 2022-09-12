@@ -3,7 +3,9 @@
 
 // import 'dart:io';
 
+import 'package:aicycle_insurance_non_null_safety/src/common/snack_bar/snack_bar.dart';
 import 'package:aicycle_insurance_non_null_safety/src/modules/module_types/common_response.dart';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -561,6 +563,11 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
   Future<Map<String, dynamic>> _getDamageAssessment() async {
     RestfulModule restfulModule = RestfulModuleImpl();
     try {
+      CommonSnackbar.show(
+        context,
+        message: StringKeys.saveSuccessfuly,
+        type: SnackbarType.success,
+      );
       ProgressDialog.showWithCircleIndicator(context);
       CommonResponse response = await restfulModule.get(
         Endpoints.getDamageAssessmentResult(widget.sessionId),
@@ -568,6 +575,11 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
       );
       ProgressDialog.hide(context);
       if (response.body != null) {
+        CommonSnackbar.show(
+          context,
+          message: StringKeys.saveSuccessfuly,
+          type: SnackbarType.success,
+        );
         return response.body as Map<String, dynamic>;
       } else {
         if (widget.onError != null) {
