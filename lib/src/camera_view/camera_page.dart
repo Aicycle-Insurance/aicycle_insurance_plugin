@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:aicycle_insurance_non_null_safety/src/drawing_tool/new_drawing_tool.dart';
 import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -374,27 +375,44 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                               ),
                             ),
 
+                          // if (_damageAssessment.value != null &&
+                          //     _previewFile.value != null &&
+                          //     currentTabIndex.value != 2)
+                          //   RotatedBox(
+                          //     quarterTurns: 1,
+                          //     child: DrawingToolLayer(
+                          //       damageAssess: Rx<DamageAssessmentModel>(
+                          //           _damageAssessment.value),
+                          //       imageUrl: _previewFile.value.path,
+                          //       onCancelCallBack: () {
+                          //         _damageAssessment.value = null;
+                          //         _previewFile.value = null;
+                          //         _autoSwitchTab();
+                          //       },
+                          //       onSaveCallBack: (buffer) {
+                          //         _damageAssessment.value = null;
+                          //         previewUserMaskImagesBuffer.assignAll(buffer);
+                          //       },
+                          //       token: widget.token,
+                          //     ),
+                          //   )
                           if (_damageAssessment.value != null &&
                               _previewFile.value != null &&
                               currentTabIndex.value != 2)
-                            RotatedBox(
-                              quarterTurns: 1,
-                              child: DrawingToolLayer(
-                                damageAssess: Rx<DamageAssessmentModel>(
-                                    _damageAssessment.value),
-                                imageUrl: _previewFile.value.path,
-                                onCancelCallBack: () {
-                                  _damageAssessment.value = null;
-                                  _previewFile.value = null;
-                                  _autoSwitchTab();
-                                },
-                                onSaveCallBack: (buffer) {
-                                  _damageAssessment.value = null;
-                                  previewUserMaskImagesBuffer.assignAll(buffer);
-                                  _autoSwitchTab();
-                                },
-                                token: widget.token,
-                              ),
+                            NewDrawingToolLayer(
+                              damageAssess: Rx<DamageAssessmentModel>(
+                                  _damageAssessment.value),
+                              imageUrl: _previewFile.value.path,
+                              onCancelCallBack: () {
+                                _damageAssessment.value = null;
+                                _previewFile.value = null;
+                                _autoSwitchTab();
+                              },
+                              onSaveCallBack: (buffer) {
+                                _damageAssessment.value = null;
+                                previewUserMaskImagesBuffer.assignAll(buffer);
+                              },
+                              token: widget.token,
                             )
                         ],
                       );
