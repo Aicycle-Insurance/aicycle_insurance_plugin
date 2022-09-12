@@ -218,13 +218,26 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
                   if (drawStatus.value == DrawStatus.drawing)
                     Container(
                       // key: controller.painterKey,
+                      width: double.maxFinite,
+                      height: double.maxFinite,
                       color: Colors.black,
-                      child: Center(
-                        child: RotatedBox(
-                          quarterTurns: 1,
-                          child: FlutterPainter(
-                            key: painterKey,
-                            controller: paintController,
+                      child: RotatedBox(
+                        quarterTurns: 1,
+                        // child: FittedBox(
+                        //   fit: BoxFit.cover,
+                        //       child: FlutterPainter(
+                        //       key: painterKey,
+                        //       controller: paintController,
+                        //     ),
+                        // ),
+                        child: Center(
+                          child: AspectRatio(
+                            aspectRatio: backgroundImage.value.width /
+                                backgroundImage.value.height,
+                            child: FlutterPainter(
+                              key: painterKey,
+                              controller: paintController,
+                            ),
                           ),
                         ),
                       ),
@@ -332,7 +345,7 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
                       padding: const EdgeInsets.all(16.0),
                       child: RotatedBox(
                         quarterTurns: 1,
-                        child: ValueListenableBuilder(
+                        child: ValueListenableBuilder<PainterControllerValue>(
                           valueListenable: paintController,
                           builder: (context, _, __) => Stack(
                             children: [

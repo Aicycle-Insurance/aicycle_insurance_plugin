@@ -28,7 +28,7 @@ import '../utils/compress_image.dart';
 import '../utils/upload_image_to_s3.dart';
 import 'bottom_action_bar/bottom_action_bar.dart';
 import 'camera_argument.dart';
-import 'widgets/drawing_tool_layer.dart';
+// import 'widgets/drawing_tool_layer.dart';
 import 'widgets/preview_with_mask.dart';
 
 class CameraPage extends StatefulWidget {
