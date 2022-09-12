@@ -1,3 +1,6 @@
+## 0.0.9
+ - Sửa lỗi tool sửa ảnh mask thiệt hại
+ - Giới hạn resize ảnh không quá 2MB
 ## 0.0.8
  - Sửa lỗi tool sửa ảnh mask thiệt hại
  - Thêm trường HANG_XE, HIEU_XE
