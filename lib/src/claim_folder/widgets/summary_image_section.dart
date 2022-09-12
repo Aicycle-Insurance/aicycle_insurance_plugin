@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:aicycle_insurance_non_null_safety/src/utils/compress_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -229,12 +230,18 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
 
     if (source != null) {
       final ImagePicker imagePicker = ImagePicker();
-      var file = await imagePicker.getImage(source: source);
+      var file = await imagePicker.getImage(
+        source: source,
+        maxHeight: 1200,
+        maxWidth: 1600,
+        imageQuality: 100,
+      );
       if (file != null) {
-        SummaryImage temp = SummaryImage(localFilePath: file.path);
+        var _resizedFile = await ImageUtils.compressImage(File(file.path));
+        SummaryImage temp = SummaryImage(localFilePath: _resizedFile.path);
         _images.add(temp);
         widget.imagesOnChanged(_images);
-        await _addSummaryImage(file).then((value) {
+        _addSummaryImage(_resizedFile).then((value) {
           _images.last.copyWith(imageId: value);
           widget.imagesOnChanged(_images);
         });
