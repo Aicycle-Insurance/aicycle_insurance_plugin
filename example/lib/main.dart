@@ -39,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: ClaimFolderView(
-        sessionId: '20220405110579',
+        sessionId: '20220908142169',
         maDonVi: '016',
         phoneNumber: '0972795635',
         kieuCongViec: 'G',
@@ -59,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         // Liên hệ để có token key
         uTokenKey:
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjYyMDgxMDg3LCJleHAiOjE2NjIxNjc0ODd9.pHeX1OYYz896f9mNa9sAOHgF4IqkIVGV6OG8fu2PJUM',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNyIsImlhdCI6MTY2MTMwNzQ3OCwiZXhwIjoxNzQ3NzA3NDc4fQ.Uk9RRkXmVxCh9xoiOrzVlF6z2Yku9u8f1w6jHanY-V8',
       ),
     );
   }
