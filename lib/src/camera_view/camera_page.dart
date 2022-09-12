@@ -502,12 +502,6 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
 
   void _changeTab(int index) {
     if (index == 2 && listCarPartFromMiddleView.isEmpty) {
-      // scaffoldKey.currentState.showSnackBar(
-      //   CommonSnackbar.snackBarWidget(
-      //     type: SnackbarType.warning,
-      //     message: 'Bạn cần chụp ảnh trung cảnh hợp lệ trước.',
-      //   ),
-      // );
       CommonSnackbar.show(
         context,
         type: SnackbarType.warning,
