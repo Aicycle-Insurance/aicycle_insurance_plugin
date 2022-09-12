@@ -74,7 +74,7 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
         mode: FreeStyleMode.draw,
       ),
       scale: const ScaleSettings(
-        enabled: true,
+        enabled: false,
         minScale: 0.1,
         maxScale: 10,
       ),
@@ -217,19 +217,9 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
                 children: [
                   if (drawStatus.value == DrawStatus.drawing)
                     Container(
-                      // key: controller.painterKey,
-                      width: double.maxFinite,
-                      height: double.maxFinite,
                       color: Colors.black,
                       child: RotatedBox(
                         quarterTurns: 1,
-                        // child: FittedBox(
-                        //   fit: BoxFit.cover,
-                        //       child: FlutterPainter(
-                        //       key: painterKey,
-                        //       controller: paintController,
-                        //     ),
-                        // ),
                         child: Center(
                           child: AspectRatio(
                             aspectRatio: backgroundImage.value.width /
