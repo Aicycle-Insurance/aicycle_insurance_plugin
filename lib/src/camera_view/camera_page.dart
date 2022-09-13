@@ -70,7 +70,10 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _currentArg = Rx<CameraArgument>(widget.cameraArgument);
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(
+        length: 3,
+        vsync: this,
+        initialIndex: widget.cameraArgument.imageRangeId);
     _previewFile = Rx<XFile?>(null);
     _damageAssessment = Rx<DamageAssessmentModel?>(null);
   }
@@ -346,6 +349,10 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                               onCancelCallBack: () {
                                 _damageAssessment.value = null;
                                 _previewFile.value = null;
+                                //move to next page
+                               if (_tabController.index < 2){
+                                 _tabController.index = _tabController.index + 1;
+                               }
                               },
                               onSaveCallBack: (buffer) {
                                 previewUserMaskImagesBuffer.assignAll(buffer);
@@ -428,7 +435,10 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
   }
 
   void _changeTab(int index) {
-    if (index == 2 && listCarPartFromMiddleView.isEmpty) {
+    if (index == 2 &&
+        listCarPartFromMiddleView.isEmpty &&
+        _currentArg.value.partDirection.middleViewImageFiles.isEmpty &&
+        _currentArg.value.partDirection.middleViewImages.isEmpty) {
       CommonSnackbar.show(
         context,
         type: SnackbarType.warning,
@@ -458,6 +468,9 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
       _resizeFile.saveTo(filePath);
       _previewFile.value = _resizeFile;
 
+      //clear previous mask
+      previewUserMaskImagesBuffer.clear();
+
       /// Call engine
       await _callAiEngine(_resizeFile.path);
     }
@@ -478,6 +491,9 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
     final file = await ImageUtils.compressImage(File(filePath));
     file.saveTo(filePath);
     _previewFile.value = XFile(filePath);
+
+    //clear previous mask
+    previewUserMaskImagesBuffer.clear();
 
     /// Call engine
     await _callAiEngine(filePath);

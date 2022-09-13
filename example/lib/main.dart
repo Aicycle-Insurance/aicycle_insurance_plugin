@@ -44,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onError: (message) {
           // handle error here.
         },
-        uTokenKey: '', // Liên hệ để có token key
+        uTokenKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjYzMDgwOTY4LCJleHAiOjE2NjMxNjczNjh9.V7S9KKZSlYH9lWGqpnrAruX-IaTjYvTSS_GlQjUZ8Wo', // Liên hệ để có token key
       ),
     );
   }

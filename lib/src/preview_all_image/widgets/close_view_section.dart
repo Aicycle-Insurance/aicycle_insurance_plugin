@@ -1,3 +1,4 @@
+import 'package:aicycle_insurance/src/extensions/range_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +19,7 @@ class CloseViewSection extends StatelessWidget {
 
   final List<XFileWithId> imageFiles;
   final List<AiImage> imageFromServers;
-  final Function()? onRetake;
+  final Function(int)? onRetake;
   final Function(String imageId)? onDelete;
 
   @override
@@ -56,7 +57,7 @@ class CloseViewSection extends StatelessWidget {
                   ],
                 ),
               ),
-              onPressed: onRetake,
+              onPressed: () => onRetake?.call(StringKeys.middleViewShot.rangeShotIndex),
             )
           ],
         ),
@@ -73,7 +74,7 @@ class CloseViewSection extends StatelessWidget {
                     imageUrl: e.url,
                     onDelete: () =>
                         onDelete != null ? onDelete!(e.imageId) : null,
-                    onRetake: onRetake,
+                    onRetake:() => onRetake?.call(e.imageRangeName.rangeShotIndex),
                   );
                 }).toList(),
                 ...imageFiles.map((e) {
@@ -82,7 +83,7 @@ class CloseViewSection extends StatelessWidget {
                     onDelete: () => onDelete != null
                         ? onDelete!(e.imageId.toString())
                         : null,
-                    onRetake: onRetake,
+                    onRetake: onRetake?.call(StringKeys.middleViewShot.rangeShotIndex), //todo: hard code
                   );
                 }).toList()
               ]),

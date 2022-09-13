@@ -1,3 +1,4 @@
+import 'package:aicycle_insurance/src/extensions/range_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -111,7 +112,7 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
                         : overviewImages.isNotEmpty
                             ? overviewImages.first.url
                             : '',
-                    onRetake: () => _goToCameraPage(1),
+                    onRetake: () => _goToCameraPage(StringKeys.overViewShot.rangeShotIndex),
                     onDelete: () => _deleteImageById(
                         overviewImageFiles.isNotEmpty
                             ? overviewImageFiles.first.imageId.toString()
@@ -122,7 +123,7 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
                     child: CloseViewSection(
                       imageFromServers: middleAndCloseImages,
                       imageFiles: middleAndCloseImageFiles,
-                      onRetake: () => _goToCameraPage(2),
+                      onRetake: (int tab) => _goToCameraPage(tab),
                       onDelete: (imageId) => _deleteImageById(imageId),
                     ),
                   ),
@@ -241,18 +242,21 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
 
   void _goToCameraPage(int rangeId) async {
     await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => CameraPage(
-                token: widget.token,
-                onError: widget.onError,
-                cameraArgument: CameraArgument(
-                  partDirection: currentArg.value.partDirection,
-                  claimId: currentArg.value.claimId,
-                  sessionId: currentArg.value.sessionId,
-                  imageRangeId: rangeId,
-                  carBrand: currentArg.value.carBrand,
-                )))).then((value) {
+      context,
+      MaterialPageRoute(
+        builder: (context) => CameraPage(
+          token: widget.token,
+          onError: widget.onError,
+          cameraArgument: CameraArgument(
+            partDirection: currentArg.value.partDirection,
+            claimId: currentArg.value.claimId,
+            sessionId: currentArg.value.sessionId,
+            imageRangeId: rangeId,
+            carBrand: currentArg.value.carBrand,
+          ),
+        ),
+      ),
+    ).then((value) {
       if (value is CameraArgument) {
         currentArg.value.partDirection = value.partDirection;
       }
