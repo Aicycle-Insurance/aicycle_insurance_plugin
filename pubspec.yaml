@@ -1,6 +1,6 @@
 name: aicycle_insurance_non_null_safety
 description: Flutter plugin to add AICycle Insurance Widget inside your project.
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/Aicycle-Insurance/aicycle_insurance_plugin
 
 environment:
