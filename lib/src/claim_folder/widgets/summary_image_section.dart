@@ -290,6 +290,7 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
           widget.onError(response.statusMessage ?? 'Package error');
         }
       }
+      return null;
     } catch (e) {
       widget.onError(e.toString());
       rethrow;

@@ -27,12 +27,14 @@ dependencies:
   vector_math: ^2.1.0-nullsafety.3
   image_gallery_saver: ^1.6.8
   another_flushbar: ^1.10.11
+  collection: ^1.14.13
+
   # flutter_painter:
   #   git:
   #     url: https://github.com/quyenpham6841/flutter_painter
   #     ref: master
     # path: ../flutter_painter
-  flutter_painter_non_null_safety: ^0.0.1
+  # flutter_painter_non_null_safety: ^0.0.1
 
 # dependency_overrides:
 #   gallery_saver: ^2.0.3

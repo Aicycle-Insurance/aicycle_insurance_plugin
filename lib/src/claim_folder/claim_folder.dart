@@ -584,6 +584,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
         if (widget.onError != null) {
           widget.onError('Package error: http code ${response.statusCode}');
         }
+        return null;
       }
     } catch (e) {
       // ProgressDialog.hide(context);
