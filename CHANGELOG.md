@@ -1,3 +1,8 @@
+## 0.1.1
+ - Sử dụng flutter_painter trong SDK
+ - Loại bỏ key.properties trong example
+## 0.1.0
+ - Thêm 'snackbar'
 ## 0.0.9
  - Sửa lỗi tool sửa ảnh mask thiệt hại
  - Giới hạn resize ảnh không quá 2MB

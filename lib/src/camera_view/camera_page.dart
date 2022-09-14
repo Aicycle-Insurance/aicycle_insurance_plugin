@@ -90,20 +90,22 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
 
   _checkInitCarPart() {
     for (var image in _currentArg.value.partDirection.middleViewImages) {
-      for (var part in image.partsMasks) {
-        var _part = CarPart(
-          uuid: part.vehiclePartExcelId,
-          carPartBoxes: part.boxes,
-          carPartClassName: part.vehiclePartName,
-          carPartDamages: [],
-          carPartIsPart: true,
-          carPartMaskPath: part.masksPath,
-          carPartMaskUrl: part.maskUrl,
-          color: part.color,
-          carPartLocation: '',
-          carPartScore: part.scores,
-        );
-        listCarPartFromMiddleView[part.vehiclePartExcelId] = _part;
+      if (image.damageMasks.isNotEmpty ?? false) {
+        for (var part in image.partsMasks) {
+          var _part = CarPart(
+            uuid: part.vehiclePartExcelId,
+            carPartBoxes: part.boxes,
+            carPartClassName: part.vehiclePartName,
+            carPartDamages: [],
+            carPartIsPart: true,
+            carPartMaskPath: part.masksPath,
+            carPartMaskUrl: part.maskUrl,
+            color: part.color,
+            carPartLocation: '',
+            carPartScore: part.scores,
+          );
+          listCarPartFromMiddleView[part.vehiclePartExcelId] = _part;
+        }
       }
     }
     if (listCarPartFromMiddleView.isNotEmpty) {
@@ -409,7 +411,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                                 _autoSwitchTab();
                               },
                               onSaveCallBack: (buffer) {
-                                _damageAssessment.value = null;
+                                // _damageAssessment.value = null;
                                 previewUserMaskImagesBuffer.assignAll(buffer);
                               },
                               token: widget.token,
@@ -502,12 +504,6 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
 
   void _changeTab(int index) {
     if (index == 2 && listCarPartFromMiddleView.isEmpty) {
-      // scaffoldKey.currentState.showSnackBar(
-      //   CommonSnackbar.snackBarWidget(
-      //     type: SnackbarType.warning,
-      //     message: 'Bạn cần chụp ảnh trung cảnh hợp lệ trước.',
-      //   ),
-      // );
       CommonSnackbar.show(
         context,
         type: SnackbarType.warning,

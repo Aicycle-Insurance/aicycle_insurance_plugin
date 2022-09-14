@@ -6,7 +6,6 @@ import 'dart:ui' as ui;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_painter_non_null_safety/flutter_painter.dart';
 import 'package:flutter_phosphor_icons/flutter_phosphor_icons.dart';
 import 'package:get/get.dart';
 import 'package:image/image.dart' as imageplugin;
@@ -15,6 +14,7 @@ import 'package:http/http.dart' as http;
 import 'package:nanoid/nanoid.dart';
 
 import '../../types/user_corrected_damage.dart';
+import '../../src/flutter_painter/flutter_painter.dart';
 import '../../types/damage_type.dart';
 import '../../types/damage_assessment.dart';
 import '../common/dialog/process_dialog.dart';
@@ -74,9 +74,9 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
         mode: FreeStyleMode.draw,
       ),
       scale: const ScaleSettings(
-        enabled: false,
-        minScale: 0.1,
-        maxScale: 10,
+        enabled: true,
+        minScale: 0.8,
+        maxScale: 5,
       ),
     ),
   );
@@ -400,6 +400,28 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
                                               ),
                                             ),
                                           ),
+                                          GestureDetector(
+                                            onTap: toggleScale,
+                                            child: Container(
+                                              height: 32,
+                                              width: 48,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                                color: isScaling()
+                                                    ? Colors.white
+                                                    : Colors.black54,
+                                              ),
+                                              child: Center(
+                                                child: Icon(
+                                                  PhosphorIcons.arrows_out,
+                                                  color: isScaling()
+                                                      ? DefaultColors.blue
+                                                      : Colors.white54,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -444,82 +466,61 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
                                   ],
                                 ),
                               ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: RotatedBox(
-                                  quarterTurns: -1,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      SizedBox(
-                                        width: Get.width / 2,
-                                        child: Slider.adaptive(
-                                          min: 1,
-                                          max: 50,
-                                          activeColor: Colors.white,
-                                          // thumbColor: Colors.white,
-                                          inactiveColor: Colors.white38,
-                                          value: paintController
-                                              .freeStyleStrokeWidth,
-                                          onChangeStart: (value) =>
-                                              isStrokeWidthChanged.value = true,
-                                          onChangeEnd: (value) =>
-                                              isStrokeWidthChanged.value =
-                                                  false,
-                                          onChanged: setFreeStyleStrokeWidth,
+                              if (paintController.freeStyleMode !=
+                                  FreeStyleMode.none)
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: RotatedBox(
+                                    quarterTurns: -1,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          width: Get.width / 2,
+                                          child: Slider.adaptive(
+                                            min: 1,
+                                            max: 50,
+                                            activeColor: Colors.white,
+                                            // thumbColor: Colors.white,
+                                            inactiveColor: Colors.white38,
+                                            value: paintController
+                                                .freeStyleStrokeWidth,
+                                            onChangeStart: (value) =>
+                                                isStrokeWidthChanged.value =
+                                                    true,
+                                            onChangeEnd: (value) =>
+                                                isStrokeWidthChanged.value =
+                                                    false,
+                                            onChanged: setFreeStyleStrokeWidth,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
                               Align(
                                 alignment: Alignment.bottomCenter,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    Visibility(
-                                      visible: undoable(),
-                                      child: GestureDetector(
-                                        onTap: undo,
-                                        child: Container(
-                                          height: 48,
-                                          width: 48,
-                                          decoration: BoxDecoration(
-                                            color: Colors.black54,
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                          child: const Center(
-                                            child: Icon(
-                                              Icons.replay_rounded,
-                                              color: Colors.white,
+                                    if (paintController.freeStyleMode !=
+                                        FreeStyleMode.none) ...[
+                                      Visibility(
+                                        visible: undoable(),
+                                        child: GestureDetector(
+                                          onTap: undo,
+                                          child: Container(
+                                            height: 48,
+                                            width: 48,
+                                            decoration: BoxDecoration(
+                                              color: Colors.black54,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                             ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Visibility(
-                                      visible: redoable(),
-                                      child: GestureDetector(
-                                        onTap: redo,
-                                        child: Container(
-                                          height: 48,
-                                          width: 48,
-                                          decoration: BoxDecoration(
-                                            color: Colors.black54,
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                          child: Center(
-                                            child: Transform(
-                                              alignment: Alignment.center,
-                                              transform:
-                                                  Matrix4.rotationY(math.pi),
-                                              child: const Icon(
+                                            child: const Center(
+                                              child: Icon(
                                                 Icons.replay_rounded,
                                                 color: Colors.white,
                                               ),
@@ -527,7 +528,34 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
                                           ),
                                         ),
                                       ),
-                                    ),
+                                      const SizedBox(width: 8),
+                                      Visibility(
+                                        visible: redoable(),
+                                        child: GestureDetector(
+                                          onTap: redo,
+                                          child: Container(
+                                            height: 48,
+                                            width: 48,
+                                            decoration: BoxDecoration(
+                                              color: Colors.black54,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: Center(
+                                              child: Transform(
+                                                alignment: Alignment.center,
+                                                transform:
+                                                    Matrix4.rotationY(math.pi),
+                                                child: const Icon(
+                                                  Icons.replay_rounded,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                     const Expanded(child: SizedBox()),
                                     Container(
                                       padding: const EdgeInsets.all(8),
@@ -807,6 +835,10 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
     startEraser();
   }
 
+  void toggleScale() {
+    updateFreeStyle(FreeStyleMode.none);
+  }
+
   void toggleDrawing() {
     startDrawing();
   }
@@ -821,6 +853,10 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
 
   bool isErasing() {
     return paintController.freeStyleMode == FreeStyleMode.erase;
+  }
+
+  bool isScaling() {
+    return paintController.freeStyleMode == FreeStyleMode.none;
   }
 
   void updateFreeStyle(FreeStyleMode value) {

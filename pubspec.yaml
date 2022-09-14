@@ -1,10 +1,10 @@
 name: aicycle_insurance_non_null_safety
 description: Flutter plugin to add AICycle Insurance Widget inside your project.
-version: 0.0.9
+version: 0.1.1
 homepage: https://github.com/Aicycle-Insurance/aicycle_insurance_plugin
 
 environment:
-  sdk: ">=2.10.0 <3.0.0"
+  sdk: ">=2.7.0 <3.0.0"
   flutter: ">=1.17.0"
 
 dependencies:
@@ -27,25 +27,13 @@ dependencies:
   vector_math: ^2.1.0-nullsafety.3
   image_gallery_saver: ^1.6.8
   another_flushbar: ^1.10.11
-  # flutter_painter:
-  #   git:
-  #     url: https://github.com/quyenpham6841/flutter_painter
-  #     ref: master
-    # path: ../flutter_painter
-  flutter_painter_non_null_safety: ^0.0.1
-
-# dependency_overrides:
-#   gallery_saver: ^2.0.3
-
+  collection: ^1.14.13
 
 dev_dependencies:
   build_runner: 1.11.1+1
   flutter_gen_runner: ^2.0.3
   flutter_test:
     sdk: flutter
-
-  # flutter_lints: ^1.0.0
-
 
 # Flutter gen
 flutter_gen:

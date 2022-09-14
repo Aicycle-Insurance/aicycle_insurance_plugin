@@ -58,6 +58,7 @@ Future<UploadResponse> upLoadImageToS3({
         imageName: imageName,
       );
     }
+    return null;
   } catch (e) {
     rethrow;
   }

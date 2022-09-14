@@ -5,7 +5,6 @@
 
 import 'package:aicycle_insurance_non_null_safety/src/common/snack_bar/snack_bar.dart';
 import 'package:aicycle_insurance_non_null_safety/src/modules/module_types/common_response.dart';
-import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -585,6 +584,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
         if (widget.onError != null) {
           widget.onError('Package error: http code ${response.statusCode}');
         }
+        return null;
       }
     } catch (e) {
       // ProgressDialog.hide(context);
