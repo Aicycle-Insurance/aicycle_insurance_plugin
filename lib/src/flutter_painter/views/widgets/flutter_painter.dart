@@ -143,65 +143,55 @@ class _FlutterPainterWidget extends StatelessWidget {
       : super(key: key);
   @override
   Widget build(BuildContext context) {
-    // FreeStyleMode currentMode = controller.freeStyleMode;
+    FreeStyleMode currentMode = controller.freeStyleMode;
     return Navigator(
-        onGenerateRoute: (settings) => PageRouteBuilder(
-            settings: settings,
-            opaque: false,
-            pageBuilder: (context, animation, secondaryAnimation) {
-              final controller = PainterController.of(context);
-              return NotificationListener<FlutterPainterNotification>(
-                onNotification: onNotification,
-                child: InteractiveViewer(
-                  transformationController: controller.transformationController,
-                  minScale: controller.settings.scale.enabled
-                      ? controller.settings.scale.minScale
-                      : 1,
-                  maxScale: controller.settings.scale.enabled
-                      ? controller.settings.scale.maxScale
-                      : 1,
-                  panEnabled: false,
-                  scaleEnabled: false,
-                  // panEnabled: controller.settings.scale.enabled &&
-                  //     (controller.freeStyleSettings.mode == FreeStyleMode.none),
-                  // scaleEnabled: controller.settings.scale.enabled &&
-                  //     (controller.freeStyleSettings.mode == FreeStyleMode.none),
-                  // onInteractionStart: (details) {
-                  //   controller.freeStyleMode = FreeStyleMode.none;
-                  // },
-                  // onInteractionEnd: (details) {
-                  //   switch (currentMode) {
-                  //     case FreeStyleMode.none:
-                  //       break;
-                  //     case FreeStyleMode.draw:
-                  //       controller.freeStyleMode = FreeStyleMode.draw;
-                  //       break;
-                  //     case FreeStyleMode.erase:
-                  //       controller.freeStyleMode = FreeStyleMode.erase;
-                  //       break;
-                  //   }
-                  // },
-                  child: _FreeStyleWidget(
-                      // controller: controller,
-                      child: _TextWidget(
-                    // controller: controller,
-                    child: _ShapeWidget(
-                      // controller: controller,
-                      child: _ObjectWidget(
-                        // controller: controller,
-                        interactionEnabled: true,
-                        child: CustomPaint(
-                          painter: Painter(
-                            drawables: controller.value.drawables,
-                            background: controller.value.background,
-                          ),
-                        ),
-                      ),
+      onGenerateRoute: (settings) => PageRouteBuilder(
+          settings: settings,
+          opaque: false,
+          pageBuilder: (context, animation, secondaryAnimation) {
+            final controller = PainterController.of(context);
+            return NotificationListener<FlutterPainterNotification>(
+              onNotification: onNotification,
+              child: InteractiveViewer(
+                transformationController: controller.transformationController,
+                minScale: controller.settings.scale.enabled
+                    ? controller.settings.scale.minScale
+                    : 1,
+                maxScale: controller.settings.scale.enabled
+                    ? controller.settings.scale.maxScale
+                    : 1,
+                panEnabled: controller.settings.scale.enabled &&
+                    (controller.freeStyleSettings.mode == FreeStyleMode.none),
+                scaleEnabled: controller.settings.scale.enabled &&
+                    (controller.freeStyleSettings.mode == FreeStyleMode.none),
+                // onInteractionStart: (details) {
+                //   controller.freeStyleMode = FreeStyleMode.none;
+                // },
+                // onInteractionEnd: (details) {
+                //   switch (currentMode) {
+                //     case FreeStyleMode.none:
+                //       break;
+                //     case FreeStyleMode.draw:
+                //       controller.freeStyleMode = FreeStyleMode.draw;
+                //       break;
+                //     case FreeStyleMode.erase:
+                //       controller.freeStyleMode = FreeStyleMode.erase;
+                //       break;
+                //   }
+                // },
+                child: _FreeStyleWidget(
+                  // controller: controller,
+                  child: CustomPaint(
+                    painter: Painter(
+                      drawables: controller.value.drawables,
+                      background: controller.value.background,
                     ),
-                  )),
+                  ),
                 ),
-              );
-            }));
+              ),
+            );
+          }),
+    );
   }
 
   /// Handles all notifications that might be dispatched from children.
