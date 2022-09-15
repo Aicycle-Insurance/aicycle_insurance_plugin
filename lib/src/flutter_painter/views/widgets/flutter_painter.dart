@@ -143,7 +143,7 @@ class _FlutterPainterWidget extends StatelessWidget {
       : super(key: key);
   @override
   Widget build(BuildContext context) {
-    FreeStyleMode currentMode = controller.freeStyleMode;
+    // FreeStyleMode currentMode = controller.freeStyleMode;
     return Navigator(
       onGenerateRoute: (settings) => PageRouteBuilder(
           settings: settings,

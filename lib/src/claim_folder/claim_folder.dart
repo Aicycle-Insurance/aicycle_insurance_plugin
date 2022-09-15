@@ -3,13 +3,15 @@
 
 // import 'dart:io';
 
-import 'package:aicycle_insurance_non_null_safety/src/common/snack_bar/snack_bar.dart';
-import 'package:aicycle_insurance_non_null_safety/src/modules/module_types/common_response.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../types/image.dart';
+import '../../types/damage_summary_result.dart';
+import '../../src/common/snack_bar/snack_bar.dart';
+import '../../src/damage_result_page/damage_result_page.dart';
+import '../../src/modules/module_types/common_response.dart';
 import '../../types/image_range.dart';
 import '../../types/summaty_image.dart';
 import '../../types/part_direction.dart';
@@ -307,6 +309,12 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                       if (widget.onGetResultCallBack != null) {
                         widget.onGetResultCallBack(result);
                       }
+                      // _goToDamageResultPage(
+                      //     PTIDamageSumary(results: [], sumaryPrice: 100));
+                      if (result != null) {
+                        var data = PTIDamageSumary.fromJson(result);
+                        _goToDamageResultPage(data);
+                      }
                     },
                   ),
                 );
@@ -562,11 +570,6 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
   Future<Map<String, dynamic>> _getDamageAssessment() async {
     RestfulModule restfulModule = RestfulModuleImpl();
     try {
-      CommonSnackbar.show(
-        context,
-        message: StringKeys.saveSuccessfuly,
-        type: SnackbarType.success,
-      );
       ProgressDialog.showWithCircleIndicator(context);
       CommonResponse response = await restfulModule.get(
         Endpoints.getDamageAssessmentResult(widget.sessionId),
@@ -574,13 +577,18 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
       );
       ProgressDialog.hide(context);
       if (response.body != null) {
-        CommonSnackbar.show(
-          context,
-          message: StringKeys.saveSuccessfuly,
-          type: SnackbarType.success,
-        );
+        // CommonSnackbar.show(
+        //   context,
+        //   message: StringKeys.saveSuccessfuly,
+        //   type: SnackbarType.success,
+        // );
         return response.body as Map<String, dynamic>;
       } else {
+        CommonSnackbar.show(
+          context,
+          message: StringKeys.haveError,
+          type: SnackbarType.error,
+        );
         if (widget.onError != null) {
           widget.onError('Package error: http code ${response.statusCode}');
         }
@@ -654,6 +662,20 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
       }
       rethrow;
     }
+  }
+
+  void _goToDamageResultPage(PTIDamageSumary data) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DamageResultPage(
+          damage: data,
+          onError: widget.onError,
+          sessionId: widget.sessionId,
+          token: widget.uTokenKey,
+        ),
+      ),
+    );
   }
 
   void _goToPreviewPage(Rx<PartDirection> partDirection) async {
