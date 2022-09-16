@@ -678,9 +678,12 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
   }
 
   void checkDamageCarPart() {
+    // listCarPartFromMiddleView.clear();
+
     /// thêm danh sách các bộ phận có hư hại để chụp cận cảnh
     for (CarPart obj in _damageAssessment.value.carParts ?? []) {
       if (obj.carPartDamages.isNotEmpty) {
+        print(obj.uuid);
         listCarPartFromMiddleView[obj.uuid] = obj;
       }
     }

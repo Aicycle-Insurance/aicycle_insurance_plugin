@@ -29,7 +29,7 @@ class CarPart {
   });
 
   factory CarPart.fromJson(Map<String, dynamic> json) => CarPart(
-        uuid: json['class_uuid'] ?? '',
+        uuid: json['class_uuid'] ?? json['class'] ?? '',
         carPartClassName: json['car_part_name'] ?? '',
         carPartLocation: json['location'],
         carPartScore: json['score'],

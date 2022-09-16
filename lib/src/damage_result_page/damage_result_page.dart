@@ -112,7 +112,7 @@ class _DamageResultPageState extends State<DamageResultPage> {
         token: widget.token,
       );
       ProgressDialog.hide(context);
-      if (response.body != null) {
+      if (response.statusCode == 200) {
         CommonSnackbar.show(
           context,
           message: StringKeys.saveSuccessfuly,
