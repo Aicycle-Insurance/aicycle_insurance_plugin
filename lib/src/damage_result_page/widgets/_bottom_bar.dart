@@ -63,7 +63,7 @@ class DamageResultBottomBar extends StatelessWidget {
                         StringKeys.addImage,
                         style: TextStyle(
                           fontSize: 14,
-                          color: DefaultColors.blue,
+                          color: DefaultColors.primaryA500,
                         ),
                       ),
                       onPressed: onAddMoreImage,
@@ -73,7 +73,7 @@ class DamageResultBottomBar extends StatelessWidget {
                   Expanded(
                     child: CupertinoButton(
                       padding: EdgeInsets.zero,
-                      color: DefaultColors.blue,
+                      color: DefaultColors.primaryA500,
                       child: Text(
                         StringKeys.submitResult,
                         style: TextStyle(

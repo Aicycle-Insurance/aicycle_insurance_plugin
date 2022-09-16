@@ -12,6 +12,7 @@ class DefaultColors {
   static const Color iconColor = Color(0xFF555B7C);
   static const Color primaryA100 = Color(0xFFF8F8FF);
   static const Color primaryA200 = Color(0xFFECEEFF);
+  static const Color primaryA500 = Color(0xFF5768FF);
   // ink
   static const Color ink100 = Color(0xFFF2F3F4);
   static const Color ink500 = Color(0xFF1F2738);

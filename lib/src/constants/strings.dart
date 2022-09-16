@@ -39,6 +39,8 @@ class StringKeys {
   static const String yesWord = 'Có';
   static const String missingDamage = 'Thiếu vết hỏng?';
   static const String saveSuccessfuly = 'Lưu kết quả thành công';
+  static const String getResultSuccessfuly =
+      'Đánh giá kết quả thiệt hại thành công';
   static const String haveError = 'Xảy ra lỗi';
   static const String damageResult = 'Kết quả đánh giá thiệt hại';
   static const String noDamage = 'Không phát hiện thiệt hại';
