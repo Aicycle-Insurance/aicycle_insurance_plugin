@@ -7,11 +7,13 @@ class PreviewImageContainer extends StatelessWidget {
   const PreviewImageContainer({
     Key key,
     this.imageUrl,
+    this.showDeleteAndRetake = true,
     this.onDelete,
     this.onRetake,
   }) : super(key: key);
 
   final String imageUrl;
+  final bool showDeleteAndRetake;
   final Function() onDelete;
   final Function() onRetake;
 
@@ -32,43 +34,44 @@ class PreviewImageContainer extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          Positioned(
-            right: 8,
-            top: 8,
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: onDelete,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.black54,
-                    ),
-                    child: const Icon(
-                      Icons.delete_rounded,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                GestureDetector(
-                  onTap: onRetake,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.black54,
-                    ),
-                    child: const Icon(
-                      Icons.camera_alt_rounded,
-                      color: Colors.white,
+          if (showDeleteAndRetake)
+            Positioned(
+              right: 8,
+              top: 8,
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: onDelete,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black54,
+                      ),
+                      child: const Icon(
+                        Icons.delete_rounded,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  GestureDetector(
+                    onTap: onRetake,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black54,
+                      ),
+                      child: const Icon(
+                        Icons.camera_alt_rounded,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );

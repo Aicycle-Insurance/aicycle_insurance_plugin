@@ -3,13 +3,15 @@
 
 // import 'dart:io';
 
-import 'package:aicycle_insurance_non_null_safety/src/common/snack_bar/snack_bar.dart';
-import 'package:aicycle_insurance_non_null_safety/src/modules/module_types/common_response.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../types/image.dart';
+import '../../types/damage_summary_result.dart';
+import '../../src/common/snack_bar/snack_bar.dart';
+import '../../src/damage_result_page/damage_result_page.dart';
+import '../../src/modules/module_types/common_response.dart';
 import '../../types/image_range.dart';
 import '../../types/summaty_image.dart';
 import '../../types/part_direction.dart';
@@ -290,24 +292,56 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
               if (isHaveImage) {
                 return SafeArea(
                   minimum: const EdgeInsets.all(16),
-                  child: CupertinoButton(
-                    // minSize: 0,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.primaries[5], //blue
-                    child: Text(
-                      'Kết quả giám định tổn thất',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    onPressed: () async {
-                      var result = await _getDamageAssessment();
-                      if (widget.onGetResultCallBack != null) {
-                        widget.onGetResultCallBack(result);
-                      }
-                    },
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: CupertinoButton(
+                          // minSize: 0,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                          color: DefaultColors.primaryA200,
+                          child: Text(
+                            'Lưu kết quả',
+                            style: TextStyle(color: DefaultColors.primaryA500),
+                          ),
+                          onPressed: () async {
+                            var result = await _getDamageAssessment();
+                            if (widget.onGetResultCallBack != null) {
+                              widget.onGetResultCallBack(result);
+                            }
+                            _sendDamageAssessmentResultToPTI();
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: CupertinoButton(
+                          // minSize: 0,
+                          padding: EdgeInsets.zero,
+                          borderRadius: BorderRadius.circular(8),
+                          color: DefaultColors.primaryA500, //blue
+                          child: Text(
+                            'Xem kết quả',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          onPressed: () async {
+                            var result = await _getDamageAssessment();
+                            if (widget.onGetResultCallBack != null) {
+                              widget.onGetResultCallBack(result);
+                            }
+                            // _goToDamageResultPage(
+                            //     PTIDamageSumary(results: [], sumaryPrice: 100));
+                            if (result != null) {
+                              var data = PTIDamageSumary.fromJson(result);
+                              _goToDamageResultPage(data);
+                            }
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 );
               } else {
@@ -562,11 +596,6 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
   Future<Map<String, dynamic>> _getDamageAssessment() async {
     RestfulModule restfulModule = RestfulModuleImpl();
     try {
-      CommonSnackbar.show(
-        context,
-        message: StringKeys.saveSuccessfuly,
-        type: SnackbarType.success,
-      );
       ProgressDialog.showWithCircleIndicator(context);
       CommonResponse response = await restfulModule.get(
         Endpoints.getDamageAssessmentResult(widget.sessionId),
@@ -576,11 +605,16 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
       if (response.body != null) {
         CommonSnackbar.show(
           context,
-          message: StringKeys.saveSuccessfuly,
+          message: StringKeys.getResultSuccessfuly,
           type: SnackbarType.success,
         );
         return response.body as Map<String, dynamic>;
       } else {
+        CommonSnackbar.show(
+          context,
+          message: StringKeys.haveError,
+          type: SnackbarType.error,
+        );
         if (widget.onError != null) {
           widget.onError('Package error: http code ${response.statusCode}');
         }
@@ -656,6 +690,20 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
     }
   }
 
+  void _goToDamageResultPage(PTIDamageSumary data) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DamageResultPage(
+          damage: data,
+          onError: widget.onError,
+          sessionId: widget.sessionId,
+          token: widget.uTokenKey,
+        ),
+      ),
+    );
+  }
+
   void _goToPreviewPage(Rx<PartDirection> partDirection) async {
     Navigator.push(
       context,
@@ -667,6 +715,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
             claimId: claimId.value,
             imageRangeId: 1,
           ),
+          sessionId: widget.sessionId,
           token: widget.uTokenKey,
           onError: (message) {
             if (widget.onError != null) {
@@ -705,5 +754,40 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
         partDirection.value = value.partDirection;
       }
     });
+  }
+
+  Future<void> _sendDamageAssessmentResultToPTI() async {
+    RestfulModule restfulModule = RestfulModuleImpl();
+    ProgressDialog.showWithCircleIndicator(context);
+    try {
+      CommonResponse response = await restfulModule.post(
+        Endpoints.sendDamageAssessmentResultToPTI(widget.sessionId),
+        {},
+        token: widget.uTokenKey,
+      );
+      ProgressDialog.hide(context);
+      if (response.statusCode == 200 && response.body != null) {
+        CommonSnackbar.show(
+          context,
+          message: StringKeys.saveSuccessfuly,
+          type: SnackbarType.success,
+        );
+      } else {
+        CommonSnackbar.show(
+          context,
+          message: StringKeys.haveError,
+          type: SnackbarType.error,
+        );
+        if (widget.onError != null) {
+          widget.onError('Package error: http code ${response.statusCode}');
+        }
+        return null;
+      }
+    } catch (e) {
+      if (widget.onError != null) {
+        widget.onError('Package error: $e');
+      }
+      rethrow;
+    }
   }
 }

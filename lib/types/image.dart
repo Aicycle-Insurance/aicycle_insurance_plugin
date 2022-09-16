@@ -23,6 +23,7 @@ class AiImage {
     this.timeProcess,
     this.errorNote,
     this.errorType,
+    this.damageParts,
   });
 
   final String imageId;
@@ -36,6 +37,7 @@ class AiImage {
   final bool damageExist;
   final List<MaskData> damageMasks;
   final List<PartsMask> partsMasks;
+  final List<DamagePart> damageParts;
   final bool deletedFlag;
   final DateTime createdDate;
   final DateTime updatedDate;
@@ -56,6 +58,7 @@ class AiImage {
     bool damageExist,
     List<MaskData> damageMasks,
     List<PartsMask> partsMasks,
+    List<DamagePart> damageParts,
     bool deletedFlag,
     DateTime createdDate,
     DateTime updatedDate,
@@ -83,6 +86,7 @@ class AiImage {
         errorNote: errorNote ?? this.errorNote,
         timeProcess: timeProcess ?? this.timeProcess,
         errorType: errorType ?? this.errorType,
+        damageParts: damageParts ?? this.damageParts,
       );
 
   factory AiImage.fromJson(Map<String, dynamic> json) => AiImage(
@@ -105,6 +109,10 @@ class AiImage {
             ? List<PartsMask>.from(
                 json["partsMasks"].map((x) => PartsMask.fromJson(x))).toList()
             : [],
+        damageParts: json["damageParts"] != null
+            ? List<DamagePart>.from(
+                json["damageParts"].map((x) => DamagePart.fromJson(x))).toList()
+            : [],
         deletedFlag: json["deletedFlag"],
         createdDate: json["createdDate"] != null
             ? DateTime.parse(json["createdDate"])
@@ -120,6 +128,26 @@ class AiImage {
             ? List<String>.from(json['errorType'].map((e) => e.toString()))
                 .toList()
             : [],
+      );
+}
+
+class DamagePart {
+  final String vehiclePartNamge;
+  final String vehiclePartExcelId;
+
+  DamagePart({this.vehiclePartNamge, this.vehiclePartExcelId});
+  DamagePart copyWith({
+    String vehiclePartNamge,
+    String vehiclePartExcelId,
+  }) =>
+      DamagePart(
+        vehiclePartExcelId: vehiclePartExcelId ?? this.vehiclePartExcelId,
+        vehiclePartNamge: vehiclePartNamge ?? this.vehiclePartNamge,
+      );
+
+  factory DamagePart.fromJson(Map<String, dynamic> json) => DamagePart(
+        vehiclePartExcelId: json['vehiclePartExcelId'],
+        vehiclePartNamge: json['vehiclePartNamge'],
       );
 }
 

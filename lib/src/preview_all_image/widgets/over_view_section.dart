@@ -8,11 +8,13 @@ class OverViewSection extends StatelessWidget {
   const OverViewSection({
     Key key,
     this.imageUrl,
+    this.showDeleteAndRetake = true,
     this.onRetake,
     this.onDelete,
   }) : super(key: key);
 
   final String imageUrl;
+  final bool showDeleteAndRetake;
   final Function() onRetake;
   final Function() onDelete;
 
@@ -36,6 +38,7 @@ class OverViewSection extends StatelessWidget {
               child: imageUrl != null && imageUrl.isNotEmpty
                   ? PreviewImageContainer(
                       imageUrl: imageUrl,
+                      showDeleteAndRetake: showDeleteAndRetake,
                       onDelete: onDelete,
                       onRetake: onRetake,
                     )

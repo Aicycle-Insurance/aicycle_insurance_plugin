@@ -11,15 +11,17 @@ class DefaultColors {
   static const Color orange = Color(0xFFFD8230);
   static const Color iconColor = Color(0xFF555B7C);
   static const Color primaryA100 = Color(0xFFF8F8FF);
+  static const Color primaryA200 = Color(0xFFECEEFF);
+  static const Color primaryA500 = Color(0xFF5768FF);
   // ink
   static const Color ink100 = Color(0xFFF2F3F4);
   static const Color ink500 = Color(0xFF1F2738);
+  static const Color ink400 = Color(0xFF7B8090);
   // red
   static const Color red400 = Color(0xFFE94260);
 
   static const Color green400 = Color(0xFF4BDDA0);
-
-
+  static const shadowColor = Color.fromRGBO(0, 0, 0, 0.16);
 }
 
 final Uint8List kTransparentImage = new Uint8List.fromList(<int>[

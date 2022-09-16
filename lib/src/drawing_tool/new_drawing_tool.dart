@@ -57,7 +57,7 @@ class NewDrawingToolLayer extends StatefulWidget {
   final String token;
   final Rx<DamageAssessmentModel> damageAssess;
   final Function() onCancelCallBack;
-  final Function(List<Uint8List>) onSaveCallBack;
+  final Function(List<Uint8List>, DamageAssessmentModel) onSaveCallBack;
 
   @override
   State<NewDrawingToolLayer> createState() => _NewDrawingToolLayerState();
@@ -711,7 +711,7 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
       );
       previewUserMaskImagesBuffer.add(pngImageBuffer);
     }
-    await userCorrectDamage(
+    var reAssessmentResult = await userCorrectDamage(
       UserCorrectedDamages(
         imageId: widget.damageAssess.value.imageId.toString(),
         correctedData: correctedItems,
@@ -719,11 +719,12 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
       isReAssessment: true,
     );
     ProgressDialog.hide(context);
-    widget.onSaveCallBack(previewUserMaskImagesBuffer);
+    widget.onSaveCallBack(previewUserMaskImagesBuffer, reAssessmentResult);
     drawStatus.value = DrawStatus.end;
   }
 
-  Future userCorrectDamage(UserCorrectedDamages userCorrectedDamages,
+  Future<DamageAssessmentModel> userCorrectDamage(
+      UserCorrectedDamages userCorrectedDamages,
       {bool isReAssessment = false}) async {
     try {
       RestfulModule restfulModule = RestfulModuleImpl();
@@ -770,26 +771,35 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
           "maskPath": correctedData.maskImgName,
         });
       }
-      if (!isReAssessment) {
-        await restfulModule.post(
-          Endpoints.runEnginePercent,
-          {
-            "images": [
-              {
-                "imageId": userCorrectedDamages.imageId,
-                "damages": damagePayload,
-              }
-            ]
-          },
-          token: widget.token,
-        );
-      } else {
-        await restfulModule.post(
-          Endpoints.callEngineAfterUserEdit(userCorrectedDamages.imageId),
-          {"damages": damagePayload},
-          token: widget.token,
-        );
+      var editResponse = await restfulModule.post(
+        Endpoints.callEngineAfterUserEdit(userCorrectedDamages.imageId),
+        {"damages": damagePayload},
+        token: widget.token,
+      );
+      if (editResponse != null) {
+        return DamageAssessmentModel.fromJson(editResponse.body);
       }
+      return null;
+      // if (!isReAssessment) {
+      //   await restfulModule.post(
+      //     Endpoints.runEnginePercent,
+      //     {
+      //       "images": [
+      //         {
+      //           "imageId": userCorrectedDamages.imageId,
+      //           "damages": damagePayload,
+      //         }
+      //       ]
+      //     },
+      //     token: widget.token,
+      //   );
+      // } else {
+      //   await restfulModule.post(
+      //     Endpoints.callEngineAfterUserEdit(userCorrectedDamages.imageId),
+      //     {"damages": damagePayload},
+      //     token: widget.token,
+      //   );
+      // }
     } catch (e) {
       rethrow;
     }

@@ -2,10 +2,10 @@ class Endpoints {
   Endpoints._();
 
   /// API Dev
-  // static const String baseUrl = 'https://dev-api-insurance.aicycle.ai';
+  static const String baseUrl = 'https://dev-api-insurance.aicycle.ai';
 
   /// API Prod
-  static const String baseUrl = 'https://api-insurance.aicycle.ai';
+  // static const String baseUrl = 'https://api-insurance.aicycle.ai';
   static const String createClaimFolder = baseUrl + '/claimfolders';
   static String getUploadUrl = baseUrl + '/images/url';
 
@@ -37,4 +37,8 @@ class Endpoints {
   // Lấy kết quả giám định
   static String getDamageAssessmentResult(String sessionId) =>
       baseUrl + '/session/$sessionId/results';
+  static String sendDamageAssessmentResultToPTI(String sessionId) =>
+      baseUrl + '/session/$sessionId/send-result';
+  static String checkDamageAssessmentSubmited(String sessionId) =>
+      baseUrl + '/session/$sessionId/check-send-data';
 }
