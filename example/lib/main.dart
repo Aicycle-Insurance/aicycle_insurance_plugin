@@ -39,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: ClaimFolderView(
-          sessionId: '20220420120283',
+          sessionId: '20220420120284',
           maDonVi: '016',
           phoneNumber: '0972795635',
           kieuCongViec: 'G',

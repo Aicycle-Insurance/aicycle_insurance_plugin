@@ -410,9 +410,10 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                                 _previewFile.value = null;
                                 _autoSwitchTab();
                               },
-                              onSaveCallBack: (buffer) {
-                                // _damageAssessment.value = null;
+                              onSaveCallBack: (buffer, reDamageAssessment) {
+                                _damageAssessment.value = reDamageAssessment;
                                 previewUserMaskImagesBuffer.assignAll(buffer);
+                                checkDamageCarPart();
                               },
                               token: widget.token,
                             )
@@ -503,6 +504,8 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
   }
 
   void _changeTab(int index) {
+    ///clear previous mask
+    previewUserMaskImagesBuffer.clear();
     if (index == 2 && listCarPartFromMiddleView.isEmpty) {
       CommonSnackbar.show(
         context,
@@ -652,16 +655,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
               // _currentArg.value.partDirection.middleViewImageFiles = temp;
 
               /// thêm danh sách các bộ phận có hư hại để chụp cận cảnh
-              for (CarPart obj in _damageAssessment.value?.carParts ?? []) {
-                if (obj.carPartDamages.isNotEmpty) {
-                  listCarPartFromMiddleView[obj.uuid] = obj;
-                }
-              }
-              if (listCarPartFromMiddleView.isNotEmpty) {
-                _carPartOnSelected =
-                    Rx<CarPart>(listCarPartFromMiddleView.values.first);
-              }
-
+              checkDamageCarPart();
               break;
             case 2:
               var temp =
@@ -680,6 +674,18 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
     } catch (e) {
       widget.onError('Package error: $e');
       if (hasLoading) ProgressDialog.hide(context);
+    }
+  }
+
+  void checkDamageCarPart() {
+    /// thêm danh sách các bộ phận có hư hại để chụp cận cảnh
+    for (CarPart obj in _damageAssessment.value.carParts ?? []) {
+      if (obj.carPartDamages.isNotEmpty) {
+        listCarPartFromMiddleView[obj.uuid] = obj;
+      }
+    }
+    if (listCarPartFromMiddleView.isNotEmpty) {
+      _carPartOnSelected = Rx<CarPart>(listCarPartFromMiddleView.values.first);
     }
   }
 

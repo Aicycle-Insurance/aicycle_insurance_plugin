@@ -42,23 +42,25 @@ class PreviewImageWithMask extends StatelessWidget {
                 Colors.transparent;
             var box = carPartDamage.boxes;
 
-            masks.add(
-              Positioned(
-                left: box[0].toDouble() * imWidth,
-                top: box[1].toDouble() * imHeight,
-                child: SizedBox(
-                  width: imWidth * (box[2] - box[0]),
-                  height: imHeight * (box[3] - box[1]),
-                  child: CachedNetworkImage(
-                    imageUrl: carPartDamage.maskUrl,
-                    fit: BoxFit.fill,
-                    color: color,
+            if (box != null && box.isNotEmpty) {
+              masks.add(
+                Positioned(
+                  left: box[0].toDouble() * imWidth,
+                  top: box[1].toDouble() * imHeight,
+                  child: SizedBox(
                     width: imWidth * (box[2] - box[0]),
                     height: imHeight * (box[3] - box[1]),
+                    child: CachedNetworkImage(
+                      imageUrl: carPartDamage.maskUrl,
+                      fit: BoxFit.fill,
+                      color: color,
+                      width: imWidth * (box[2] - box[0]),
+                      height: imHeight * (box[3] - box[1]),
+                    ),
                   ),
                 ),
-              ),
-            );
+              );
+            }
           }
         }
       }
