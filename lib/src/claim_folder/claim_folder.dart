@@ -689,6 +689,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
             claimId: claimId.value,
             imageRangeId: 1,
           ),
+          sessionId: widget.sessionId,
           token: widget.uTokenKey,
           onError: (message) {
             if (widget.onError != null) {

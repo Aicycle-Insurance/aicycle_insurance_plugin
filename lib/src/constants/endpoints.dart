@@ -39,4 +39,6 @@ class Endpoints {
       baseUrl + '/session/$sessionId/results';
   static String sendDamageAssessmentResultToPTI(String sessionId) =>
       baseUrl + '/session/$sessionId/send-result';
+  static String checkDamageAssessmentSubmited(String sessionId) =>
+      baseUrl + '/session/$sessionId/check-send-data';
 }

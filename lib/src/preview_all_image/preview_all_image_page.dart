@@ -20,11 +20,13 @@ class PreviewAllImagePage extends StatefulWidget {
     Key key,
     this.cameraArgument,
     this.token,
+    this.sessionId,
     this.onError,
   }) : super(key: key);
 
   final CameraArgument cameraArgument;
   final String token;
+  final String sessionId;
   final Function(String) onError;
 
   @override
@@ -34,6 +36,7 @@ class PreviewAllImagePage extends StatefulWidget {
 class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
   final _toolbarHeight = 64.0;
   Rx<CameraArgument> currentArg;
+  var isSubmited = false.obs;
 
   @override
   void initState() {
@@ -43,6 +46,7 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
 
   @override
   Widget build(BuildContext context) {
+    checkAssessmentSubmited();
     return WillPopScope(
       onWillPop: _willPop,
       child: Scaffold(
@@ -66,12 +70,16 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
             ],
           ),
           actions: [
-            CupertinoButton(
-              child: const Icon(
-                Icons.delete_outline_rounded,
-                color: DefaultColors.red400,
-              ),
-              onPressed: _deleteAllImages,
+            Obx(
+              () => isSubmited.isFalse
+                  ? CupertinoButton(
+                      child: const Icon(
+                        Icons.delete_outline_rounded,
+                        color: DefaultColors.red400,
+                      ),
+                      onPressed: _deleteAllImages,
+                    )
+                  : Container(),
             ),
           ],
         ),
@@ -93,6 +101,7 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   OverViewSection(
+                    showDeleteAndRetake: !isSubmited.value,
                     imageUrl: currentArg
                             .value.partDirection.overViewImageFiles.isNotEmpty
                         ? currentArg.value.partDirection.overViewImageFiles
@@ -117,6 +126,7 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
                   const SizedBox(height: 16),
                   Expanded(
                     child: CloseViewSection(
+                      showDeleteAndRetake: !isSubmited.value,
                       imageFromServers: imageList,
                       imageFiles: imageFiles,
                       onRetake: () => _goToCameraPage(2),
@@ -253,5 +263,29 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
         });
       }
     });
+  }
+
+  Future<void> checkAssessmentSubmited() async {
+    try {
+      RestfulModule restfulModule = RestfulModuleImpl();
+      var response = await restfulModule.get(
+        Endpoints.checkDamageAssessmentSubmited(widget.sessionId),
+        token: widget.token,
+      );
+      if (response.statusCode == 200) {
+        if (response.body['isSendData'] == true) {
+          isSubmited(true);
+        } else {
+          isSubmited(false);
+        }
+      } else {
+        isSubmited(false);
+        widget.onError(response.statusMessage ?? 'Package error');
+      }
+    } catch (e) {
+      isSubmited(false);
+      widget.onError(e.toString());
+      rethrow;
+    }
   }
 }

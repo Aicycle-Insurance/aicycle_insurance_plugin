@@ -112,7 +112,7 @@ class _DamageResultPageState extends State<DamageResultPage> {
         token: widget.token,
       );
       ProgressDialog.hide(context);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 && response.body != null) {
         CommonSnackbar.show(
           context,
           message: StringKeys.saveSuccessfuly,
@@ -130,7 +130,6 @@ class _DamageResultPageState extends State<DamageResultPage> {
         return null;
       }
     } catch (e) {
-      ProgressDialog.hide(context);
       if (widget.onError != null) {
         widget.onError('Package error: $e');
       }
