@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:aicycle_insurance_non_null_safety/src/drawing_tool/new_drawing_tool.dart';
 import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,11 +12,13 @@ import 'package:path_provider/path_provider.dart';
 import '../../aicycle_insurance.dart';
 import '../../types/car_part.dart';
 import '../../types/damage_assessment.dart';
+import '../../src/common/dialog/notification_dialog.dart';
+import '../../src/drawing_tool/new_drawing_tool.dart';
 // import 'package:gallery_saver/gallery_saver.dart';
 
 import '../../types/part_direction.dart';
 import '../common/dialog/process_dialog.dart';
-import '../common/snack_bar/snack_bar.dart';
+// import '../common/snack_bar/snack_bar.dart';
 import '../constants/colors.dart';
 import '../constants/endpoints.dart';
 import '../constants/shot_range.dart';
@@ -495,10 +496,16 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
   void _handleCameraDoNotHavePermission(bool value) {
     if (value == null || value == false) {
       Navigator.pop(context);
-      CommonSnackbar.show(
+      // CommonSnackbar.show(
+      //   context,
+      //   type: SnackbarType.error,
+      //   message: StringKeys.noCameraPermission,
+      // );
+      NotificationDialog.show(
         context,
-        type: SnackbarType.error,
-        message: StringKeys.noCameraPermission,
+        type: NotiType.error,
+        content: StringKeys.noCameraPermission,
+        confirmCallBack: () {},
       );
     }
   }
@@ -507,12 +514,19 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
     ///clear previous mask
     previewUserMaskImagesBuffer.clear();
     if (index == 2 && listCarPartFromMiddleView.isEmpty) {
-      CommonSnackbar.show(
+      // CommonSnackbar.show(
+      //   context,
+      //   type: SnackbarType.warning,
+      //   message: 'Bạn cần chụp ảnh trung cảnh hợp lệ trước.',
+      // );
+      NotificationDialog.show(
         context,
-        type: SnackbarType.warning,
-        message: 'Bạn cần chụp ảnh trung cảnh hợp lệ trước.',
+        type: NotiType.warning,
+        content: 'Bạn cần chụp ảnh trung cảnh hợp lệ trước.',
+        confirmCallBack: () {
+          _changeTab(1);
+        },
       );
-      _changeTab(1);
     } else {
       _previewFile.value = null;
       currentTabIndex.value = index;

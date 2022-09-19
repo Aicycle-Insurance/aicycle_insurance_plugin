@@ -1,3 +1,4 @@
+import '../../src/common/dialog/notification_dialog.dart';
 import 'package:flutter/material.dart';
 
 import '../../src/common/dialog/process_dialog.dart';
@@ -6,7 +7,7 @@ import '../../src/constants/colors.dart';
 import '../../src/constants/strings.dart';
 import '../../aicycle_insurance.dart';
 import '../../gen/assets.gen.dart';
-import '../../src/common/snack_bar/snack_bar.dart';
+// import '../../src/common/snack_bar/snack_bar.dart';
 import '../../src/constants/endpoints.dart';
 import '../../src/damage_result_page/widgets/_bottom_bar.dart';
 import '../../src/modules/module_types/common_response.dart';
@@ -113,17 +114,29 @@ class _DamageResultPageState extends State<DamageResultPage> {
       );
       ProgressDialog.hide(context);
       if (response.statusCode == 200 && response.body != null) {
-        CommonSnackbar.show(
+        NotificationDialog.show(
           context,
-          message: StringKeys.saveSuccessfuly,
-          type: SnackbarType.success,
+          type: NotiType.success,
+          content: StringKeys.saveSuccessfuly,
+          confirmCallBack: () {},
         );
+        // CommonSnackbar.show(
+        //   context,
+        //   message: StringKeys.saveSuccessfuly,
+        //   type: SnackbarType.success,
+        // );
       } else {
-        CommonSnackbar.show(
+        NotificationDialog.show(
           context,
-          message: StringKeys.haveError,
-          type: SnackbarType.error,
+          type: NotiType.error,
+          content: StringKeys.haveError,
+          confirmCallBack: () {},
         );
+        // CommonSnackbar.show(
+        //   context,
+        //   message: StringKeys.haveError,
+        //   type: SnackbarType.error,
+        // );
         if (widget.onError != null) {
           widget.onError('Package error: http code ${response.statusCode}');
         }

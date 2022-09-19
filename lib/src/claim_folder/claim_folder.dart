@@ -8,8 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../types/image.dart';
+import '../../src/common/dialog/notification_dialog.dart';
 import '../../types/damage_summary_result.dart';
-import '../../src/common/snack_bar/snack_bar.dart';
+// import '../../src/common/snack_bar/snack_bar.dart';
 import '../../src/damage_result_page/damage_result_page.dart';
 import '../../src/modules/module_types/common_response.dart';
 import '../../types/image_range.dart';
@@ -312,7 +313,9 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                             if (widget.onGetResultCallBack != null) {
                               widget.onGetResultCallBack(result);
                             }
-                            _sendDamageAssessmentResultToPTI();
+                            if (result != null) {
+                              _sendDamageAssessmentResultToPTI(result);
+                            }
                           },
                         ),
                       ),
@@ -603,21 +606,18 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
       );
       ProgressDialog.hide(context);
       if (response.body != null) {
-        CommonSnackbar.show(
-          context,
-          message: StringKeys.getResultSuccessfuly,
-          type: SnackbarType.success,
-        );
         return response.body as Map<String, dynamic>;
       } else {
-        CommonSnackbar.show(
+        NotificationDialog.show(
           context,
-          message: StringKeys.haveError,
-          type: SnackbarType.error,
+          type: NotiType.error,
+          content: StringKeys.haveError,
+          confirmCallBack: () {
+            if (widget.onError != null) {
+              widget.onError('Package error: http code ${response.statusCode}');
+            }
+          },
         );
-        if (widget.onError != null) {
-          widget.onError('Package error: http code ${response.statusCode}');
-        }
         return null;
       }
     } catch (e) {
@@ -756,7 +756,8 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
     });
   }
 
-  Future<void> _sendDamageAssessmentResultToPTI() async {
+  Future<void> _sendDamageAssessmentResultToPTI(
+      Map<String, dynamic> result) async {
     RestfulModule restfulModule = RestfulModuleImpl();
     ProgressDialog.showWithCircleIndicator(context);
     try {
@@ -767,20 +768,27 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
       );
       ProgressDialog.hide(context);
       if (response.statusCode == 200 && response.body != null) {
-        CommonSnackbar.show(
+        NotificationDialog.show(
           context,
-          message: StringKeys.saveSuccessfuly,
-          type: SnackbarType.success,
+          type: NotiType.success,
+          content: StringKeys.saveSuccessfuly,
+          confirmCallBack: () {
+            if (widget.onGetResultCallBack != null) {
+              widget.onGetResultCallBack(result);
+            }
+          },
         );
       } else {
-        CommonSnackbar.show(
+        NotificationDialog.show(
           context,
-          message: StringKeys.haveError,
-          type: SnackbarType.error,
+          type: NotiType.error,
+          content: StringKeys.haveError,
+          confirmCallBack: () {
+            if (widget.onError != null) {
+              widget.onError('Package error: http code ${response.statusCode}');
+            }
+          },
         );
-        if (widget.onError != null) {
-          widget.onError('Package error: http code ${response.statusCode}');
-        }
         return null;
       }
     } catch (e) {
