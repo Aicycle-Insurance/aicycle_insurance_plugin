@@ -656,6 +656,9 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
               _currentArg.value.partDirection = _currentArg.value.partDirection
                   .copyWith(overViewImageFiles: temp);
               // _currentArg.value.partDirection.overViewImageFiles = temp;
+
+              /// thêm danh sách các bộ phận có hư hại để chụp cận cảnh
+              checkDamageCarPart();
               break;
             case 1:
               var temp =

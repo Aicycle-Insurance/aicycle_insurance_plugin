@@ -1,12 +1,13 @@
 import 'dart:io';
 
-import 'package:aicycle_insurance_non_null_safety/src/utils/compress_image.dart';
+// import 'package:aicycle_insurance_non_null_safety/src/utils/compress_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
 
+import '../../../src/summary_camera/summary_camera.dart';
 import '../../common/image_view/image_view.dart';
 import '../../constants/colors.dart';
 import '../../constants/endpoints.dart';
@@ -14,7 +15,7 @@ import '../../constants/strings.dart';
 import '../../modules/resful_module.dart';
 import '../../modules/resful_module_impl.dart';
 import '../../utils/upload_image_to_s3.dart';
-import '../../../types/summaty_image.dart';
+import '../../../types/summary_image.dart';
 
 class SummaryImagesSection extends StatefulWidget {
   const SummaryImagesSection({
@@ -92,7 +93,8 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
                     ],
                   ),
                 ),
-                onPressed: _takePicture,
+                // onPressed: _takePicture,
+                onPressed: _goToSummaryCamera,
               )
             ],
           ),
@@ -101,6 +103,28 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
         ],
       ),
     );
+  }
+
+  void _goToSummaryCamera() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SummaryCameraPage(
+          images: _images,
+        ),
+      ),
+    ).then((value) {
+      if (value is List<SummaryImage>) {
+        _images.assignAll(value);
+        for (var image in value) {
+          if (image.localFilePath != null && image.url == null) {
+            _addSummaryImage(File(image.localFilePath)).then((value) {
+              image.copyWith(imageId: value);
+            });
+          }
+        }
+      }
+    });
   }
 
   Widget _overViewImageSection() {
@@ -205,49 +229,49 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
     });
   }
 
-  void _takePicture() async {
-    ImageSource source = await showCupertinoModalPopup(
-      context: context,
-      builder: (context) {
-        return CupertinoActionSheet(
-          actions: [
-            CupertinoActionSheetAction(
-              child: const Text(StringKeys.gallery),
-              onPressed: () {
-                Navigator.pop(context, ImageSource.gallery);
-              },
-            ),
-            CupertinoActionSheetAction(
-              child: const Text(StringKeys.camera),
-              onPressed: () {
-                Navigator.pop(context, ImageSource.camera);
-              },
-            )
-          ],
-        );
-      },
-    );
+  // void _takePicture() async {
+  //   ImageSource source = await showCupertinoModalPopup(
+  //     context: context,
+  //     builder: (context) {
+  //       return CupertinoActionSheet(
+  //         actions: [
+  //           CupertinoActionSheetAction(
+  //             child: const Text(StringKeys.gallery),
+  //             onPressed: () {
+  //               Navigator.pop(context, ImageSource.gallery);
+  //             },
+  //           ),
+  //           CupertinoActionSheetAction(
+  //             child: const Text(StringKeys.camera),
+  //             onPressed: () {
+  //               Navigator.pop(context, ImageSource.camera);
+  //             },
+  //           )
+  //         ],
+  //       );
+  //     },
+  //   );
 
-    if (source != null) {
-      final ImagePicker imagePicker = ImagePicker();
-      var file = await imagePicker.getImage(
-        source: source,
-        maxHeight: 1200,
-        maxWidth: 1600,
-        imageQuality: 100,
-      );
-      if (file != null) {
-        var _resizedFile = await ImageUtils.compressImage(File(file.path));
-        SummaryImage temp = SummaryImage(localFilePath: _resizedFile.path);
-        _images.add(temp);
-        widget.imagesOnChanged(_images);
-        _addSummaryImage(_resizedFile).then((value) {
-          _images.last.copyWith(imageId: value);
-          widget.imagesOnChanged(_images);
-        });
-      }
-    }
-  }
+  //   if (source != null) {
+  //     final ImagePicker imagePicker = ImagePicker();
+  //     var file = await imagePicker.getImage(
+  //       source: source,
+  //       maxHeight: 1200,
+  //       maxWidth: 1600,
+  //       imageQuality: 100,
+  //     );
+  //     if (file != null) {
+  //       var _resizedFile = await ImageUtils.compressImage(File(file.path));
+  //       SummaryImage temp = SummaryImage(localFilePath: _resizedFile.path);
+  //       _images.add(temp);
+  //       widget.imagesOnChanged(_images);
+  //       _addSummaryImage(_resizedFile).then((value) {
+  //         _images.last.copyWith(imageId: value);
+  //         widget.imagesOnChanged(_images);
+  //       });
+  //     }
+  //   }
+  // }
 
   void _deleteImage(SummaryImage image) async {
     if (image.imageId != null) {
@@ -269,7 +293,7 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
   }
 
   // Thêm ảnh toàn cảnh (summary images)
-  Future<int> _addSummaryImage(PickedFile file) async {
+  Future<int> _addSummaryImage(File file) async {
     final RestfulModule restfulModule = RestfulModuleImpl();
     try {
       var result =

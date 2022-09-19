@@ -14,7 +14,7 @@ import '../../types/damage_summary_result.dart';
 import '../../src/damage_result_page/damage_result_page.dart';
 import '../../src/modules/module_types/common_response.dart';
 import '../../types/image_range.dart';
-import '../../types/summaty_image.dart';
+import '../../types/summary_image.dart';
 import '../../types/part_direction.dart';
 import '../../gen/assets.gen.dart';
 import '../../types/part_direction_meta.dart';
