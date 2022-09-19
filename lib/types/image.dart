@@ -109,9 +109,9 @@ class AiImage {
             ? List<PartsMask>.from(
                 json["partsMasks"].map((x) => PartsMask.fromJson(x))).toList()
             : [],
-        damageParts: json["damageParts"] != null
+        damageParts: json["damagePart"] != null
             ? List<DamagePart>.from(
-                json["damageParts"].map((x) => DamagePart.fromJson(x))).toList()
+                json["damagePart"].map((x) => DamagePart.fromJson(x))).toList()
             : [],
         deletedFlag: json["deletedFlag"],
         createdDate: json["createdDate"] != null
@@ -147,7 +147,7 @@ class DamagePart {
 
   factory DamagePart.fromJson(Map<String, dynamic> json) => DamagePart(
         vehiclePartExcelId: json['vehiclePartExcelId'],
-        vehiclePartNamge: json['vehiclePartNamge'],
+        vehiclePartNamge: json['vehiclePartName'],
       );
 }
 
