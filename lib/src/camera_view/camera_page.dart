@@ -91,19 +91,19 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
 
   _checkInitCarPart() {
     for (var image in _currentArg.value.partDirection.middleViewImages) {
-      if (image.damageMasks.isNotEmpty ?? false) {
-        for (var part in image.partsMasks) {
+      if (image.damageParts.isNotEmpty ?? false) {
+        for (var part in image.damageParts) {
           var _part = CarPart(
             uuid: part.vehiclePartExcelId,
-            carPartBoxes: part.boxes,
-            carPartClassName: part.vehiclePartName,
+            carPartBoxes: [0, 0, 0, 0],
+            carPartClassName: part.vehiclePartNamge ?? '',
             carPartDamages: [],
             carPartIsPart: true,
-            carPartMaskPath: part.masksPath,
-            carPartMaskUrl: part.maskUrl,
-            color: part.color,
+            carPartMaskPath: '',
+            carPartMaskUrl: '',
+            color: Colors.amber,
             carPartLocation: '',
-            carPartScore: part.scores,
+            carPartScore: 1,
           );
           listCarPartFromMiddleView[part.vehiclePartExcelId] = _part;
         }
@@ -522,7 +522,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
       NotificationDialog.show(
         context,
         type: NotiType.warning,
-        content: 'Bạn cần chụp ảnh trung cảnh hợp lệ trước.',
+        content: 'Bạn cần chụp ảnh toàn cảnh hoặc trung cảnh hợp lệ trước.',
         confirmCallBack: () {
           _changeTab(1);
         },
