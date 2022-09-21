@@ -2,10 +2,10 @@ class Endpoints {
   Endpoints._();
 
   /// API Dev
-  // static const String baseUrl = 'https://dev-api-insurance.aicycle.ai';
+  static const String baseUrl = 'https://dev-api-insurance.aicycle.ai';
 
   /// API Prod
-  static const String baseUrl = 'https://api-insurance.aicycle.ai';
+  // static const String baseUrl = 'https://api-insurance.aicycle.ai';
   static const String createClaimFolder = baseUrl + '/claimfolders';
   static String getUploadUrl = baseUrl + '/images/url';
 
@@ -17,8 +17,9 @@ class Endpoints {
       baseUrl + '/claimimages/summary/$imageId';
 
   // part image
-  static String deleteAllImageInClaim(String claimID) =>
-      baseUrl + '/claimimages/all/$claimID';
+  static String deleteAllImageInClaim(String sessionId) =>
+      // baseUrl + '/claimimages/all/$claimID';
+      baseUrl + '/session/$sessionId/all-images';
   static String deleteImageInCLaim(String imageID) =>
       baseUrl + '/claimimages/$imageID';
   static String getImageInCLaim(String sessionID) =>

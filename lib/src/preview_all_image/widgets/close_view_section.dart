@@ -12,14 +12,12 @@ class CloseViewSection extends StatelessWidget {
     Key key,
     this.imageFiles = const [],
     this.imageFromServers = const [],
-    this.showDeleteAndRetake,
     this.onRetake,
     this.onDelete,
   }) : super(key: key);
 
   final List<PickedFileWithId> imageFiles;
   final List<AiImage> imageFromServers;
-  final bool showDeleteAndRetake;
   final Function() onRetake;
   final Function(String imageId) onDelete;
 
@@ -72,7 +70,7 @@ class CloseViewSection extends StatelessWidget {
               children: [
                 ...imageFromServers.map((e) {
                   return PreviewImageContainer(
-                    showDeleteAndRetake: showDeleteAndRetake,
+                    showDeleteAndRetake: e.isSendToPti != true,
                     imageUrl: e.url,
                     onDelete: () =>
                         onDelete != null ? onDelete(e.imageId) : null,
@@ -81,6 +79,7 @@ class CloseViewSection extends StatelessWidget {
                 }).toList(),
                 ...imageFiles.map((e) {
                   return PreviewImageContainer(
+                    showDeleteAndRetake: true,
                     imageUrl: e.file.path,
                     onDelete: () => onDelete != null
                         ? onDelete(e.imageId.toString())

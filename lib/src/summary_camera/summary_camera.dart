@@ -11,7 +11,7 @@ import '../../src/utils/compress_image.dart';
 import '../../src/common/dialog/notification_dialog.dart';
 import '../../src/summary_camera/summary_action_bar.dart';
 import '../../types/summary_image.dart';
-import '../../src/constants/colors.dart';
+// import '../../src/constants/colors.dart';
 import '../../src/constants/strings.dart';
 
 class SummaryCameraPage extends StatefulWidget {

@@ -24,6 +24,7 @@ class AiImage {
     this.errorNote,
     this.errorType,
     this.damageParts,
+    this.isSendToPti,
   });
 
   final String imageId;
@@ -45,6 +46,7 @@ class AiImage {
   final double timeProcess;
   final List<String> errorType;
   final String errorNote;
+  final bool isSendToPti;
 
   AiImage copyWith({
     String imageId,
@@ -87,10 +89,12 @@ class AiImage {
         timeProcess: timeProcess ?? this.timeProcess,
         errorType: errorType ?? this.errorType,
         damageParts: damageParts ?? this.damageParts,
+        isSendToPti: isSendToPti ?? this.isSendToPti,
       );
 
   factory AiImage.fromJson(Map<String, dynamic> json) => AiImage(
         imageId: json["imageId"],
+        isSendToPti: json["isSendToPti"] ?? false,
         imageName: json["imageName"],
         claimId: json["claimId"],
         url: json["url"],

@@ -740,6 +740,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
       MaterialPageRoute(
         builder: (context) => CameraPage(
           token: widget.uTokenKey,
+          sessionId: widget.sessionId,
           onError: widget.onError ?? (message) {},
           cameraArgument: CameraArgument(
             partDirection: partDirection.value,
@@ -753,6 +754,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
       if (value is CameraArgument) {
         partDirection.value = value.partDirection;
       }
+      _getAllImageInClaimFolder();
     });
   }
 

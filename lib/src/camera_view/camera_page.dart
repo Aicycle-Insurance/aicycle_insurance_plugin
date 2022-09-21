@@ -14,9 +14,11 @@ import '../../types/car_part.dart';
 import '../../types/damage_assessment.dart';
 import '../../src/common/dialog/notification_dialog.dart';
 import '../../src/drawing_tool/new_drawing_tool.dart';
+import '../../types/image.dart';
+// import '../../types/part_direction.dart';
 // import 'package:gallery_saver/gallery_saver.dart';
 
-import '../../types/part_direction.dart';
+// import '../../types/part_direction.dart';
 import '../common/dialog/process_dialog.dart';
 // import '../common/snack_bar/snack_bar.dart';
 import '../constants/colors.dart';
@@ -37,11 +39,13 @@ class CameraPage extends StatefulWidget {
     Key key,
     this.cameraArgument,
     this.token,
+    this.sessionId,
     this.onError,
   }) : super(key: key);
 
   final CameraArgument cameraArgument;
   final String token;
+  final String sessionId;
   final Function(String message) onError;
 
   @override
@@ -61,6 +65,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
   var listCarPartFromMiddleView = <String, CarPart>{}.obs;
   Rx<CarPart> _carPartOnSelected;
   var previewUserMaskImagesBuffer = <Uint8List>[].obs;
+  var isOverViewSubmited = false.obs;
 
   /// camera
   final flashMode = ValueNotifier(CameraFlashes.NONE);
@@ -82,6 +87,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
     _previewFile = Rx<PickedFile>(null);
     _damageAssessment = Rx<DamageAssessmentModel>(null);
     _checkInitCarPart();
+    _checkSubmited();
   }
 
   @override
@@ -89,8 +95,9 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  _checkInitCarPart() {
-    for (var image in _currentArg.value.partDirection.middleViewImages) {
+  void _checkInitCarPart() {
+    listCarPartFromMiddleView.clear();
+    for (var image in _currentArg.value.partDirection.images) {
       if (image.damageParts.isNotEmpty ?? false) {
         for (var part in image.damageParts) {
           var _part = CarPart(
@@ -111,6 +118,14 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
     }
     if (listCarPartFromMiddleView.isNotEmpty) {
       _carPartOnSelected = Rx<CarPart>(listCarPartFromMiddleView.values.first);
+    }
+  }
+
+  void _checkSubmited() {
+    if (_currentArg.value.partDirection.overViewImages.isNotEmpty) {
+      isOverViewSubmited.value =
+          _currentArg.value.partDirection.overViewImages.first.isSendToPti ??
+              false;
     }
   }
 
@@ -414,7 +429,13 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                               onSaveCallBack: (buffer, reDamageAssessment) {
                                 _damageAssessment.value = reDamageAssessment;
                                 previewUserMaskImagesBuffer.assignAll(buffer);
-                                checkDamageCarPart();
+                                // checkDamageCarPart();
+                                ProgressDialog.showWithCircleIndicator(context,
+                                    isLandScape: true);
+                                _geImageInPartDirection().whenComplete(() {
+                                  _checkInitCarPart();
+                                  ProgressDialog.hide(context);
+                                });
                               },
                               token: widget.token,
                             )
@@ -513,12 +534,17 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
   void _changeTab(int index) {
     ///clear previous mask
     previewUserMaskImagesBuffer.clear();
+    if (index == 0 && isOverViewSubmited == true) {
+      NotificationDialog.show(
+        context,
+        type: NotiType.warning,
+        content: 'Bạn đã không thể thay đổi ảnh toàn cảnh khi đã Lưu kết quả.',
+        confirmCallBack: () {
+          _changeTab(1);
+        },
+      );
+    }
     if (index == 2 && listCarPartFromMiddleView.isEmpty) {
-      // CommonSnackbar.show(
-      //   context,
-      //   type: SnackbarType.warning,
-      //   message: 'Bạn cần chụp ảnh trung cảnh hợp lệ trước.',
-      // );
       NotificationDialog.show(
         context,
         type: NotiType.warning,
@@ -552,6 +578,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
 
       ///clear previous mask
       previewUserMaskImagesBuffer.clear();
+      _damageAssessment.value = null;
 
       /// Call engine
       await _callAiEngine(_resizeFile.path);
@@ -583,6 +610,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
 
     ///clear previous mask
     previewUserMaskImagesBuffer.clear();
+    _damageAssessment.value = null;
 
     /// Call engine
     await _callAiEngine(file.path);
@@ -618,96 +646,101 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
           token: widget.token,
         );
         if (callEngineResponse.statusCode == 200) {
-          if (currentTabIndex.value != 2) {
-            _damageAssessment.value =
-                DamageAssessmentModel.fromJson(callEngineResponse.body);
-          } else {
-            _damageAssessment.value = DamageAssessmentModel(
-              carDamages: [],
-              carParts: [],
-              imageId: int.parse(callEngineResponse.body['imageId'].toString()),
-              imageSize: [],
-              imgUrl: '',
-            );
-          }
+          _geImageInPartDirection().whenComplete(() {
+            if (currentTabIndex.value != 2) {
+              _damageAssessment.value =
+                  DamageAssessmentModel.fromJson(callEngineResponse.body);
+            } else {
+              _damageAssessment.value = DamageAssessmentModel(
+                carDamages: [],
+                carParts: [],
+                imageId:
+                    int.parse(callEngineResponse.body['imageId'].toString()),
+                imageSize: [],
+                imgUrl: '',
+              );
+            }
+
+            /// gán chi tiết từng góc ảnh
+            switch (currentTabIndex.value) {
+              case 0:
+                // var temp =
+                //     _currentArg.value.partDirection.overViewImageFiles.toList();
+                // temp.assignAll([
+                //   PickedFileWithId(
+                //     imageId: _damageAssessment.value.imageId,
+                //     file: _previewFile.value,
+                //   )
+                // ]);
+                // _currentArg.value.partDirection = _currentArg.value.partDirection
+                //     .copyWith(overViewImageFiles: temp);
+                // _currentArg.value.partDirection.overViewImageFiles = temp;
+
+                /// thêm danh sách các bộ phận có hư hại để chụp cận cảnh
+                // checkDamageCarPart();
+                _checkInitCarPart();
+                break;
+              case 1:
+                // var temp =
+                //     _currentArg.value.partDirection.middleViewImageFiles.toList();
+                // temp.add(PickedFileWithId(
+                //   imageId: _damageAssessment.value.imageId,
+                //   file: _previewFile.value,
+                // ));
+                // _currentArg.value.partDirection = _currentArg.value.partDirection
+                //     .copyWith(middleViewImageFiles: temp);
+                // _currentArg.value.partDirection.middleViewImageFiles = temp;
+
+                /// thêm danh sách các bộ phận có hư hại để chụp cận cảnh
+                // checkDamageCarPart();
+                _checkInitCarPart();
+                break;
+              case 2:
+                // var temp =
+                //     _currentArg.value.partDirection.closeViewImageFiles.toList();
+                // temp.add(PickedFileWithId(
+                //   imageId: _damageAssessment.value.imageId,
+                //   file: _previewFile.value,
+                // ));
+                // _currentArg.value.partDirection = _currentArg.value.partDirection
+                //     .copyWith(closeViewImageFiles: temp);
+                break;
+            }
+          });
 
           /// gán ảnh cho part direction
-          var temp = _currentArg.value.partDirection.imageFiles.toList();
-          temp.add(
-            PickedFileWithId(
-              imageId: _damageAssessment.value.imageId,
-              file: _previewFile.value,
-            ),
-          );
-          _currentArg.value.partDirection =
-              _currentArg.value.partDirection.copyWith(imageFiles: temp);
+          // var temp = _currentArg.value.partDirection.imageFiles.toList();
+          // temp.add(
+          //   PickedFileWithId(
+          //     imageId: _damageAssessment.value.imageId,
+          //     file: _previewFile.value,
+          //   ),
+          // );
+          // _currentArg.value.partDirection =
+          //     _currentArg.value.partDirection.copyWith(imageFiles: temp);
 
-          /// gán chi tiết từng góc ảnh
-          switch (currentTabIndex.value) {
-            case 0:
-              var temp =
-                  _currentArg.value.partDirection.overViewImageFiles.toList();
-              temp.assignAll([
-                PickedFileWithId(
-                  imageId: _damageAssessment.value.imageId,
-                  file: _previewFile.value,
-                )
-              ]);
-              _currentArg.value.partDirection = _currentArg.value.partDirection
-                  .copyWith(overViewImageFiles: temp);
-              // _currentArg.value.partDirection.overViewImageFiles = temp;
-
-              /// thêm danh sách các bộ phận có hư hại để chụp cận cảnh
-              checkDamageCarPart();
-              break;
-            case 1:
-              var temp =
-                  _currentArg.value.partDirection.middleViewImageFiles.toList();
-              temp.add(PickedFileWithId(
-                imageId: _damageAssessment.value.imageId,
-                file: _previewFile.value,
-              ));
-              _currentArg.value.partDirection = _currentArg.value.partDirection
-                  .copyWith(middleViewImageFiles: temp);
-              // _currentArg.value.partDirection.middleViewImageFiles = temp;
-
-              /// thêm danh sách các bộ phận có hư hại để chụp cận cảnh
-              checkDamageCarPart();
-              break;
-            case 2:
-              var temp =
-                  _currentArg.value.partDirection.closeViewImageFiles.toList();
-              temp.add(PickedFileWithId(
-                imageId: _damageAssessment.value.imageId,
-                file: _previewFile.value,
-              ));
-              _currentArg.value.partDirection = _currentArg.value.partDirection
-                  .copyWith(closeViewImageFiles: temp);
-              break;
-          }
         }
       }
       if (hasLoading) ProgressDialog.hide(context);
     } catch (e) {
       widget.onError('Package error: $e');
-      if (hasLoading) ProgressDialog.hide(context);
     }
   }
 
-  void checkDamageCarPart() {
-    // listCarPartFromMiddleView.clear();
+  // void checkDamageCarPart() {
+  //   // listCarPartFromMiddleView.clear();
 
-    /// thêm danh sách các bộ phận có hư hại để chụp cận cảnh
-    for (CarPart obj in _damageAssessment.value.carParts ?? []) {
-      if (obj.carPartDamages.isNotEmpty) {
-        print(obj.uuid);
-        listCarPartFromMiddleView[obj.uuid] = obj;
-      }
-    }
-    if (listCarPartFromMiddleView.isNotEmpty) {
-      _carPartOnSelected = Rx<CarPart>(listCarPartFromMiddleView.values.first);
-    }
-  }
+  //   /// thêm danh sách các bộ phận có hư hại để chụp cận cảnh
+  //   for (CarPart obj in _damageAssessment.value.carParts ?? []) {
+  //     if (obj.carPartDamages.isNotEmpty) {
+  //       print(obj.uuid);
+  //       listCarPartFromMiddleView[obj.uuid] = obj;
+  //     }
+  //   }
+  //   if (listCarPartFromMiddleView.isNotEmpty) {
+  //     _carPartOnSelected = Rx<CarPart>(listCarPartFromMiddleView.values.first);
+  //   }
+  // }
 
   String _loadImageByVehicleBrand() {
     String imagePath;
@@ -733,5 +766,65 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
         break;
     }
     return imagePath;
+  }
+
+  Future<void> _geImageInPartDirection() async {
+    try {
+      RestfulModule restfulModule = RestfulModuleImpl();
+
+      /// Gọi lấy ảnh từng góc chụp
+      var response = await restfulModule.get(
+        Endpoints.getImageInCLaim(widget.sessionId),
+        token: widget.token,
+        query: {
+          "partDirectionId":
+              _currentArg.value.partDirection.partDirectionId.toString(),
+        },
+      );
+      if (response.body != null) {
+        List result = response.body['data'];
+        List<AiImage> _images = result.map((e) => AiImage.fromJson(e)).toList();
+
+        /// Tạo list trung gian Gán ảnh vào part
+        List<AiImage> _overViewImages = [];
+        List<AiImage> _middleViewImages = [];
+        List<AiImage> _closeImages = [];
+        for (var _image in _images) {
+          switch (imageRangeIds[_image.imageRangeName]) {
+            case 1:
+              _overViewImages.add(_image);
+              break;
+            case 2:
+              _middleViewImages.add(_image);
+              break;
+            case 3:
+              _closeImages.add(_image);
+              break;
+          }
+        }
+
+        /// Gán ảnh vào part
+        _currentArg.value.partDirection =
+            _currentArg.value.partDirection.copyWith(
+          images: _images,
+          overViewImages: _overViewImages,
+          closeViewImages: _closeImages,
+          middleViewImages: _middleViewImages,
+          imageFiles: [],
+          overViewImageFiles: [],
+          closeViewImageFiles: [],
+          middleViewImageFiles: [],
+        );
+      } else {
+        if (widget.onError != null) {
+          widget.onError(response.statusMessage ?? 'Package error');
+        }
+      }
+    } catch (e) {
+      if (widget.onError != null) {
+        widget.onError('Package get images error: $e');
+      }
+      rethrow;
+    }
   }
 }
