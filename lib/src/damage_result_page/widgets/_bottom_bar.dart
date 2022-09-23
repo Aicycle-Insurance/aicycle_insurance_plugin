@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../src/constants/colors.dart';
 import '../../../src/constants/strings.dart';
-import '../../../src/utils/string_utils.dart';
+// import '../../../src/utils/string_utils.dart';
 
 class DamageResultBottomBar extends StatelessWidget {
   const DamageResultBottomBar({
@@ -33,26 +33,26 @@ class DamageResultBottomBar extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            //   child: Row(
+            //     children: [
+            //       Text(
+            //         StringKeys.totalPrice,
+            //         style: TextStyle(fontSize: 14, color: DefaultColors.ink400),
+            //       ),
+            //       const SizedBox(width: 8),
+            //       Expanded(child: _totalCost())
+            //     ],
+            //   ),
+            // ),
+            // Divider(
+            //   thickness: 1,
+            //   height: 1,
+            //   color: DefaultColors.ink100,
+            // ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: Row(
-                children: [
-                  Text(
-                    StringKeys.totalPrice,
-                    style: TextStyle(fontSize: 14, color: DefaultColors.ink400),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(child: _totalCost())
-                ],
-              ),
-            ),
-            Divider(
-              thickness: 1,
-              height: 1,
-              color: DefaultColors.ink100,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
                   Expanded(
@@ -93,25 +93,25 @@ class DamageResultBottomBar extends StatelessWidget {
     );
   }
 
-  Widget _totalCost() {
-    String _totalCost =
-        StringUtils.formatPriceNumber(double.parse(totalCost.toString())) +
-            ' đ';
-    return Row(
-      children: [
-        const SizedBox(
-          width: 16,
-        ),
-        Text(
-          _totalCost,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: DefaultColors.ink500,
-          ),
-          overflow: TextOverflow.ellipsis,
-        ),
-      ],
-    );
-  }
+  // Widget _totalCost() {
+  //   String _totalCost =
+  //       StringUtils.formatPriceNumber(double.parse(totalCost.toString())) +
+  //           ' đ';
+  //   return Row(
+  //     children: [
+  //       const SizedBox(
+  //         width: 16,
+  //       ),
+  //       Text(
+  //         _totalCost,
+  //         style: TextStyle(
+  //           fontSize: 16,
+  //           fontWeight: FontWeight.bold,
+  //           color: DefaultColors.ink500,
+  //         ),
+  //         overflow: TextOverflow.ellipsis,
+  //       ),
+  //     ],
+  //   );
+  // }
 }

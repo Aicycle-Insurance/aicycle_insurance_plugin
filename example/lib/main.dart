@@ -12,12 +12,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'SDK Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Demo'),
+      home: const MyHomePage(title: 'SDK Demo'),
     );
   }
 }
@@ -39,7 +39,9 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: ClaimFolderView(
-          sessionId: '20220916143853',
+          sessionId: '20220916144011',
+          // sessionId: '20220916144013',
+          // sessionId: '20220922144886',
           maDonVi: '016',
           phoneNumber: '0972795635',
           kieuCongViec: 'G',
@@ -59,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
           },
           // Liên hệ để có token key
           uTokenKey:
-              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMyIsImlhdCI6MTY2MzU1NDU5NCwiZXhwIjoxNjYzNjQwOTk0fQ.ufJqxYvRTLjmNhjZE_nKgQpG5KjmsC_5GOwJtwcrmUo'
+              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMyIsImlhdCI6MTY2MzkwMjYzMSwiZXhwIjoxNjYzOTg5MDMxfQ.yVGx5Mm2LdKRGjrOrvwaMd6JDezyGawBXTERYDydWv0'
           // 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNyIsImlhdCI6MTY2MTMwNzQ3OCwiZXhwIjoxNzQ3NzA3NDc4fQ.Uk9RRkXmVxCh9xoiOrzVlF6z2Yku9u8f1w6jHanY-V8',
           ),
     );

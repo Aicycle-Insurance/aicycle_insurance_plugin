@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../types/damage_result_model.dart';
 import '../../../src/constants/strings.dart';
-import '../../../src/utils/string_utils.dart';
+// import '../../../src/utils/string_utils.dart';
 
 class DamageResultCard extends StatelessWidget {
   const DamageResultCard({Key key, this.damageResult}) : super(key: key);
@@ -39,22 +39,22 @@ class DamageResultCard extends StatelessWidget {
             title: '${StringKeys.plan}:',
             damages: [damageResult.repairPlan],
           ),
-          _tableRow(
-            title: StringKeys.repaintPrice,
-            damages: [
-              StringUtils.formatPriceNumber(
-                      double.parse(damageResult.price.toString())) +
-                  ' đ'
-            ],
-          ),
-          _tableRow(
-            title: StringKeys.effortPrice,
-            damages: [
-              StringUtils.formatPriceNumber(
-                      double.parse(damageResult.laborCost.toString())) +
-                  ' đ'
-            ],
-          ),
+          // _tableRow(
+          //   title: StringKeys.repaintPrice,
+          //   damages: [
+          //     StringUtils.formatPriceNumber(
+          //             double.parse(damageResult.price.toString())) +
+          //         ' đ'
+          //   ],
+          // ),
+          // _tableRow(
+          //   title: StringKeys.effortPrice,
+          //   damages: [
+          //     StringUtils.formatPriceNumber(
+          //             double.parse(damageResult.laborCost.toString())) +
+          //         ' đ'
+          //   ],
+          // ),
           const SizedBox(height: 8),
           SizedBox(
             height: 72,

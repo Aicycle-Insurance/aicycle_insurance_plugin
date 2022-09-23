@@ -1,3 +1,5 @@
+import '../../src/common/dialog/process_dialog.dart';
+import '../../types/image_range.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -36,17 +38,18 @@ class PreviewAllImagePage extends StatefulWidget {
 class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
   final _toolbarHeight = 64.0;
   Rx<CameraArgument> currentArg;
-  var isSubmited = false.obs;
+  var isSubmited = true.obs;
 
   @override
   void initState() {
     super.initState();
     currentArg = Rx<CameraArgument>(widget.cameraArgument);
+    isSubmited.value = currentArg.value.partDirection.images
+        .every((element) => element.isSendToPti == true);
   }
 
   @override
   Widget build(BuildContext context) {
-    checkAssessmentSubmited();
     return WillPopScope(
       onWillPop: _willPop,
       child: Scaffold(
@@ -101,7 +104,11 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   OverViewSection(
-                    showDeleteAndRetake: !isSubmited.value,
+                    showDeleteAndRetake: !(currentArg
+                            .value.partDirection.overViewImages.isNotEmpty &&
+                        currentArg.value.partDirection.overViewImages.first
+                                .isSendToPti ==
+                            true),
                     imageUrl: currentArg
                             .value.partDirection.overViewImageFiles.isNotEmpty
                         ? currentArg.value.partDirection.overViewImageFiles
@@ -111,7 +118,13 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
                             ? currentArg
                                 .value.partDirection.overViewImages.first.url
                             : '',
-                    onRetake: () => _goToCameraPage(1),
+                    onRetake: () => _goToCameraPage(
+                      1,
+                      oldImageId: currentArg.value.partDirection
+                              .overViewImageFiles.first.imageId ??
+                          int.parse(currentArg.value.partDirection
+                              .overViewImages.first.imageId),
+                    ),
                     onDelete: () => _deleteImageById(
                       currentArg
                               .value.partDirection.overViewImageFiles.isNotEmpty
@@ -126,10 +139,12 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
                   const SizedBox(height: 16),
                   Expanded(
                     child: CloseViewSection(
-                      showDeleteAndRetake: !isSubmited.value,
                       imageFromServers: imageList,
                       imageFiles: imageFiles,
-                      onRetake: () => _goToCameraPage(2),
+                      onRetake: (rangeID, oldImageId) => _goToCameraPage(
+                        rangeID,
+                        oldImageId: oldImageId,
+                      ),
                       onDelete: (imageId) =>
                           _deleteImageById(imageId, rangeId: 2),
                     ),
@@ -207,33 +222,37 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
 
     if (confirm != null && confirm) {
       try {
+        ProgressDialog.showWithCircleIndicator(context);
         RestfulModule restfulModule = RestfulModuleImpl();
         var response = await restfulModule.delete(
-          Endpoints.deleteAllImageInClaim(currentArg.value.claimId),
+          Endpoints.deleteAllImageInClaim(widget.sessionId),
           token: widget.token,
           query: {
             'partDirectionId':
                 currentArg.value.partDirection.partDirectionId.toString(),
           },
         );
-        if (response.statusCode != 200) {
+        if (response.statusCode != 204) {
           widget.onError(response.statusMessage ?? 'Package error');
         } else {
-          setState(() {
-            currentArg.value.partDirection =
-                currentArg.value.partDirection.copyWith(
-              images: [],
-              imageFiles: [],
-              closeViewImageFiles: [],
-              closeViewImages: [],
-              imagesCount: 0,
-              middleViewImageFiles: [],
-              middleViewImages: [],
-              overViewImageFiles: [],
-              overViewImages: [],
-            );
-          });
+          await _geImageInPartDirection();
+          setState(() {});
+          // setState(() {
+          //   currentArg.value.partDirection =
+          //       currentArg.value.partDirection.copyWith(
+          //     images: [],
+          //     imageFiles: [],
+          //     closeViewImageFiles: [],
+          //     closeViewImages: [],
+          //     imagesCount: 0,
+          //     middleViewImageFiles: [],
+          //     middleViewImages: [],
+          //     overViewImageFiles: [],
+          //     overViewImages: [],
+          //   );
+          // });
         }
+        ProgressDialog.hide(context);
       } catch (e) {
         widget.onError(e.toString());
         rethrow;
@@ -241,17 +260,79 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
     }
   }
 
-  void _goToCameraPage(int rangeId) async {
+  Future<void> _geImageInPartDirection() async {
+    try {
+      RestfulModule restfulModule = RestfulModuleImpl();
+
+      /// Gọi lấy ảnh từng góc chụp
+      var response = await restfulModule.get(
+        Endpoints.getImageInCLaim(widget.sessionId),
+        token: widget.token,
+        query: {
+          "partDirectionId":
+              currentArg.value.partDirection.partDirectionId.toString(),
+        },
+      );
+      if (response.body != null) {
+        List result = response.body['data'];
+        List<AiImage> _images = result.map((e) => AiImage.fromJson(e)).toList();
+
+        /// Tạo list trung gian Gán ảnh vào part
+        List<AiImage> _overViewImages = [];
+        List<AiImage> _middleViewImages = [];
+        List<AiImage> _closeImages = [];
+        for (var _image in _images) {
+          switch (imageRangeIds[_image.imageRangeName]) {
+            case 1:
+              _overViewImages.add(_image);
+              break;
+            case 2:
+              _middleViewImages.add(_image);
+              break;
+            case 3:
+              _closeImages.add(_image);
+              break;
+          }
+        }
+
+        /// Gán ảnh vào part
+        currentArg.value.partDirection =
+            currentArg.value.partDirection.copyWith(
+          images: _images,
+          overViewImages: _overViewImages,
+          closeViewImages: _closeImages,
+          middleViewImages: _middleViewImages,
+          imageFiles: [],
+          overViewImageFiles: [],
+          closeViewImageFiles: [],
+          middleViewImageFiles: [],
+        );
+      } else {
+        if (widget.onError != null) {
+          widget.onError(response.statusMessage ?? 'Package error');
+        }
+      }
+    } catch (e) {
+      if (widget.onError != null) {
+        widget.onError('Package get images error: $e');
+      }
+      rethrow;
+    }
+  }
+
+  void _goToCameraPage(int rangeId, {int oldImageId}) async {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => CameraPage(
           token: widget.token,
           onError: widget.onError,
+          sessionId: widget.sessionId,
           cameraArgument: CameraArgument(
             partDirection: currentArg.value.partDirection,
             claimId: currentArg.value.claimId,
             imageRangeId: rangeId,
+            oldImageId: oldImageId,
             carBrand: currentArg.value.carBrand,
           ),
         ),
@@ -265,27 +346,27 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
     });
   }
 
-  Future<void> checkAssessmentSubmited() async {
-    try {
-      RestfulModule restfulModule = RestfulModuleImpl();
-      var response = await restfulModule.get(
-        Endpoints.checkDamageAssessmentSubmited(widget.sessionId),
-        token: widget.token,
-      );
-      if (response.statusCode == 200) {
-        if (response.body['isSendData'] == true) {
-          isSubmited(true);
-        } else {
-          isSubmited(false);
-        }
-      } else {
-        isSubmited(false);
-        widget.onError(response.statusMessage ?? 'Package error');
-      }
-    } catch (e) {
-      isSubmited(false);
-      widget.onError(e.toString());
-      rethrow;
-    }
-  }
+  // Future<void> checkAssessmentSubmited() async {
+  //   try {
+  //     RestfulModule restfulModule = RestfulModuleImpl();
+  //     var response = await restfulModule.get(
+  //       Endpoints.checkDamageAssessmentSubmited(widget.sessionId),
+  //       token: widget.token,
+  //     );
+  //     if (response.statusCode == 200) {
+  //       if (response.body['isSendData'] == true) {
+  //         isSubmited(true);
+  //       } else {
+  //         isSubmited(false);
+  //       }
+  //     } else {
+  //       isSubmited(false);
+  //       widget.onError(response.statusMessage ?? 'Package error');
+  //     }
+  //   } catch (e) {
+  //     isSubmited(false);
+  //     widget.onError(e.toString());
+  //     rethrow;
+  //   }
+  // }
 }

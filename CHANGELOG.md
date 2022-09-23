@@ -1,3 +1,12 @@
+## 0.1.4
+ - Sửa lỗi import file từ đường dẫn gián tiếp
+## 0.1.3
+ - Sửa lỗi cho phép xoá ảnh chưa submit sang PTI
+ - Sửa lỗi cập nhật bộ phận hỏng khi chụp cận cảnh 
+## 0.1.2
+ - Sửa lỗi cập nhật bộ phận hỏng khi chụp cận cảnh
+ - Cho phép chụp liên tiếp ảnh tổng quan
+ - Loại bỏ thư viện flushbar 
 ## 0.1.1
  - Sử dụng flutter_painter trong SDK
  - Loại bỏ key.properties trong example

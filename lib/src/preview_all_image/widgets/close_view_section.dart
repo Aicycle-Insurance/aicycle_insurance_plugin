@@ -1,3 +1,4 @@
+import '../../../types/image_range.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -12,15 +13,13 @@ class CloseViewSection extends StatelessWidget {
     Key key,
     this.imageFiles = const [],
     this.imageFromServers = const [],
-    this.showDeleteAndRetake,
     this.onRetake,
     this.onDelete,
   }) : super(key: key);
 
   final List<PickedFileWithId> imageFiles;
   final List<AiImage> imageFromServers;
-  final bool showDeleteAndRetake;
-  final Function() onRetake;
+  final Function(int rangeID, int oldImageId) onRetake;
   final Function(String imageId) onDelete;
 
   @override
@@ -58,7 +57,7 @@ class CloseViewSection extends StatelessWidget {
                   ],
                 ),
               ),
-              onPressed: onRetake,
+              onPressed: () => onRetake(2, null),
             )
           ],
         ),
@@ -72,20 +71,24 @@ class CloseViewSection extends StatelessWidget {
               children: [
                 ...imageFromServers.map((e) {
                   return PreviewImageContainer(
-                    showDeleteAndRetake: showDeleteAndRetake,
+                    showDeleteAndRetake: e.isSendToPti != true,
                     imageUrl: e.url,
                     onDelete: () =>
                         onDelete != null ? onDelete(e.imageId) : null,
-                    onRetake: onRetake,
+                    onRetake: () => onRetake(
+                      imageRangeIds[e.imageRangeName],
+                      int.parse(e.imageId) ?? 0,
+                    ),
                   );
                 }).toList(),
                 ...imageFiles.map((e) {
                   return PreviewImageContainer(
+                    showDeleteAndRetake: true,
                     imageUrl: e.file.path,
                     onDelete: () => onDelete != null
                         ? onDelete(e.imageId.toString())
                         : null,
-                    onRetake: onRetake,
+                    onRetake: () => onRetake(2, e.imageId),
                   );
                 }).toList()
               ]),
