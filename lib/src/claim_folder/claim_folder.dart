@@ -361,7 +361,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
 
   Widget _partDirectionsSection() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0).copyWith(bottom: 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -458,60 +458,68 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                                           ? null
                                           : paddingLeft,
                                   top: paddingTop,
-                                  child: Column(
-                                    crossAxisAlignment: isLeftPoint
-                                        ? CrossAxisAlignment.end
-                                        : isCenterPoint
-                                            ? CrossAxisAlignment.center
-                                            : CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.all(4),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(4),
-                                        ),
-                                        child: Text(
-                                          carDirection.value.partDirectionName,
-                                          style: const TextStyle(fontSize: 12),
-                                          maxLines: 2,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      if (allImageLength.value > 0)
+                                  child: GestureDetector(
+                                    onTap: allImageLength.value == 0
+                                        ? () => _goToCameraPage(carDirection)
+                                        : () => _goToPreviewPage(carDirection),
+                                    child: Column(
+                                      crossAxisAlignment: isLeftPoint
+                                          ? CrossAxisAlignment.end
+                                          : isCenterPoint
+                                              ? CrossAxisAlignment.center
+                                              : CrossAxisAlignment.start,
+                                      children: [
                                         Container(
                                           padding: const EdgeInsets.all(4),
                                           decoration: BoxDecoration(
-                                            color: DefaultColors.blue,
+                                            color: Colors.white,
                                             borderRadius:
                                                 BorderRadius.circular(4),
                                           ),
-                                          child: Text.rich(
-                                            TextSpan(
-                                              children: [
-                                                TextSpan(
-                                                  text:
-                                                      '${allImageLength.value}',
-                                                  style: const TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                const TextSpan(
-                                                  text:
-                                                      ' ${StringKeys.imageWord}',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 12,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                          child: Text(
+                                            carDirection
+                                                .value.partDirectionName,
+                                            style:
+                                                const TextStyle(fontSize: 12),
+                                            maxLines: 2,
                                           ),
                                         ),
-                                    ],
+                                        const SizedBox(height: 4),
+                                        if (allImageLength.value > 0)
+                                          Container(
+                                            padding: const EdgeInsets.all(4),
+                                            decoration: BoxDecoration(
+                                              color: DefaultColors.blue,
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                            child: Text.rich(
+                                              TextSpan(
+                                                children: [
+                                                  TextSpan(
+                                                    text:
+                                                        '${allImageLength.value}',
+                                                    style: const TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  const TextSpan(
+                                                    text:
+                                                        ' ${StringKeys.imageWord}',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
                                   ),
                                 );
                               });
@@ -768,8 +776,9 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
         {},
         token: widget.uTokenKey,
       );
-      ProgressDialog.hide(context);
       if (response.statusCode == 200 && response.body != null) {
+        await _getAllImageInClaimFolder();
+        ProgressDialog.hide(context);
         NotificationDialog.show(
           context,
           type: NotiType.success,
@@ -781,6 +790,7 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
           },
         );
       } else {
+        ProgressDialog.hide(context);
         NotificationDialog.show(
           context,
           type: NotiType.error,

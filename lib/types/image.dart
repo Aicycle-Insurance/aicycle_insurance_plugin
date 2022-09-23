@@ -138,20 +138,25 @@ class AiImage {
 class DamagePart {
   final String vehiclePartNamge;
   final String vehiclePartExcelId;
+  final int numOfCloseImage;
 
-  DamagePart({this.vehiclePartNamge, this.vehiclePartExcelId});
+  DamagePart(
+      {this.vehiclePartNamge, this.vehiclePartExcelId, this.numOfCloseImage});
   DamagePart copyWith({
     String vehiclePartNamge,
     String vehiclePartExcelId,
+    int numOfCloseImage,
   }) =>
       DamagePart(
         vehiclePartExcelId: vehiclePartExcelId ?? this.vehiclePartExcelId,
         vehiclePartNamge: vehiclePartNamge ?? this.vehiclePartNamge,
+        numOfCloseImage: numOfCloseImage ?? this.numOfCloseImage,
       );
 
   factory DamagePart.fromJson(Map<String, dynamic> json) => DamagePart(
         vehiclePartExcelId: json['vehiclePartExcelId'],
         vehiclePartNamge: json['vehiclePartName'],
+        numOfCloseImage: json['numOfCloseImage'] ?? 0,
       );
 }
 

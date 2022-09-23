@@ -38,7 +38,7 @@ class PreviewImageWithMask extends StatelessWidget {
             var carPartDamage =
                 damageAssess.value.carParts[i].carPartDamages[j];
             var color = damageClassColors[carPartDamage.className]
-                    ?.withOpacity(damageBaseOpacity) ??
+                    .withOpacity(damageBaseOpacity) ??
                 Colors.transparent;
             var box = carPartDamage.boxes;
 

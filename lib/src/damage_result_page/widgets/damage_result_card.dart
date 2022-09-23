@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../types/damage_result_model.dart';
 import '../../../src/constants/strings.dart';
-import '../../../src/utils/string_utils.dart';
+// import '../../../src/utils/string_utils.dart';
 
 class DamageResultCard extends StatelessWidget {
   const DamageResultCard({Key key, this.damageResult}) : super(key: key);

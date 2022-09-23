@@ -118,7 +118,13 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
                             ? currentArg
                                 .value.partDirection.overViewImages.first.url
                             : '',
-                    onRetake: () => _goToCameraPage(1),
+                    onRetake: () => _goToCameraPage(
+                      1,
+                      oldImageId: currentArg.value.partDirection
+                              .overViewImageFiles.first.imageId ??
+                          int.parse(currentArg.value.partDirection
+                              .overViewImages.first.imageId),
+                    ),
                     onDelete: () => _deleteImageById(
                       currentArg
                               .value.partDirection.overViewImageFiles.isNotEmpty
@@ -135,7 +141,10 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
                     child: CloseViewSection(
                       imageFromServers: imageList,
                       imageFiles: imageFiles,
-                      onRetake: () => _goToCameraPage(2),
+                      onRetake: (rangeID, oldImageId) => _goToCameraPage(
+                        rangeID,
+                        oldImageId: oldImageId,
+                      ),
                       onDelete: (imageId) =>
                           _deleteImageById(imageId, rangeId: 2),
                     ),
@@ -311,7 +320,7 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
     }
   }
 
-  void _goToCameraPage(int rangeId) async {
+  void _goToCameraPage(int rangeId, {int oldImageId}) async {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -323,6 +332,7 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
             partDirection: currentArg.value.partDirection,
             claimId: currentArg.value.claimId,
             imageRangeId: rangeId,
+            oldImageId: oldImageId,
             carBrand: currentArg.value.carBrand,
           ),
         ),

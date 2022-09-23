@@ -10,7 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../aicycle_insurance.dart';
-import '../../types/car_part.dart';
+// import '../../types/car_part.dart';
 import '../../types/damage_assessment.dart';
 import '../../src/common/dialog/notification_dialog.dart';
 import '../../src/drawing_tool/new_drawing_tool.dart';
@@ -62,8 +62,8 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
   TabController _tabController;
   Rx<PickedFile> _previewFile;
   Rx<DamageAssessmentModel> _damageAssessment;
-  var listCarPartFromMiddleView = <String, CarPart>{}.obs;
-  Rx<CarPart> _carPartOnSelected;
+  var listCarPartFromMiddleView = <String, DamagePart>{}.obs;
+  Rx<DamagePart> _carPartOnSelected;
   var previewUserMaskImagesBuffer = <Uint8List>[].obs;
   var isOverViewSubmited = false.obs;
 
@@ -100,24 +100,25 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
     for (var image in _currentArg.value.partDirection.images) {
       if (image.damageParts.isNotEmpty ?? false) {
         for (var part in image.damageParts) {
-          var _part = CarPart(
-            uuid: part.vehiclePartExcelId,
-            carPartBoxes: [0, 0, 0, 0],
-            carPartClassName: part.vehiclePartNamge ?? '',
-            carPartDamages: [],
-            carPartIsPart: true,
-            carPartMaskPath: '',
-            carPartMaskUrl: '',
-            color: Colors.amber,
-            carPartLocation: '',
-            carPartScore: 1,
-          );
-          listCarPartFromMiddleView[part.vehiclePartExcelId] = _part;
+          // var _part = CarPart(
+          //   uuid: part.vehiclePartExcelId,
+          //   carPartBoxes: [0, 0, 0, 0],
+          //   carPartClassName: part.vehiclePartNamge ?? '',
+          //   carPartDamages: [],
+          //   carPartIsPart: true,
+          //   carPartMaskPath: '',
+          //   carPartMaskUrl: '',
+          //   color: Colors.amber,
+          //   carPartLocation: '',
+          //   carPartScore: 1,
+          // );
+          listCarPartFromMiddleView[part.vehiclePartExcelId] = part;
         }
       }
     }
     if (listCarPartFromMiddleView.isNotEmpty) {
-      _carPartOnSelected = Rx<CarPart>(listCarPartFromMiddleView.values.first);
+      _carPartOnSelected =
+          Rx<DamagePart>(listCarPartFromMiddleView.values.first);
     }
   }
 
@@ -369,8 +370,9 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 Text(
-                                                  _carPartOnSelected
-                                                      .value.carPartClassName,
+                                                  _carPartOnSelected.value
+                                                          .vehiclePartNamge ??
+                                                      '',
                                                   style: const TextStyle(
                                                     color: Colors.white,
                                                     fontWeight: FontWeight.w500,
@@ -492,14 +494,27 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                     // minLeadingWidth: 30,
                     leading: SizedBox(
                       width: 24,
-                      child: e.uuid == _carPartOnSelected.value.uuid
+                      child: e.vehiclePartExcelId ==
+                              _carPartOnSelected.value.vehiclePartExcelId
                           ? const Icon(
                               Icons.check,
                               color: DefaultColors.green400,
                             )
                           : null,
                     ),
-                    title: Text(e.carPartClassName),
+                    title: Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: e.vehiclePartNamge ?? '',
+                          ),
+                          TextSpan(
+                            text: ' (${e.numOfCloseImage.toString()} ảnh)',
+                            style: TextStyle(color: DefaultColors.ink400),
+                          )
+                        ],
+                      ),
+                    ),
                   ),
                 )
                 .toList(),
@@ -640,8 +655,10 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
             "filePath": uploadResponse.filePath,
             "imageRangeId": currentTabIndex.value + 1,
             "partDirectionId": _currentArg.value.partDirection.partDirectionId,
-            "vehiclePartExcelId":
-                currentTabIndex.value == 2 ? _carPartOnSelected.value.uuid : '',
+            "vehiclePartExcelId": currentTabIndex.value == 2
+                ? _carPartOnSelected.value.vehiclePartExcelId
+                : '',
+            "oldImageId": _currentArg.value.oldImageId
           },
           token: widget.token,
         );
@@ -826,18 +843,19 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
         }
 
         /// Gán ảnh vào part
-        _currentArg.value.partDirection =
-            _currentArg.value.partDirection.copyWith(
-          images: _images,
-          overViewImages: _overViewImages,
-          closeViewImages: _closeImages,
-          middleViewImages: _middleViewImages,
-          imageFiles: [],
-          overViewImageFiles: [],
-          closeViewImageFiles: [],
-          middleViewImageFiles: [],
-        );
-        print(_currentArg.value.partDirection.closeViewImages.length);
+        setState(() {
+          _currentArg.value.partDirection =
+              _currentArg.value.partDirection.copyWith(
+            images: _images,
+            overViewImages: _overViewImages,
+            closeViewImages: _closeImages,
+            middleViewImages: _middleViewImages,
+            imageFiles: [],
+            overViewImageFiles: [],
+            closeViewImageFiles: [],
+            middleViewImageFiles: [],
+          );
+        });
       } else {
         if (widget.onError != null) {
           widget.onError(response.statusMessage ?? 'Package error');
