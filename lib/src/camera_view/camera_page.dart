@@ -667,7 +667,6 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
             switch (currentTabIndex.value) {
               case 0:
               case 1:
-                _checkInitCarPart();
                 _damageAssessment.value =
                     DamageAssessmentModel.fromJson(callEngineResponse.body);
                 break;
@@ -682,6 +681,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                 );
                 break;
             }
+            _checkInitCarPart();
             if (hasLoading) ProgressDialog.hide(context);
             // if (currentTabIndex.value != 2) {
             //   _damageAssessment.value =
