@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:aicycle_insurance_non_null_safety/src/constants/colors.dart';
-import 'package:aicycle_insurance_non_null_safety/types/summary_image.dart';
+import '../../src/constants/colors.dart';
+import '../../types/summary_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:flutter/cupertino.dart';

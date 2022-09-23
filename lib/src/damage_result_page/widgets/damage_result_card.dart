@@ -39,22 +39,22 @@ class DamageResultCard extends StatelessWidget {
             title: '${StringKeys.plan}:',
             damages: [damageResult.repairPlan],
           ),
-          _tableRow(
-            title: StringKeys.repaintPrice,
-            damages: [
-              StringUtils.formatPriceNumber(
-                      double.parse(damageResult.price.toString())) +
-                  ' đ'
-            ],
-          ),
-          _tableRow(
-            title: StringKeys.effortPrice,
-            damages: [
-              StringUtils.formatPriceNumber(
-                      double.parse(damageResult.laborCost.toString())) +
-                  ' đ'
-            ],
-          ),
+          // _tableRow(
+          //   title: StringKeys.repaintPrice,
+          //   damages: [
+          //     StringUtils.formatPriceNumber(
+          //             double.parse(damageResult.price.toString())) +
+          //         ' đ'
+          //   ],
+          // ),
+          // _tableRow(
+          //   title: StringKeys.effortPrice,
+          //   damages: [
+          //     StringUtils.formatPriceNumber(
+          //             double.parse(damageResult.laborCost.toString())) +
+          //         ' đ'
+          //   ],
+          // ),
           const SizedBox(height: 8),
           SizedBox(
             height: 72,

@@ -33,26 +33,26 @@ class DamageResultBottomBar extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            //   child: Row(
+            //     children: [
+            //       Text(
+            //         StringKeys.totalPrice,
+            //         style: TextStyle(fontSize: 14, color: DefaultColors.ink400),
+            //       ),
+            //       const SizedBox(width: 8),
+            //       Expanded(child: _totalCost())
+            //     ],
+            //   ),
+            // ),
+            // Divider(
+            //   thickness: 1,
+            //   height: 1,
+            //   color: DefaultColors.ink100,
+            // ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: Row(
-                children: [
-                  Text(
-                    StringKeys.totalPrice,
-                    style: TextStyle(fontSize: 14, color: DefaultColors.ink400),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(child: _totalCost())
-                ],
-              ),
-            ),
-            Divider(
-              thickness: 1,
-              height: 1,
-              color: DefaultColors.ink100,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
                   Expanded(

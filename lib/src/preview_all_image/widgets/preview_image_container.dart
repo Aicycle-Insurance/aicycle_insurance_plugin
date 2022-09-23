@@ -24,7 +24,7 @@ class PreviewImageContainer extends StatelessWidget {
       decoration: BoxDecoration(
         image: imageUrl.startsWith('https')
             ? DecorationImage(
-                image: CachedNetworkImageProvider(imageUrl),
+                image: CachedNetworkImageProvider(imageUrl, cacheKey: imageUrl),
                 fit: BoxFit.cover,
               )
             : DecorationImage(

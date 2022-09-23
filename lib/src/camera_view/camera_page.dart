@@ -647,65 +647,84 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
         );
         if (callEngineResponse.statusCode == 200) {
           _geImageInPartDirection().whenComplete(() {
-            if (currentTabIndex.value != 2) {
-              _damageAssessment.value =
-                  DamageAssessmentModel.fromJson(callEngineResponse.body);
-            } else {
-              _damageAssessment.value = DamageAssessmentModel(
-                carDamages: [],
-                carParts: [],
-                imageId:
-                    int.parse(callEngineResponse.body['imageId'].toString()),
-                imageSize: [],
-                imgUrl: '',
-              );
-            }
-
-            /// gán chi tiết từng góc ảnh
             switch (currentTabIndex.value) {
               case 0:
-                // var temp =
-                //     _currentArg.value.partDirection.overViewImageFiles.toList();
-                // temp.assignAll([
-                //   PickedFileWithId(
-                //     imageId: _damageAssessment.value.imageId,
-                //     file: _previewFile.value,
-                //   )
-                // ]);
-                // _currentArg.value.partDirection = _currentArg.value.partDirection
-                //     .copyWith(overViewImageFiles: temp);
-                // _currentArg.value.partDirection.overViewImageFiles = temp;
-
-                /// thêm danh sách các bộ phận có hư hại để chụp cận cảnh
-                // checkDamageCarPart();
-                _checkInitCarPart();
-                break;
               case 1:
-                // var temp =
-                //     _currentArg.value.partDirection.middleViewImageFiles.toList();
-                // temp.add(PickedFileWithId(
-                //   imageId: _damageAssessment.value.imageId,
-                //   file: _previewFile.value,
-                // ));
-                // _currentArg.value.partDirection = _currentArg.value.partDirection
-                //     .copyWith(middleViewImageFiles: temp);
-                // _currentArg.value.partDirection.middleViewImageFiles = temp;
-
-                /// thêm danh sách các bộ phận có hư hại để chụp cận cảnh
-                // checkDamageCarPart();
                 _checkInitCarPart();
+                _damageAssessment.value =
+                    DamageAssessmentModel.fromJson(callEngineResponse.body);
                 break;
               case 2:
-                // var temp =
-                //     _currentArg.value.partDirection.closeViewImageFiles.toList();
-                // temp.add(PickedFileWithId(
-                //   imageId: _damageAssessment.value.imageId,
-                //   file: _previewFile.value,
-                // ));
-                // _currentArg.value.partDirection = _currentArg.value.partDirection
-                //     .copyWith(closeViewImageFiles: temp);
+                _damageAssessment.value = DamageAssessmentModel(
+                  carDamages: [],
+                  carParts: [],
+                  imageId:
+                      int.parse(callEngineResponse.body['imageId'].toString()),
+                  imageSize: [],
+                  imgUrl: '',
+                );
                 break;
             }
+            if (hasLoading) ProgressDialog.hide(context);
+            // if (currentTabIndex.value != 2) {
+            //   _damageAssessment.value =
+            //       DamageAssessmentModel.fromJson(callEngineResponse.body);
+            // } else {
+            //   _damageAssessment.value = DamageAssessmentModel(
+            //     carDamages: [],
+            //     carParts: [],
+            //     imageId:
+            //         int.parse(callEngineResponse.body['imageId'].toString()),
+            //     imageSize: [],
+            //     imgUrl: '',
+            //   );
+            // }
+
+            /// gán chi tiết từng góc ảnh
+            // switch (currentTabIndex.value) {
+            //   case 0:
+            // var temp =
+            //     _currentArg.value.partDirection.overViewImageFiles.toList();
+            // temp.assignAll([
+            //   PickedFileWithId(
+            //     imageId: _damageAssessment.value.imageId,
+            //     file: _previewFile.value,
+            //   )
+            // ]);
+            // _currentArg.value.partDirection = _currentArg.value.partDirection
+            //     .copyWith(overViewImageFiles: temp);
+            // _currentArg.value.partDirection.overViewImageFiles = temp;
+
+            /// thêm danh sách các bộ phận có hư hại để chụp cận cảnh
+            // checkDamageCarPart();
+            //   _checkInitCarPart();
+            //   break;
+            // case 1:
+            // var temp =
+            //     _currentArg.value.partDirection.middleViewImageFiles.toList();
+            // temp.add(PickedFileWithId(
+            //   imageId: _damageAssessment.value.imageId,
+            //   file: _previewFile.value,
+            // ));
+            // _currentArg.value.partDirection = _currentArg.value.partDirection
+            //     .copyWith(middleViewImageFiles: temp);
+            // _currentArg.value.partDirection.middleViewImageFiles = temp;
+
+            /// thêm danh sách các bộ phận có hư hại để chụp cận cảnh
+            // checkDamageCarPart();
+            //   _checkInitCarPart();
+            //   break;
+            // case 2:
+            // var temp =
+            //     _currentArg.value.partDirection.closeViewImageFiles.toList();
+            // temp.add(PickedFileWithId(
+            //   imageId: _damageAssessment.value.imageId,
+            //   file: _previewFile.value,
+            // ));
+            // _currentArg.value.partDirection = _currentArg.value.partDirection
+            //     .copyWith(closeViewImageFiles: temp);
+            // break;
+            // }
           });
 
           /// gán ảnh cho part direction
@@ -719,9 +738,12 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
           // _currentArg.value.partDirection =
           //     _currentArg.value.partDirection.copyWith(imageFiles: temp);
 
+        } else {
+          if (hasLoading) ProgressDialog.hide(context);
         }
+      } else {
+        if (hasLoading) ProgressDialog.hide(context);
       }
-      if (hasLoading) ProgressDialog.hide(context);
     } catch (e) {
       widget.onError('Package error: $e');
     }
@@ -815,6 +837,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
           closeViewImageFiles: [],
           middleViewImageFiles: [],
         );
+        print(_currentArg.value.partDirection.closeViewImages.length);
       } else {
         if (widget.onError != null) {
           widget.onError(response.statusMessage ?? 'Package error');

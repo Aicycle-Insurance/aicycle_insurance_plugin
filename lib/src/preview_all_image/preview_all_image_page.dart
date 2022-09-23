@@ -38,7 +38,7 @@ class PreviewAllImagePage extends StatefulWidget {
 class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
   final _toolbarHeight = 64.0;
   Rx<CameraArgument> currentArg;
-  var isSubmited = false.obs;
+  var isSubmited = true.obs;
 
   @override
   void initState() {
