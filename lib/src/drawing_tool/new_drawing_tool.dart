@@ -414,7 +414,8 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
                                               ),
                                               child: Center(
                                                 child: Icon(
-                                                  PhosphorIcons.arrows_out,
+                                                  Icons.zoom_out_map_rounded,
+                                                  // PhosphorIcons.arrows_out,
                                                   color: isScaling()
                                                       ? DefaultColors.blue
                                                       : Colors.white54,
