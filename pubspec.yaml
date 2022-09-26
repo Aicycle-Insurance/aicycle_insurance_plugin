@@ -21,7 +21,8 @@ dependencies:
   flutter_image_compress: ^0.7.0
   camerawesome: ^0.2.2
   path: ^1.7.0
-  flutter_phosphor_icons: ^0.0.1+3
+  font_awesome_flutter: ^8.8.1
+  # flutter_phosphor_icons: ^0.0.1+3
   image: ^2.1.19
   nanoid: ^0.1.0
   vector_math: ^2.1.0-nullsafety.3

@@ -6,7 +6,8 @@ import 'dart:ui' as ui;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_phosphor_icons/flutter_phosphor_icons.dart';
+// import 'package:flutter_phosphor_icons/flutter_phosphor_icons.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:image/image.dart' as imageplugin;
 import 'package:mime/mime.dart' as mime;
@@ -392,7 +393,8 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
                                               ),
                                               child: Center(
                                                 child: Icon(
-                                                  PhosphorIcons.eraser,
+                                                  FontAwesomeIcons.eraser,
+                                                  // PhosphorIcons.eraser,
                                                   color: isErasing()
                                                       ? DefaultColors.blue
                                                       : Colors.white54,
