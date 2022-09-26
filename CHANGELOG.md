@@ -1,3 +1,6 @@
+## 0.1.5
+ - Đếm số lượng ảnh cận cảnh theo từng loại thiệt hại
+ - Sửa lỗi chụp ảnh thay thế 
 ## 0.1.4
  - Sửa lỗi import file từ đường dẫn gián tiếp
 ## 0.1.3

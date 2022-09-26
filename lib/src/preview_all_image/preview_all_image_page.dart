@@ -100,6 +100,14 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
                   .addAll(currentArg.value.partDirection.middleViewImageFiles);
               imageFiles
                   .addAll(currentArg.value.partDirection.closeViewImageFiles);
+              int _oldImageId =
+                  currentArg.value.partDirection.overViewImageFiles.isNotEmpty
+                      ? currentArg
+                          .value.partDirection.overViewImageFiles.first.imageId
+                      : currentArg.value.partDirection.overViewImages.isNotEmpty
+                          ? int.parse(currentArg
+                              .value.partDirection.overViewImages.first.imageId)
+                          : null;
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -120,10 +128,7 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
                             : '',
                     onRetake: () => _goToCameraPage(
                       1,
-                      oldImageId: currentArg.value.partDirection
-                              .overViewImageFiles.first.imageId ??
-                          int.parse(currentArg.value.partDirection
-                              .overViewImages.first.imageId),
+                      oldImageId: _oldImageId,
                     ),
                     onDelete: () => _deleteImageById(
                       currentArg
