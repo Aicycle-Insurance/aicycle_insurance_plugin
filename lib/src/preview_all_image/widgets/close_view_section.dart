@@ -1,3 +1,5 @@
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 import '../../../types/image_range.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +45,8 @@ class CloseViewSection extends StatelessWidget {
                 child: Row(
                   children: const [
                     Icon(
-                      CupertinoIcons.camera,
+                      // CupertinoIcons.camera,
+                      FontAwesomeIcons.camera,
                       size: 18,
                       color: DefaultColors.blue,
                     ),

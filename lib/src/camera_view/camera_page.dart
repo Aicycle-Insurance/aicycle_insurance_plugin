@@ -5,6 +5,7 @@ import 'dart:collection';
 import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
@@ -189,7 +190,8 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                     ),
                     padding: const EdgeInsets.all(2),
                     child: const Icon(
-                      CupertinoIcons.photo_on_rectangle,
+                      // CupertinoIcons.photo_on_rectangle,
+                      FontAwesomeIcons.images,
                       size: 28,
                       color: Colors.black,
                     ),

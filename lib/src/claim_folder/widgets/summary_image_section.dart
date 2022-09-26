@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 // import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
 
@@ -76,7 +77,8 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
                   child: Row(
                     children: const [
                       Icon(
-                        CupertinoIcons.camera,
+                        // CupertinoIcons.camera,
+                        FontAwesomeIcons.camera,
                         size: 18,
                         color: DefaultColors.blue,
                       ),
