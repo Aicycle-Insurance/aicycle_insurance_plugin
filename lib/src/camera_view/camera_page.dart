@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:collection';
 
 import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:flutter/cupertino.dart';
@@ -77,6 +78,9 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
   /// khung chụp
   var scaleImageValue = 1.0.obs;
 
+  /// queue ảnh cận cảnh
+  final Queue<File> overViewImageQueue = Queue();
+
   @override
   void initState() {
     super.initState();
@@ -116,7 +120,8 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
         }
       }
     }
-    if (listCarPartFromMiddleView.isNotEmpty) {
+    if (listCarPartFromMiddleView.isNotEmpty &&
+        (_carPartOnSelected == null || _carPartOnSelected.value == null)) {
       _carPartOnSelected =
           Rx<DamagePart>(listCarPartFromMiddleView.values.first);
     }
@@ -757,9 +762,25 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
 
         } else {
           if (hasLoading) ProgressDialog.hide(context);
+          NotificationDialog.show(
+            context,
+            type: NotiType.error,
+            content: 'Tải ảnh lên không thành công',
+            confirmCallBack: () {
+              _previewFile.value = null;
+            },
+          );
         }
       } else {
         if (hasLoading) ProgressDialog.hide(context);
+        NotificationDialog.show(
+          context,
+          type: NotiType.error,
+          content: 'Tải ảnh lên không thành công',
+          confirmCallBack: () {
+            _previewFile.value = null;
+          },
+        );
       }
     } catch (e) {
       widget.onError('Package error: $e');

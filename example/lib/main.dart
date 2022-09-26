@@ -39,9 +39,9 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: ClaimFolderView(
-        sessionId: '20220916144011',
+        // sessionId: '20220916144011',
         // sessionId: '20220916144013', // a Trung
-        // sessionId: '20220922144886', // chị Diệp
+        sessionId: '20220922144886', // chị Diệp
         maDonVi: '016',
         phoneNumber: '0972795635',
         kieuCongViec: 'G',
