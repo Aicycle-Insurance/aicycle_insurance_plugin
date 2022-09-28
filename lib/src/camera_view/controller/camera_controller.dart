@@ -71,7 +71,7 @@ class CameraController extends GetxController
 
   void checkInitCarPart() {
     listCarPartFromMiddleView.clear();
-    for (var image in currentArg.value.partDirection.images) {
+    for (var image in currentArg.value.partDirection.value.images) {
       if (image.damageParts.isNotEmpty ?? false) {
         for (var part in image.damageParts) {
           listCarPartFromMiddleView[part.vehiclePartExcelId] = part;
@@ -86,10 +86,10 @@ class CameraController extends GetxController
   }
 
   void checkSubmited() {
-    if (currentArg.value.partDirection.overViewImages.isNotEmpty) {
-      isOverViewSubmited.value =
-          currentArg.value.partDirection.overViewImages.first.isSendToPti ??
-              false;
+    if (currentArg.value.partDirection.value.overViewImages.isNotEmpty) {
+      isOverViewSubmited.value = currentArg
+              .value.partDirection.value.overViewImages.first.isSendToPti ??
+          false;
     }
   }
 
@@ -258,7 +258,8 @@ class CameraController extends GetxController
             "imageName": uploadResponse.imageName,
             "filePath": uploadResponse.filePath,
             "imageRangeId": currentTabIndex.value + 1,
-            "partDirectionId": currentArg.value.partDirection.partDirectionId,
+            "partDirectionId":
+                currentArg.value.partDirection.value.partDirectionId,
             "vehiclePartExcelId": currentTabIndex.value == 2
                 ? carPartOnSelected.value.vehiclePartExcelId
                 : '',
@@ -320,22 +321,22 @@ class CameraController extends GetxController
     switch (currentArg.value.carBrand) {
       //Check loại xe để lấy khung tương ứng với ảnh
       case CarBrandType.kiaMorning:
-        imagePath = currentArg.value.partDirection.meta.kiaChassisPath;
+        imagePath = currentArg.value.partDirection.value.meta.kiaChassisPath;
         break;
       case CarBrandType.toyotaInnova:
-        imagePath = currentArg.value.partDirection.meta.innovaChassisPath;
+        imagePath = currentArg.value.partDirection.value.meta.innovaChassisPath;
         break;
       case CarBrandType.toyotaCross:
-        imagePath = currentArg.value.partDirection.meta.chassisPath;
+        imagePath = currentArg.value.partDirection.value.meta.chassisPath;
         break;
       case CarBrandType.mazdaCX5:
-        imagePath = currentArg.value.partDirection.meta.chassisPath;
+        imagePath = currentArg.value.partDirection.value.meta.chassisPath;
         break;
       case CarBrandType.toyotaVios:
-        imagePath = currentArg.value.partDirection.meta.viosChassisPath;
+        imagePath = currentArg.value.partDirection.value.meta.viosChassisPath;
         break;
       default:
-        imagePath = currentArg.value.partDirection.meta.kiaChassisPath;
+        imagePath = currentArg.value.partDirection.value.meta.kiaChassisPath;
         break;
     }
     return imagePath;
@@ -351,7 +352,7 @@ class CameraController extends GetxController
         token: currentArg.value.token,
         query: {
           "partDirectionId":
-              currentArg.value.partDirection.partDirectionId.toString(),
+              currentArg.value.partDirection.value.partDirectionId.toString(),
         },
       );
       if (response.body != null) {
@@ -377,8 +378,8 @@ class CameraController extends GetxController
         }
 
         /// Gán ảnh vào part
-        currentArg.value.partDirection =
-            currentArg.value.partDirection.copyWith(
+        currentArg.value.partDirection.value =
+            currentArg.value.partDirection.value.copyWith(
           images: _images,
           overViewImages: _overViewImages,
           closeViewImages: _closeImages,
@@ -388,7 +389,7 @@ class CameraController extends GetxController
           closeViewImageFiles: [],
           middleViewImageFiles: [],
         );
-        currentTabIndex.value = currentTabIndex.value;
+        update(['camera-bottom-bar']);
       } else {
         if (currentArg.value.onError != null) {
           currentArg.value.onError(response.statusMessage ?? 'Package error');

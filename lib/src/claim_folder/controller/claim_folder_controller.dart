@@ -368,17 +368,17 @@ class ClaimFolderController extends GetxController {
         builder: (context) => PreviewAllImagePage(
           cameraArgument: CameraArgument(
             carBrand: carBrand,
-            partDirection: partDirection.value,
+            partDirection: partDirection,
             claimId: claimID.value,
             imageRangeId: 1,
+            sessionId: claimArgument.sessionId,
+            token: claimArgument.uTokenKey,
+            onError: (message) {
+              if (claimArgument.onError != null) {
+                claimArgument.onError(message);
+              }
+            },
           ),
-          sessionId: claimArgument.sessionId,
-          token: claimArgument.uTokenKey,
-          onError: (message) {
-            if (claimArgument.onError != null) {
-              claimArgument.onError(message);
-            }
-          },
         ),
       ),
     ).then((value) {
@@ -398,7 +398,7 @@ class ClaimFolderController extends GetxController {
       MaterialPageRoute(
         builder: (context) => CameraPage(
           cameraArgument: CameraArgument(
-            partDirection: partDirection.value,
+            partDirection: partDirection,
             claimId: claimID.value,
             imageRangeId: 1,
             carBrand: carBrand,
@@ -410,7 +410,7 @@ class ClaimFolderController extends GetxController {
       ),
     ).then((value) {
       if (value is CameraArgument) {
-        partDirection.value = value.partDirection;
+        partDirection.value = value.partDirection.value;
       }
       getAllImageInClaimFolder();
     });

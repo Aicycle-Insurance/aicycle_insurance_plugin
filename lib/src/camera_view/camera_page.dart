@@ -81,8 +81,8 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                 Center(
                   child: Obx(
                     () => Text(
-                      controller
-                          .currentArg.value.partDirection.partDirectionName,
+                      controller.currentArg.value.partDirection.value
+                          .partDirectionName,
                       style: const TextStyle(
                           color: Colors.white, fontWeight: FontWeight.w500),
                     ),

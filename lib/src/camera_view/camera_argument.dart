@@ -1,8 +1,9 @@
+import 'package:get/get.dart';
 import '../../types/part_direction.dart';
 import '../constants/car_brand.dart';
 
 class CameraArgument {
-  PartDirection partDirection;
+  Rx<PartDirection> partDirection;
   final String claimId;
   final int imageRangeId;
   final int oldImageId;
