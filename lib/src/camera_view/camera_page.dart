@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:collection';
 
 import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:flutter/cupertino.dart';
@@ -58,8 +57,6 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
   final double toolbarHeight = 80.0;
 
   var currentTabIndex = 0.obs;
-  final scaffoldKey = GlobalKey<ScaffoldState>();
-
   Rx<CameraArgument> _currentArg;
   TabController _tabController;
   Rx<PickedFile> _previewFile;
@@ -79,9 +76,6 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
   /// khung chụp
   var scaleImageValue = 1.0.obs;
 
-  /// queue ảnh cận cảnh
-  final Queue<File> overViewImageQueue = Queue();
-
   @override
   void initState() {
     super.initState();
@@ -97,6 +91,11 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
 
   @override
   dispose() {
+    _tabController.dispose();
+    flashMode.dispose();
+    sensor.dispose();
+    captureMode.dispose();
+    photoSize.dispose();
     super.dispose();
   }
 
@@ -143,7 +142,6 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
       child: DefaultTabController(
         length: 3,
         child: Scaffold(
-          key: scaffoldKey,
           appBar: AppBar(
             automaticallyImplyLeading: false,
             elevation: 0,
@@ -427,8 +425,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                               _previewFile.value != null &&
                               currentTabIndex.value != 2)
                             NewDrawingToolLayer(
-                              damageAssess: Rx<DamageAssessmentModel>(
-                                  _damageAssessment.value),
+                              damageAssess: _damageAssessment,
                               imageUrl: _previewFile.value.path,
                               onCancelCallBack: () {
                                 _damageAssessment.value = null;
@@ -436,6 +433,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                                 _autoSwitchTab();
                               },
                               onSaveCallBack: (buffer, reDamageAssessment) {
+                                previewUserMaskImagesBuffer.clear();
                                 _damageAssessment.value = reDamageAssessment;
                                 previewUserMaskImagesBuffer.assignAll(buffer);
                                 // checkDamageCarPart();

@@ -16,6 +16,21 @@ class DamageAssessmentModel {
     this.carParts,
   });
 
+  DamageAssessmentModel copyWith({
+    int imageId,
+    String imgUrl,
+    List<dynamic> imageSize,
+    List<DamageModel> carDamages,
+    List<CarPart> carParts,
+  }) =>
+      DamageAssessmentModel(
+        imageId: imageId ?? this.imageId,
+        imgUrl: imgUrl ?? this.imgUrl,
+        imageSize: imageSize ?? this.imageSize,
+        carDamages: carDamages ?? this.carDamages,
+        carParts: carParts ?? this.carParts,
+      );
+
   factory DamageAssessmentModel.fromJson(Map<String, dynamic> json) {
     List<dynamic> _results = json['result']['results']['Results'];
     Map<String, dynamic> _result = _results.first;
