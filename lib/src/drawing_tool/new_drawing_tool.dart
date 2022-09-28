@@ -228,6 +228,7 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
                             child: FlutterPainter(
                               key: painterKey,
                               controller: paintController,
+                              onDrawableDeleted: (a) {},
                             ),
                           ),
                         ),
@@ -694,6 +695,7 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
   }
 
   void finishAnnotate() async {
+    previewUserMaskImagesBuffer.clear();
     paintController.freeStyleMode = FreeStyleMode.none;
     ProgressDialog.showWithCircleIndicator(context, isLandScape: true);
     await saveDamageMask();
@@ -780,7 +782,8 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
         token: widget.token,
       );
       if (editResponse != null) {
-        return DamageAssessmentModel.fromJson(editResponse.body);
+        return DamageAssessmentModel.fromJson(editResponse.body)
+            .copyWith(imageId: widget.damageAssess.value.imageId);
       }
       return null;
       // if (!isReAssessment) {
