@@ -120,11 +120,6 @@ class _DamageResultPageState extends State<DamageResultPage> {
           content: StringKeys.saveSuccessfuly,
           confirmCallBack: () {},
         );
-        // CommonSnackbar.show(
-        //   context,
-        //   message: StringKeys.saveSuccessfuly,
-        //   type: SnackbarType.success,
-        // );
       } else {
         NotificationDialog.show(
           context,
@@ -132,11 +127,6 @@ class _DamageResultPageState extends State<DamageResultPage> {
           content: StringKeys.haveError,
           confirmCallBack: () {},
         );
-        // CommonSnackbar.show(
-        //   context,
-        //   message: StringKeys.haveError,
-        //   type: SnackbarType.error,
-        // );
         if (widget.onError != null) {
           widget.onError('Package error: http code ${response.statusCode}');
         }

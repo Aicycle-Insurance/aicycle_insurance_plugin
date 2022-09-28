@@ -85,26 +85,6 @@ class _SummaryCameraPageState extends State<SummaryCameraPage> {
                 height: 60,
                 width: 60,
               )
-              // CupertinoButton(
-              //   padding: EdgeInsets.zero,
-              //   minSize: 0,
-              //   child: Container(
-              //     height: 60,
-              //     width: 60,
-              //     decoration: BoxDecoration(
-              //       shape: BoxShape.circle,
-              //       color: DefaultColors.ink100,
-              //       border: Border.all(width: 1, color: DefaultColors.ink100),
-              //     ),
-              //     padding: const EdgeInsets.all(2),
-              //     child: const Icon(
-              //       CupertinoIcons.photo_on_rectangle,
-              //       size: 28,
-              //       color: Colors.black,
-              //     ),
-              //   ),
-              //   onPressed: _galleryPicker,
-              // )
             ],
           ),
         ),
@@ -189,6 +169,4 @@ class _SummaryCameraPageState extends State<SummaryCameraPage> {
     Navigator.pop(context, _images);
     return false;
   }
-
-  // _galleryPicker() {}
 }
