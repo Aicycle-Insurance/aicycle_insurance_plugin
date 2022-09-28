@@ -41,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: ClaimFolderView(
         sessionId: '20220916144011',
         // sessionId: '20220916144013', // a Trung
-        // sessionId: '20220926145464', // chị Diệp
+        // sessionId: '20220922144888', // chị Diệp
         maDonVi: '016',
         phoneNumber: '0972795635',
         kieuCongViec: 'G',
@@ -50,8 +50,8 @@ class _MyHomePageState extends State<MyHomePage> {
         maDonViNguoiDangNhap: '090',
         maGiamDinhVien: 'LDH',
         bienSoXe: '29A1223',
-        hangXe: 'ACURA',
-        hieuXe: 'CL',
+        hangXe: 'TOYOTA',
+        hieuXe: 'VIOS E',
         onGetResultCallBack: (data) {
           print(data.toString());
         },

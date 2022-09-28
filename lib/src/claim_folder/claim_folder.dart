@@ -747,14 +747,14 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
       context,
       MaterialPageRoute(
         builder: (context) => CameraPage(
-          token: widget.uTokenKey,
-          sessionId: widget.sessionId,
-          onError: widget.onError ?? (message) {},
           cameraArgument: CameraArgument(
             partDirection: partDirection.value,
             claimId: claimId.value,
             imageRangeId: 1,
             carBrand: carBrand,
+            token: widget.uTokenKey,
+            sessionId: widget.sessionId,
+            onError: widget.onError ?? (message) {},
           ),
         ),
       ),

@@ -330,15 +330,18 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
       context,
       MaterialPageRoute(
         builder: (context) => CameraPage(
-          token: widget.token,
-          onError: widget.onError,
-          sessionId: widget.sessionId,
+          // token: widget.token,
+          // onError: widget.onError,
+          // sessionId: widget.sessionId,
           cameraArgument: CameraArgument(
             partDirection: currentArg.value.partDirection,
             claimId: currentArg.value.claimId,
             imageRangeId: rangeId,
             oldImageId: oldImageId,
             carBrand: currentArg.value.carBrand,
+            token: widget.token,
+            onError: widget.onError,
+            sessionId: widget.sessionId,
           ),
         ),
       ),
