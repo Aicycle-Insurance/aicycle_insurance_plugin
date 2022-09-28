@@ -194,9 +194,9 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
 
   void initPartDirection() {
     _front45Left = Rx<PartDirection>(PartDirection(
-      partDirectionId: 4,
+      partDirectionId: 9,
       partDirectionName: StringKeys.leftHead45,
-      meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[4]),
+      meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[9]),
     ));
     _frontStraight = Rx<PartDirection>(PartDirection(
       partDirectionId: 2,
@@ -204,19 +204,19 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
       meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[2]),
     ));
     _front45Right = Rx<PartDirection>(PartDirection(
-      partDirectionId: 3,
+      partDirectionId: 8,
       partDirectionName: StringKeys.rightHead45,
-      meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[3]),
+      meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[8]),
     ));
     _leftRear = Rx<PartDirection>(PartDirection(
-      partDirectionId: 7,
+      partDirectionId: 11,
       partDirectionName: StringKeys.leftTail45,
-      meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[7]),
+      meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[11]),
     ));
     _rightRear = Rx<PartDirection>(PartDirection(
-      partDirectionId: 6,
+      partDirectionId: 10,
       partDirectionName: StringKeys.rightTail45,
-      meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[6]),
+      meta: PartDirectionMeta.fromJson(CarPartConstant.directionMetas[10]),
     ));
     _rear = Rx<PartDirection>(PartDirection(
       partDirectionId: 5,
@@ -421,8 +421,8 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                             }).toList(),
                             ..._listPartDirections.map((carDirection) {
                               bool isLeftPoint =
-                                  carDirection.value.partDirectionId == 4 ||
-                                      carDirection.value.partDirectionId == 7;
+                                  carDirection.value.partDirectionId == 9 ||
+                                      carDirection.value.partDirectionId == 11;
                               double paddingRight = (1 -
                                           carDirection.value.meta
                                               .verticalRelativePosition[0]) *
