@@ -1,3 +1,7 @@
+## 0.1.7
+ - Tối ưu hiệu năng và sửa lỗi
+## 0.1.6
+ - Sửa lỗi xung đột iconData
 ## 0.1.5
  - Đếm số lượng ảnh cận cảnh theo từng loại thiệt hại
  - Sửa lỗi chụp ảnh thay thế 

@@ -43,6 +43,8 @@ class SummaryImagesSection extends StatefulWidget {
 class _SummaryImagesSectionState extends State<SummaryImagesSection> {
   final _images = <SummaryImage>[].obs;
   final isLoadingImage = false.obs;
+  var imagesAreDeleting = <int>[].obs;
+  var imagesAreUploading = <String>[].obs;
 
   @override
   void initState() {
@@ -120,8 +122,14 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
         _images.assignAll(value);
         for (var image in value) {
           if (image.localFilePath != null && image.url == null) {
-            _addSummaryImage(File(image.localFilePath)).then((value) {
-              image.copyWith(imageId: value);
+            imagesAreUploading.add(image.localFilePath);
+            _addSummaryImage(File(image.localFilePath)).then((imageId) {
+              // image.copyWith(imageId: value);
+              int index = _images.indexOf(image);
+              if (index != -1) {
+                _images[index] = _images[index].copyWith(imageId: imageId);
+              }
+              imagesAreUploading.remove(image.localFilePath);
             });
           }
         }
@@ -181,6 +189,52 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
               );
               imageUrl = element.url;
             }
+            if (imagesAreDeleting.contains(element.imageId)) {
+              return Container(
+                height: 72,
+                width: double.maxFinite,
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(8.0)),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      CupertinoActivityIndicator(),
+                      SizedBox(height: 4),
+                      Text(
+                        'Đang xoá...',
+                        style: TextStyle(fontSize: 10),
+                      )
+                    ],
+                  ),
+                ),
+              );
+            }
+            if (imagesAreUploading.contains(element.localFilePath)) {
+              return Container(
+                height: 72,
+                width: double.maxFinite,
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(8.0)),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      CupertinoActivityIndicator(),
+                      SizedBox(height: 4),
+                      Text(
+                        'Đang tải lên...',
+                        style: TextStyle(fontSize: 10),
+                      )
+                    ],
+                  ),
+                ),
+              );
+            }
             return Stack(
               children: [
                 GestureDetector(
@@ -231,53 +285,10 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
     });
   }
 
-  // void _takePicture() async {
-  //   ImageSource source = await showCupertinoModalPopup(
-  //     context: context,
-  //     builder: (context) {
-  //       return CupertinoActionSheet(
-  //         actions: [
-  //           CupertinoActionSheetAction(
-  //             child: const Text(StringKeys.gallery),
-  //             onPressed: () {
-  //               Navigator.pop(context, ImageSource.gallery);
-  //             },
-  //           ),
-  //           CupertinoActionSheetAction(
-  //             child: const Text(StringKeys.camera),
-  //             onPressed: () {
-  //               Navigator.pop(context, ImageSource.camera);
-  //             },
-  //           )
-  //         ],
-  //       );
-  //     },
-  //   );
-
-  //   if (source != null) {
-  //     final ImagePicker imagePicker = ImagePicker();
-  //     var file = await imagePicker.getImage(
-  //       source: source,
-  //       maxHeight: 1200,
-  //       maxWidth: 1600,
-  //       imageQuality: 100,
-  //     );
-  //     if (file != null) {
-  //       var _resizedFile = await ImageUtils.compressImage(File(file.path));
-  //       SummaryImage temp = SummaryImage(localFilePath: _resizedFile.path);
-  //       _images.add(temp);
-  //       widget.imagesOnChanged(_images);
-  //       _addSummaryImage(_resizedFile).then((value) {
-  //         _images.last.copyWith(imageId: value);
-  //         widget.imagesOnChanged(_images);
-  //       });
-  //     }
-  //   }
-  // }
-
-  void _deleteImage(SummaryImage image) async {
+  Future<void> _deleteImage(SummaryImage image) async {
     if (image.imageId != null) {
-      _images.removeWhere((element) => element.imageId == image.imageId);
+      imagesAreDeleting.add(image.imageId);
+      // _images.removeWhere((element) => element.imageId == image.imageId);
       // call api
       final RestfulModule restfulModule = RestfulModuleImpl();
       try {
@@ -285,11 +296,14 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
           Endpoints.deleteSummaryImage(image.imageId.toString()),
           token: widget.token,
         );
+        imagesAreDeleting.remove(image.imageId);
+        _images.removeWhere((element) => element.imageId == image.imageId);
       } catch (e) {
+        imagesAreDeleting.remove(image.imageId);
         rethrow;
       }
     } else {
-      _images.removeAt(_images.indexOf(image));
+      _images.remove(image);
     }
     widget.imagesOnChanged(_images);
   }
