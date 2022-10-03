@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:aicycle_insurance_non_null_safety/types/damage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -16,16 +17,20 @@ class PreviewImageWithMask extends StatelessWidget {
     this.damageAssess,
     this.previewFile,
     this.previewUserMaskImagesBuffer,
+    this.listDamageModelCallBack,
   }) : super(key: key);
 
   final Rx<PickedFile> previewFile;
   final Rx<DamageAssessmentModel> damageAssess;
   final RxList<Uint8List> previewUserMaskImagesBuffer;
+  final Function(List<DamageModel>) listDamageModelCallBack;
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       var masks = <Widget>[];
+      var cachedDamageType = <String>[];
+      var listInitDamageModel = <DamageModel>[];
       if (damageAssess.value != null) {
         // duyệt hết các parts trả về
         for (var i = 0; i < damageAssess.value.carParts.length; i++) {
@@ -37,33 +42,39 @@ class PreviewImageWithMask extends StatelessWidget {
               j++) {
             var carPartDamage =
                 damageAssess.value.carParts[i].carPartDamages[j];
-            var color = damageClassColors[carPartDamage.className]
-                    .withOpacity(damageBaseOpacity) ??
-                Colors.transparent;
-            var box = carPartDamage.boxes;
+            if (!cachedDamageType.contains(carPartDamage.uuid)) {
+              cachedDamageType.add(carPartDamage.uuid);
+              listInitDamageModel.add(carPartDamage);
+              var color = damageClassColors[carPartDamage.className]
+                      .withOpacity(damageBaseOpacity) ??
+                  Colors.transparent;
+              var box = carPartDamage.boxes;
 
-            if (box != null && box.isNotEmpty) {
-              masks.add(
-                Positioned(
-                  left: box[0].toDouble() * imWidth,
-                  top: box[1].toDouble() * imHeight,
-                  child: SizedBox(
-                    width: imWidth * (box[2] - box[0]),
-                    height: imHeight * (box[3] - box[1]),
-                    child: CachedNetworkImage(
-                      imageUrl: carPartDamage.maskUrl,
-                      fit: BoxFit.fill,
-                      color: color,
+              if (box != null && box.isNotEmpty) {
+                masks.add(
+                  Positioned(
+                    left: box[0].toDouble() * imWidth,
+                    top: box[1].toDouble() * imHeight,
+                    child: SizedBox(
                       width: imWidth * (box[2] - box[0]),
                       height: imHeight * (box[3] - box[1]),
+                      child: CachedNetworkImage(
+                        imageUrl: carPartDamage.maskUrl,
+                        fit: BoxFit.fill,
+                        color: color,
+                        width: imWidth * (box[2] - box[0]),
+                        height: imHeight * (box[3] - box[1]),
+                      ),
                     ),
                   ),
-                ),
-              );
+                );
+              }
             }
           }
         }
       }
+      if (listDamageModelCallBack != null)
+        listDamageModelCallBack(listInitDamageModel);
       if (previewUserMaskImagesBuffer != null) {
         for (var maskImageBuffer in previewUserMaskImagesBuffer) {
           masks.add(Image.memory(

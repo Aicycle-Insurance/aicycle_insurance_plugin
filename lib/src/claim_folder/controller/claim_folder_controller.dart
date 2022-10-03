@@ -328,7 +328,9 @@ class ClaimFolderController extends GetxController {
           disableSaveButton: disableSaveButton.value,
         ),
       ),
-    );
+    ).then((value) async {
+      await getAllImageInClaimFolder();
+    });
   }
 
   Future<Map<String, dynamic>> getDamageAssessment(BuildContext context) async {
@@ -489,8 +491,7 @@ class ClaimFolderController extends GetxController {
       claimArgument.onGetResultCallBack(result);
     }
     if (result != null) {
-      sendDamageAssessmentResultToPTI(context, result)
-          .whenComplete(() => disableSaveButton(true));
+      sendDamageAssessmentResultToPTI(context, result);
     }
   }
 

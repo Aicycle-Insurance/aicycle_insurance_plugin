@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:aicycle_insurance_non_null_safety/types/damage.dart';
 import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -48,6 +49,9 @@ class CameraController extends GetxController
 
   /// khung chụp
   var scaleImageValue = 1.0.obs;
+
+  /// Tool vẽ
+  var listPartHasDamage = <DamageModel>[].obs;
 
   @override
   void onInit() {

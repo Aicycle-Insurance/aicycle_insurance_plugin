@@ -38,6 +38,7 @@ class DamageResultPage extends StatefulWidget {
 class _DamageResultPageState extends State<DamageResultPage> {
   final double _toolbarHeight = 64.0;
   var _disableSaveButton = true.obs;
+  var reloadWhenBack = false;
 
   @override
   void initState() {
@@ -47,66 +48,69 @@ class _DamageResultPageState extends State<DamageResultPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: true,
-        // elevation: 0.5,
-        shadowColor: DefaultColors.shadowColor,
-        toolbarHeight: _toolbarHeight,
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: DefaultColors.iconColor),
-        title: Text(
-          StringKeys.damageResult,
-          style: const TextStyle(
-              color: DefaultColors.ink500,
-              fontSize: 16,
-              fontWeight: FontWeight.w600),
+    return WillPopScope(
+      onWillPop: () => willPop(),
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: true,
+          // elevation: 0.5,
+          shadowColor: DefaultColors.shadowColor,
+          toolbarHeight: _toolbarHeight,
+          centerTitle: true,
+          backgroundColor: Colors.white,
+          iconTheme: const IconThemeData(color: DefaultColors.iconColor),
+          title: Text(
+            StringKeys.damageResult,
+            style: const TextStyle(
+                color: DefaultColors.ink500,
+                fontSize: 16,
+                fontWeight: FontWeight.w600),
+          ),
         ),
-      ),
-      body: widget.damage.results == null || widget.damage.results.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Assets.images.emptyFolder
-                      .image(height: 180, package: packageName),
-                  const SizedBox(height: 16),
-                  Text(
-                    StringKeys.noDamage,
-                    style: const TextStyle(
-                        color: DefaultColors.ink400,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  // style: t14M.copyWith(color: AppColors.ink[400]),
-                ],
+        body: widget.damage.results == null || widget.damage.results.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Assets.images.emptyFolder
+                        .image(height: 180, package: packageName),
+                    const SizedBox(height: 16),
+                    Text(
+                      StringKeys.noDamage,
+                      style: const TextStyle(
+                          color: DefaultColors.ink400,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    // style: t14M.copyWith(color: AppColors.ink[400]),
+                  ],
+                ),
+              )
+            : SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    ...widget.damage.results.map((damageResult) {
+                      if (damageResult.damages.isNotEmpty) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: DamageResultCard(damageResult: damageResult),
+                        );
+                      } else {
+                        return const SizedBox();
+                      }
+                    }).toList(),
+                    const SizedBox(height: 24)
+                  ],
+                ),
               ),
-            )
-          : SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  ...widget.damage.results.map((damageResult) {
-                    if (damageResult.damages.isNotEmpty) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: DamageResultCard(damageResult: damageResult),
-                      );
-                    } else {
-                      return const SizedBox();
-                    }
-                  }).toList(),
-                  const SizedBox(height: 24)
-                ],
-              ),
-            ),
-      bottomNavigationBar: Obx(
-        () => DamageResultBottomBar(
-          totalCost: widget.damage.sumaryPrice.toDouble() ?? 0,
-          onAddMoreImage: () => Navigator.pop(context),
-          onSubmited: _sendDamageAssessmentResultToPTI,
-          onChecked: () => checkIsSentData(context),
-          disableSaveButton: _disableSaveButton.value,
+        bottomNavigationBar: Obx(
+          () => DamageResultBottomBar(
+            totalCost: widget.damage.sumaryPrice.toDouble() ?? 0,
+            onAddMoreImage: () => Navigator.pop(context, reloadWhenBack),
+            onSubmited: _sendDamageAssessmentResultToPTI,
+            onChecked: () => checkIsSentData(context),
+            disableSaveButton: _disableSaveButton.value,
+          ),
         ),
       ),
     );
@@ -124,6 +128,7 @@ class _DamageResultPageState extends State<DamageResultPage> {
       ProgressDialog.hide(context);
       if (response.statusCode == 200 && response.body != null) {
         _disableSaveButton(false);
+        reloadWhenBack = true;
         NotificationDialog.show(
           context,
           type: NotiType.success,
@@ -132,12 +137,6 @@ class _DamageResultPageState extends State<DamageResultPage> {
         );
       } else {
         _disableSaveButton(true);
-        // NotificationDialog.show(
-        //   context,
-        //   type: NotiType.error,
-        //   content: StringKeys.haveError,
-        //   confirmCallBack: () {},
-        // );
         if (widget.onError != null) {
           widget.onError('Package error: http code ${response.statusCode}');
         }
@@ -193,5 +192,10 @@ class _DamageResultPageState extends State<DamageResultPage> {
       }
       rethrow;
     }
+  }
+
+  Future willPop() async {
+    Navigator.pop(context, reloadWhenBack);
+    return false;
   }
 }

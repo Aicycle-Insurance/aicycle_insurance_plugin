@@ -3,6 +3,7 @@
 
 // import 'dart:io';
 
+import 'package:aicycle_insurance_non_null_safety/src/common/button/common_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -215,18 +216,10 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                     children: [
                       if (controller.disableSaveButton.isTrue) ...[
                         Expanded(
-                          child: CupertinoButton(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            borderRadius: BorderRadius.circular(8),
+                          child: CommonButton.text(
+                            'Kiểm tra hồ sơ',
                             color: DefaultColors.primaryA200,
-                            child: Text(
-                              'Kiểm tra hồ sơ',
-                              style:
-                                  TextStyle(color: DefaultColors.primaryA500),
-                            ),
+                            textColor: DefaultColors.primaryA500,
                             onPressed: () =>
                                 controller.checkIsSentData(context),
                           ),
@@ -235,18 +228,10 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                       ],
                       if (controller.disableSaveButton.isFalse) ...[
                         Expanded(
-                          child: CupertinoButton(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            borderRadius: BorderRadius.circular(8),
+                          child: CommonButton.text(
+                            'Lưu kết quả',
                             color: DefaultColors.primaryA200,
-                            child: Text(
-                              'Lưu kết quả',
-                              style:
-                                  TextStyle(color: DefaultColors.primaryA500),
-                            ),
+                            textColor: DefaultColors.primaryA500,
                             onPressed: () =>
                                 controller.saveResultTapped(context),
                           ),
@@ -254,14 +239,10 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                         const SizedBox(width: 16),
                       ],
                       Expanded(
-                        child: CupertinoButton(
-                          padding: EdgeInsets.zero,
-                          borderRadius: BorderRadius.circular(8),
-                          color: DefaultColors.primaryA500, //blue
-                          child: Text(
-                            'Xem kết quả',
-                            style: TextStyle(color: Colors.white),
-                          ),
+                        child: CommonButton.text(
+                          'Xem kết quả',
+                          color: DefaultColors.primaryA500,
+                          textColor: Colors.white,
                           onPressed: () => controller.showResultTapped(context),
                         ),
                       ),

@@ -1,3 +1,4 @@
+import 'package:aicycle_insurance_non_null_safety/src/common/button/common_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -42,48 +43,30 @@ class DamageResultBottomBar extends StatelessWidget {
               child: Row(
                 children: [
                   Expanded(
-                    child: CupertinoButton(
-                      padding: EdgeInsets.zero,
+                    child: CommonButton.text(
+                      StringKeys.addImage,
                       color: DefaultColors.primaryA200,
-                      child: Text(
-                        StringKeys.addImage,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: DefaultColors.primaryA500,
-                        ),
-                      ),
+                      textColor: DefaultColors.primaryA500,
                       onPressed: onAddMoreImage,
                     ),
                   ),
                   const SizedBox(width: 16),
                   if (disableSaveButton == false)
                     Expanded(
-                      child: CupertinoButton(
-                        padding: EdgeInsets.zero,
+                      child: CommonButton.text(
+                        StringKeys.submitResult,
                         color: DefaultColors.primaryA500,
-                        child: Text(
-                          StringKeys.submitResult,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                          ),
-                        ),
+                        textColor: Colors.white,
                         onPressed: onSubmited,
                       ),
                     ),
                   if (disableSaveButton == true)
                     Expanded(
-                      child: CupertinoButton(
-                        padding: EdgeInsets.zero,
+                      child: CommonButton.text(
+                        'Kiểm tra hồ sơ',
                         color: DefaultColors.primaryA500,
-                        child: Text(
-                          'Kiểm tra hồ sơ',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                          ),
-                        ),
-                        onPressed: onChecked ?? () {},
+                        textColor: Colors.white,
+                        onPressed: onChecked,
                       ),
                     ),
                 ],

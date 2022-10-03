@@ -220,6 +220,9 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                                   previewFile: controller.previewFile,
                                   previewUserMaskImagesBuffer:
                                       controller.previewUserMaskImagesBuffer,
+                                  listDamageModelCallBack: (damageModelList) =>
+                                      controller.listPartHasDamage
+                                          .assignAll(damageModelList),
                                 ),
                               ),
                             ),
@@ -319,15 +322,19 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                           if (controller.damageAssessment.value != null &&
                               controller.previewFile.value != null &&
                               controller.currentTabIndex.value != 2)
-                            NewDrawingToolLayer(
-                              damageAssess: controller.damageAssessment,
-                              imageUrl: controller.previewFile.value.path,
-                              onCancelCallBack: () =>
-                                  controller.drawingToolCancelCallBack(context),
-                              onSaveCallBack: (buffer, reDamageAssessment) =>
-                                  controller.drawingToolSaveCallBack(
-                                      context, buffer, reDamageAssessment),
-                              token: controller.currentArg.value.token,
+                            Obx(
+                              () => NewDrawingToolLayer(
+                                damageAssess: controller.damageAssessment,
+                                imageUrl: controller.previewFile.value.path,
+                                onCancelCallBack: () => controller
+                                    .drawingToolCancelCallBack(context),
+                                onSaveCallBack: (buffer, reDamageAssessment) =>
+                                    controller.drawingToolSaveCallBack(
+                                        context, buffer, reDamageAssessment),
+                                token: controller.currentArg.value.token,
+                                initDamageModelList:
+                                    controller.listPartHasDamage,
+                              ),
                             )
                         ],
                       );
