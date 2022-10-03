@@ -27,18 +27,24 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class FirstPage extends StatelessWidget {
+class FirstPage extends StatefulWidget {
   FirstPage({Key key, this.title}) : super(key: key);
   final String title;
 
+  @override
+  _FirstPageState createState() => _FirstPageState();
+}
+
+class _FirstPageState extends State<FirstPage> {
   String sessionId;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(title),
+          title: Text(widget.title),
         ),
         body: Padding(
           padding: const EdgeInsets.all(32.0),
@@ -50,7 +56,9 @@ class FirstPage extends StatelessWidget {
               TextFormField(
                 keyboardType: TextInputType.number,
                 onChanged: (str) {
-                  sessionId = str;
+                  setState(() {
+                    sessionId = str;
+                  });
                 },
               ),
               const SizedBox(height: 16),
@@ -62,7 +70,7 @@ class FirstPage extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => MyHomePage(
-                        title: title,
+                        title: widget.title,
                         sessionId: sessionId,
                       ),
                     ),

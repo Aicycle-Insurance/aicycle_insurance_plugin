@@ -1,5 +1,6 @@
 import '../../src/common/dialog/notification_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../src/common/dialog/process_dialog.dart';
 import '../../types/damage_summary_result.dart';
@@ -22,22 +23,26 @@ class DamageResultPage extends StatefulWidget {
     this.token,
     this.sessionId,
     this.onError,
+    this.disableSaveButton,
   }) : super(key: key);
 
   final PTIDamageSumary damage;
   final String token;
   final String sessionId;
   final Function(String) onError;
+  final bool disableSaveButton;
   @override
   _DamageResultPageState createState() => _DamageResultPageState();
 }
 
 class _DamageResultPageState extends State<DamageResultPage> {
   final double _toolbarHeight = 64.0;
+  var _disableSaveButton = true.obs;
 
   @override
   void initState() {
     super.initState();
+    _disableSaveButton.value = widget.disableSaveButton;
   }
 
   @override
@@ -95,10 +100,14 @@ class _DamageResultPageState extends State<DamageResultPage> {
                 ],
               ),
             ),
-      bottomNavigationBar: DamageResultBottomBar(
-        totalCost: widget.damage.sumaryPrice.toDouble() ?? 0,
-        onAddMoreImage: () => Navigator.pop(context),
-        onSubmited: _sendDamageAssessmentResultToPTI,
+      bottomNavigationBar: Obx(
+        () => DamageResultBottomBar(
+          totalCost: widget.damage.sumaryPrice.toDouble() ?? 0,
+          onAddMoreImage: () => Navigator.pop(context),
+          onSubmited: _sendDamageAssessmentResultToPTI,
+          onChecked: () => checkIsSentData(context),
+          disableSaveButton: _disableSaveButton.value,
+        ),
       ),
     );
   }
@@ -114,6 +123,7 @@ class _DamageResultPageState extends State<DamageResultPage> {
       );
       ProgressDialog.hide(context);
       if (response.statusCode == 200 && response.body != null) {
+        _disableSaveButton(false);
         NotificationDialog.show(
           context,
           type: NotiType.success,
@@ -121,18 +131,63 @@ class _DamageResultPageState extends State<DamageResultPage> {
           confirmCallBack: () {},
         );
       } else {
-        NotificationDialog.show(
-          context,
-          type: NotiType.error,
-          content: StringKeys.haveError,
-          confirmCallBack: () {},
-        );
+        _disableSaveButton(true);
+        // NotificationDialog.show(
+        //   context,
+        //   type: NotiType.error,
+        //   content: StringKeys.haveError,
+        //   confirmCallBack: () {},
+        // );
         if (widget.onError != null) {
           widget.onError('Package error: http code ${response.statusCode}');
         }
         return null;
       }
     } catch (e) {
+      _disableSaveButton(true);
+      if (widget.onError != null) {
+        widget.onError('Package error: $e');
+      }
+      rethrow;
+    }
+  }
+
+  void checkIsSentData(BuildContext context) async {
+    RestfulModule restfulModule = RestfulModuleImpl();
+    ProgressDialog.showWithCircleIndicator(context);
+    try {
+      CommonResponse response = await restfulModule.get(
+        Endpoints.checkDamageAssessmentSubmited(widget.sessionId),
+        token: widget.token,
+      );
+      if (response.statusCode == 200 &&
+          response.body != null &&
+          response.body['isSendData'] == true) {
+        ProgressDialog.hide(context);
+
+        /// Cho phép lưu/gửi kết quả sang PTI
+        _disableSaveButton(false);
+        NotificationDialog.show(
+          context,
+          type: NotiType.success,
+          content: StringKeys.availableToSave,
+          confirmCallBack: () {},
+        );
+      } else {
+        ProgressDialog.hide(context);
+
+        /// ko cho phép lưu
+        _disableSaveButton(true);
+        NotificationDialog.show(
+          context,
+          type: NotiType.warning,
+          content: StringKeys.claimIsProcessing,
+          confirmCallBack: () {},
+        );
+        return null;
+      }
+    } catch (e) {
+      _disableSaveButton(true);
       if (widget.onError != null) {
         widget.onError('Package error: $e');
       }

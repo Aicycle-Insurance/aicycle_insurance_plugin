@@ -135,6 +135,8 @@ class ClaimFolderController extends GetxController {
     ];
   }
 
+  var disableSaveButton = true.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -177,12 +179,14 @@ class ClaimFolderController extends GetxController {
 
   Future<void> createAndCallImage() async {
     isCreatingClaim(true);
-    createClaimFolder().then((value) async {
-      if (value != null) {
-        claimID.value = value;
-        await getAllImageInClaimFolder();
-      }
-    }).whenComplete(() => isCreatingClaim(false));
+    createClaimFolder()
+      ..then((value) async {
+        if (value != null) {
+          claimID.value = value;
+          await getAllImageInClaimFolder();
+        }
+      })
+      ..whenComplete(() => isCreatingClaim(false));
   }
 
   // Tạo folder phía AICycle
@@ -321,6 +325,7 @@ class ClaimFolderController extends GetxController {
           onError: claimArgument.onError,
           sessionId: claimArgument.sessionId,
           token: claimArgument.uTokenKey,
+          disableSaveButton: disableSaveButton.value,
         ),
       ),
     );
@@ -429,6 +434,7 @@ class ClaimFolderController extends GetxController {
       if (response.statusCode == 200 && response.body != null) {
         await getAllImageInClaimFolder();
         ProgressDialog.hide(context);
+        disableSaveButton(false);
         NotificationDialog.show(
           context,
           type: NotiType.success,
@@ -441,20 +447,22 @@ class ClaimFolderController extends GetxController {
         );
       } else {
         ProgressDialog.hide(context);
-        NotificationDialog.show(
-          context,
-          type: NotiType.error,
-          content: StringKeys.haveError,
-          confirmCallBack: () {
-            if (claimArgument.onError != null) {
-              claimArgument
-                  .onError('Package error: http code ${response.statusCode}');
-            }
-          },
-        );
+        disableSaveButton(true);
+        // NotificationDialog.show(
+        //   context,
+        //   type: NotiType.error,
+        //   content: StringKeys.haveError,
+        //   confirmCallBack: () {
+        //     if (claimArgument.onError != null) {
+        //       claimArgument
+        //           .onError('Package error: http code ${response.statusCode}');
+        //     }
+        //   },
+        // );
         return null;
       }
     } catch (e) {
+      disableSaveButton(true);
       if (claimArgument.onError != null) {
         claimArgument.onError('Package error: $e');
       }
@@ -481,7 +489,51 @@ class ClaimFolderController extends GetxController {
       claimArgument.onGetResultCallBack(result);
     }
     if (result != null) {
-      sendDamageAssessmentResultToPTI(context, result);
+      sendDamageAssessmentResultToPTI(context, result)
+          .whenComplete(() => disableSaveButton(true));
+    }
+  }
+
+  void checkIsSentData(BuildContext context) async {
+    RestfulModule restfulModule = RestfulModuleImpl();
+    ProgressDialog.showWithCircleIndicator(context);
+    try {
+      CommonResponse response = await restfulModule.get(
+        Endpoints.checkDamageAssessmentSubmited(claimArgument.sessionId),
+        token: claimArgument.uTokenKey,
+      );
+      if (response.statusCode == 200 &&
+          response.body != null &&
+          response.body['isSendData'] == true) {
+        ProgressDialog.hide(context);
+
+        /// Cho phép lưu/gửi kết quả sang PTI
+        disableSaveButton(false);
+        NotificationDialog.show(
+          context,
+          type: NotiType.success,
+          content: StringKeys.availableToSave,
+          confirmCallBack: () {},
+        );
+      } else {
+        ProgressDialog.hide(context);
+
+        /// ko cho phép lưu
+        disableSaveButton(true);
+        NotificationDialog.show(
+          context,
+          type: NotiType.warning,
+          content: StringKeys.claimIsProcessing,
+          confirmCallBack: () {},
+        );
+        return null;
+      }
+    } catch (e) {
+      disableSaveButton(true);
+      if (claimArgument.onError != null) {
+        claimArgument.onError('Package error: $e');
+      }
+      rethrow;
     }
   }
 }

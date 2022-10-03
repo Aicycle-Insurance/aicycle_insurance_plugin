@@ -213,26 +213,48 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
                   minimum: const EdgeInsets.all(16),
                   child: Row(
                     children: [
-                      Expanded(
-                        child: CupertinoButton(
-                          // minSize: 0,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
+                      if (controller.disableSaveButton.isTrue) ...[
+                        Expanded(
+                          child: CupertinoButton(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                            color: DefaultColors.primaryA200,
+                            child: Text(
+                              'Kiểm tra hồ sơ',
+                              style:
+                                  TextStyle(color: DefaultColors.primaryA500),
+                            ),
+                            onPressed: () =>
+                                controller.checkIsSentData(context),
                           ),
-                          borderRadius: BorderRadius.circular(8),
-                          color: DefaultColors.primaryA200,
-                          child: Text(
-                            'Lưu kết quả',
-                            style: TextStyle(color: DefaultColors.primaryA500),
-                          ),
-                          onPressed: () => controller.saveResultTapped(context),
                         ),
-                      ),
-                      const SizedBox(width: 16),
+                        const SizedBox(width: 16),
+                      ],
+                      if (controller.disableSaveButton.isFalse) ...[
+                        Expanded(
+                          child: CupertinoButton(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                            color: DefaultColors.primaryA200,
+                            child: Text(
+                              'Lưu kết quả',
+                              style:
+                                  TextStyle(color: DefaultColors.primaryA500),
+                            ),
+                            onPressed: () =>
+                                controller.saveResultTapped(context),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                      ],
                       Expanded(
                         child: CupertinoButton(
-                          // minSize: 0,
                           padding: EdgeInsets.zero,
                           borderRadius: BorderRadius.circular(8),
                           color: DefaultColors.primaryA500, //blue
