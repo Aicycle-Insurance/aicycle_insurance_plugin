@@ -1,3 +1,5 @@
+## 0.1.8
+ - Tối ưu hiệu năng và sửa lỗi
 ## 0.1.7
  - Tối ưu hiệu năng và sửa lỗi
 ## 0.1.6

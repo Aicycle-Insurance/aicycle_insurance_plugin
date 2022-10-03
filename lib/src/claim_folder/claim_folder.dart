@@ -154,6 +154,12 @@ class _ClaimFolderViewState extends State<ClaimFolderView> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    Get.delete<ClaimFolderController>();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Obx(
         // future: _createAndCallImage(),

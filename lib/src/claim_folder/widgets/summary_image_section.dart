@@ -121,16 +121,18 @@ class _SummaryImagesSectionState extends State<SummaryImagesSection> {
       if (value is List<SummaryImage>) {
         _images.assignAll(value);
         for (var image in value) {
-          if (image.localFilePath != null && image.url == null) {
+          if (image.localFilePath != null && image.imageId == null) {
             imagesAreUploading.add(image.localFilePath);
-            _addSummaryImage(File(image.localFilePath)).then((imageId) {
-              // image.copyWith(imageId: value);
-              int index = _images.indexOf(image);
-              if (index != -1) {
-                _images[index] = _images[index].copyWith(imageId: imageId);
-              }
-              imagesAreUploading.remove(image.localFilePath);
-            });
+            _addSummaryImage(File(image.localFilePath))
+              ..then((imageId) {
+                // image.copyWith(imageId: value);
+                int index = _images.indexOf(image);
+                if (index != -1) {
+                  _images[index] = _images[index].copyWith(imageId: imageId);
+                }
+              })
+              ..whenComplete(
+                  () => imagesAreUploading.remove(image.localFilePath));
           }
         }
       }

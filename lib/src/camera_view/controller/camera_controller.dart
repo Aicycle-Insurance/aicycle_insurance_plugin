@@ -312,6 +312,7 @@ class CameraController extends GetxController
         );
       }
     } catch (e) {
+      if (hasLoading) ProgressDialog.hide(context);
       currentArg.value.onError('Package error: $e');
     }
   }

@@ -146,7 +146,7 @@ class _SummaryCameraPageState extends State<SummaryCameraPage> {
     ImageGallerySaver.saveFile(filePath);
 
     /// compress ảnh -> full HD
-    final file = await ImageUtils.compressImage(File(filePath));
+    final file = await ImageUtils.compressImage(File(filePath), 75);
     // file.saveTo(filePath); todo
     SummaryImage temp = SummaryImage(localFilePath: file.path);
     _images.add(temp);

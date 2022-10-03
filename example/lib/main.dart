@@ -1,4 +1,5 @@
 import 'package:aicycle_insurance_non_null_safety/aicycle_insurance.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -17,15 +18,70 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'SDK Demo'),
+      // home: FirstPage(title: 'SDK Demo'),
+      home: MyHomePage(
+        title: 'SDK Demo',
+        sessionId: '20220916144013',
+      ),
+    );
+  }
+}
+
+class FirstPage extends StatelessWidget {
+  FirstPage({Key key, this.title}) : super(key: key);
+  final String title;
+
+  String sessionId;
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Nhập mã hồ sơ'),
+              TextFormField(
+                keyboardType: TextInputType.number,
+                onChanged: (str) {
+                  sessionId = str;
+                },
+              ),
+              const SizedBox(height: 16),
+              CupertinoButton(
+                color: Colors.blue,
+                child: Text('Next'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MyHomePage(
+                        title: title,
+                        sessionId: sessionId,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key key, this.title}) : super(key: key);
+  const MyHomePage({Key key, this.title, this.sessionId}) : super(key: key);
 
   final String title;
+  final String sessionId;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -34,12 +90,14 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
+    print(widget.sessionId);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        automaticallyImplyLeading: true,
       ),
       body: ClaimFolderView(
-        sessionId: '20220916144011',
+        sessionId: widget.sessionId,
         // sessionId: '20220916144013', // a Trung
         // sessionId: '20220922144893', // chị Diệp
         maDonVi: '016',
