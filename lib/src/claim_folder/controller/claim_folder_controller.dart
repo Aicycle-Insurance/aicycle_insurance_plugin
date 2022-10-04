@@ -329,7 +329,11 @@ class ClaimFolderController extends GetxController {
         ),
       ),
     ).then((value) async {
-      await getAllImageInClaimFolder();
+      if (value == true) {
+        ProgressDialog.showWithCircleIndicator(context);
+        getAllImageInClaimFolder()
+            .whenComplete(() => ProgressDialog.hide(context));
+      }
     });
   }
 

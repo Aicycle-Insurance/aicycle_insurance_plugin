@@ -130,6 +130,7 @@ class CameraController extends GetxController
       previewFile.value = null;
       currentTabIndex.value = index;
       tabController.animateTo(index);
+      update(['camera-bottom-bar']);
     }
   }
 

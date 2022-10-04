@@ -1,3 +1,6 @@
+## 0.1.9
+ - Tối ưu hiệu năng và sửa lỗi
+ - Thêm bước kiểm tra hồ sơ trước khi lưu ảnh
 ## 0.1.8
  - Tối ưu hiệu năng và sửa lỗi
 ## 0.1.7

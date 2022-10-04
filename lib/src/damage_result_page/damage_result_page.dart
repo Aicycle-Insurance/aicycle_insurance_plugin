@@ -194,7 +194,7 @@ class _DamageResultPageState extends State<DamageResultPage> {
     }
   }
 
-  Future willPop() async {
+  Future<bool> willPop() async {
     Navigator.pop(context, reloadWhenBack);
     return false;
   }
