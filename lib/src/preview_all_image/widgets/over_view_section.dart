@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/state_manager.dart';
 
 import '../../constants/colors.dart';
 import '../../constants/strings.dart';
@@ -9,12 +10,14 @@ class OverViewSection extends StatelessWidget {
     Key key,
     this.imageUrl,
     this.showDeleteAndRetake = true,
+    this.isDeleting,
     this.onRetake,
     this.onDelete,
   }) : super(key: key);
 
   final String imageUrl;
   final bool showDeleteAndRetake;
+  final RxBool isDeleting;
   final Function() onRetake;
   final Function() onDelete;
 
@@ -41,6 +44,7 @@ class OverViewSection extends StatelessWidget {
                       showDeleteAndRetake: showDeleteAndRetake,
                       onDelete: onDelete,
                       onRetake: onRetake,
+                      isDeleting: isDeleting,
                     )
                   : GestureDetector(
                       onTap: onRetake,

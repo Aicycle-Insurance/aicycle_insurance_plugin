@@ -20,6 +20,7 @@ class PreviewAllImageController extends GetxController {
   Rx<CameraArgument> currentArg;
   var isSubmited = true.obs;
   final GlobalKey pageKey = GlobalKey();
+  var imagesAreDeleting = <String>[].obs;
 
   @override
   void onInit() {
@@ -38,41 +39,8 @@ class PreviewAllImageController extends GetxController {
     String imageId, {
     int rangeId,
   }) async {
-    var _partDirection = currentArg.value.partDirection;
-    try {
-      _partDirection.value.images
-          .removeWhere((element) => element.imageId == imageId);
-      _partDirection.value.imageFiles
-          .removeWhere((element) => element.imageId.toString() == imageId);
-      if (rangeId == 1) {
-        // over view
-        _partDirection.value.overViewImages
-            .removeWhere((element) => element.imageId == imageId);
-        _partDirection.value.overViewImageFiles
-            .removeWhere((element) => element.imageId.toString() == imageId);
-      }
-      if (rangeId == 2) {
-        // middle view
-        _partDirection.value.middleViewImages
-            .removeWhere((element) => element.imageId == imageId);
-        _partDirection.value.middleViewImageFiles
-            .removeWhere((element) => element.imageId.toString() == imageId);
-        // close up view
-        _partDirection.value.closeViewImages
-            .removeWhere((element) => element.imageId == imageId);
-        _partDirection.value.closeViewImageFiles
-            .removeWhere((element) => element.imageId.toString() == imageId);
-      }
-      // setState(() {
-      currentArg.value.partDirection.value = _partDirection.value;
-      update(['previewAllImage']);
-
-      // });
-    } catch (e) {
-      currentArg.value.onError('Package: Removing image gets error!');
-    }
-
     // delete on server
+    imagesAreDeleting.add(imageId);
     try {
       RestfulModule restfulModule = RestfulModuleImpl();
       var response = await restfulModule.delete(
@@ -81,8 +49,13 @@ class PreviewAllImageController extends GetxController {
       );
       if (response.statusCode != 200) {
         currentArg.value.onError(response.statusMessage ?? 'Package error');
+      } else {
+        await geImageInPartDirection()
+            .whenComplete(() => imagesAreDeleting.remove(imageId));
+        update(['previewAllImage']);
       }
     } catch (e) {
+      imagesAreDeleting.remove(imageId);
       currentArg.value.onError(e.toString());
       rethrow;
     }

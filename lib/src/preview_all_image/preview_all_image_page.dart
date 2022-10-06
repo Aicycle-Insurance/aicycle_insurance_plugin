@@ -108,35 +108,44 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  OverViewSection(
-                    showDeleteAndRetake: !(partDirection
-                            .overViewImages.isNotEmpty &&
-                        partDirection.overViewImages.first.isSendToPti == true),
-                    imageUrl: partDirection.overViewImageFiles.isNotEmpty
-                        ? partDirection.overViewImageFiles.first.file.path
-                        : partDirection.overViewImages.isNotEmpty
-                            ? partDirection.overViewImages.first.url
-                            : '',
-                    onRetake: () => controller.goToCameraPage(
-                      context,
-                      1,
-                      oldImageId: _oldImageId,
+                  Obx(
+                    () => OverViewSection(
+                      isDeleting: controller.imagesAreDeleting
+                          .contains(partDirection.overViewImages.first.imageId)
+                          .obs,
+                      showDeleteAndRetake:
+                          !(partDirection.overViewImages.isNotEmpty &&
+                              partDirection.overViewImages.first.isSendToPti ==
+                                  true),
+                      imageUrl: partDirection.overViewImageFiles.isNotEmpty
+                          ? partDirection.overViewImageFiles.first.file.path
+                          : partDirection.overViewImages.isNotEmpty
+                              ? partDirection.overViewImages.first.url
+                              : '',
+                      onRetake: () => controller.goToCameraPage(
+                        context,
+                        1,
+                        oldImageId: _oldImageId,
+                      ),
+                      onDelete: () => controller.overViewImageDelete(),
                     ),
-                    onDelete: () => controller.overViewImageDelete(),
                   ),
                   const SizedBox(height: 16),
                   Expanded(
-                    child: CloseViewSection(
-                      imageFromServers: imageList,
-                      imageFiles: imageFiles,
-                      onRetake: (rangeID, oldImageId) =>
-                          controller.goToCameraPage(
-                        context,
-                        rangeID,
-                        oldImageId: oldImageId,
+                    child: Obx(
+                      () => CloseViewSection(
+                        imagesAreDeleting: controller.imagesAreDeleting.value,
+                        imageFromServers: imageList,
+                        imageFiles: imageFiles,
+                        onRetake: (rangeID, oldImageId) =>
+                            controller.goToCameraPage(
+                          context,
+                          rangeID,
+                          oldImageId: oldImageId,
+                        ),
+                        onDelete: (imageId) =>
+                            controller.deleteImageById(imageId, rangeId: 2),
                       ),
-                      onDelete: (imageId) =>
-                          controller.deleteImageById(imageId, rangeId: 2),
                     ),
                   ),
                 ],

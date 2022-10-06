@@ -1,4 +1,5 @@
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/state_manager.dart';
 
 import '../../../types/image_range.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,12 +18,14 @@ class CloseViewSection extends StatelessWidget {
     this.imageFromServers = const [],
     this.onRetake,
     this.onDelete,
+    this.imagesAreDeleting,
   }) : super(key: key);
 
   final List<PickedFileWithId> imageFiles;
   final List<AiImage> imageFromServers;
   final Function(int rangeID, int oldImageId) onRetake;
   final Function(String imageId) onDelete;
+  final List<String> imagesAreDeleting;
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +77,7 @@ class CloseViewSection extends StatelessWidget {
               children: [
                 ...imageFromServers.map((e) {
                   return PreviewImageContainer(
+                    isDeleting: imagesAreDeleting.contains(e.imageId).obs,
                     showDeleteAndRetake: e.isSendToPti != true,
                     imageUrl: e.url,
                     onDelete: () =>
