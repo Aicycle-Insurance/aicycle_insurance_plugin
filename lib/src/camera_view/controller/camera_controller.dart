@@ -60,8 +60,13 @@ class CameraController extends GetxController
     currentTabIndex.value = currentArg.value.imageRangeId - 1;
     tabController = TabController(
         length: 3, vsync: this, initialIndex: currentTabIndex.value);
-    checkInitCarPart();
     checkSubmited();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    checkInitCarPart();
   }
 
   @override

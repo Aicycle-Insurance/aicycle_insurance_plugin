@@ -1,3 +1,5 @@
+## 0.2.0
+ - Sửa lỗi đếm số lượng ảnh cận cảnh theo bộ phận
 ## 0.1.9
  - Tối ưu hiệu năng và sửa lỗi
  - Thêm bước kiểm tra hồ sơ trước khi lưu ảnh

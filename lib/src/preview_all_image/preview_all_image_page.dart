@@ -104,15 +104,21 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
                   : partDirection.overViewImages.isNotEmpty
                       ? int.parse(partDirection.overViewImages.first.imageId)
                       : null;
+              // overview image
+              AiImage overViewImage = partDirection.overViewImages.isNotEmpty
+                  ? partDirection.overViewImages.first
+                  : null;
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Obx(
                     () => OverViewSection(
-                      isDeleting: controller.imagesAreDeleting
-                          .contains(partDirection.overViewImages.first.imageId)
-                          .obs,
+                      isDeleting: overViewImage != null
+                          ? controller.imagesAreDeleting
+                              .contains(overViewImage.imageId)
+                              .obs
+                          : false.obs,
                       showDeleteAndRetake:
                           !(partDirection.overViewImages.isNotEmpty &&
                               partDirection.overViewImages.first.isSendToPti ==

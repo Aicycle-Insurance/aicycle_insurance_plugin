@@ -18,11 +18,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: FirstPage(title: 'SDK Demo'),
-      // home: MyHomePage(
-      //   title: 'SDK Demo',
-      //   sessionId: '20220916144013',
-      // ),
+      // home: FirstPage(title: 'SDK Demo'),
+      home: MyHomePage(
+        title: 'SDK Demo',
+        sessionId: '20220916144013',
+      ),
     );
   }
 }
