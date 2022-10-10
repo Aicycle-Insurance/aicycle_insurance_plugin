@@ -104,37 +104,38 @@ class _PreviewAllImagePageState extends State<PreviewAllImagePage> {
                   : partDirection.overViewImages.isNotEmpty
                       ? int.parse(partDirection.overViewImages.first.imageId)
                       : null;
-              // overview image
-              AiImage overViewImage = partDirection.overViewImages.isNotEmpty
-                  ? partDirection.overViewImages.first
-                  : null;
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Obx(
-                    () => OverViewSection(
-                      isDeleting: overViewImage != null
-                          ? controller.imagesAreDeleting
-                              .contains(overViewImage.imageId)
-                              .obs
-                          : false.obs,
-                      showDeleteAndRetake:
-                          !(partDirection.overViewImages.isNotEmpty &&
-                              partDirection.overViewImages.first.isSendToPti ==
-                                  true),
-                      imageUrl: partDirection.overViewImageFiles.isNotEmpty
-                          ? partDirection.overViewImageFiles.first.file.path
-                          : partDirection.overViewImages.isNotEmpty
-                              ? partDirection.overViewImages.first.url
-                              : '',
-                      onRetake: () => controller.goToCameraPage(
-                        context,
-                        1,
-                        oldImageId: _oldImageId,
-                      ),
-                      onDelete: () => controller.overViewImageDelete(),
-                    ),
+                    () {
+                      // overview image
+                      AiImage overViewImage =
+                          partDirection.overViewImages.isNotEmpty
+                              ? partDirection.overViewImages.first
+                              : null;
+                      return OverViewSection(
+                        isDeleting: controller.imagesAreDeleting
+                            .contains(overViewImage?.imageId ?? '')
+                            .obs,
+                        showDeleteAndRetake: !(partDirection
+                                .overViewImages.isNotEmpty &&
+                            partDirection.overViewImages.first.isSendToPti ==
+                                true),
+                        imageUrl: partDirection.overViewImageFiles.isNotEmpty
+                            ? partDirection.overViewImageFiles.first.file.path
+                            : partDirection.overViewImages.isNotEmpty
+                                ? partDirection.overViewImages.first.url
+                                : '',
+                        onRetake: () => controller.goToCameraPage(
+                          context,
+                          1,
+                          oldImageId: _oldImageId,
+                        ),
+                        onDelete: () => controller.overViewImageDelete(),
+                      );
+                    },
                   ),
                   const SizedBox(height: 16),
                   Expanded(

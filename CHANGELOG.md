@@ -1,3 +1,7 @@
+## 0.2.2
+ - Sửa lỗi xoá ảnh
+## 0.2.1
+ - Sửa lỗi hiển thị ảnh
 ## 0.2.0
  - Sửa lỗi đếm số lượng ảnh cận cảnh theo bộ phận
 ## 0.1.9
