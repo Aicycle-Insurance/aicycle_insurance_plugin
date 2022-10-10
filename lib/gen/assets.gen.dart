@@ -17,6 +17,10 @@ class $AssetsIconsGen {
   /// File path: assets/icons/Repeat.svg
   SvgGenImage get repeat => const SvgGenImage('assets/icons/Repeat.svg');
 
+  /// File path: assets/icons/deleting_gif.gif
+  AssetGenImage get deletingGif =>
+      const AssetGenImage('assets/icons/deleting_gif.gif');
+
   /// File path: assets/icons/ic_draw.svg
   SvgGenImage get icDraw => const SvgGenImage('assets/icons/ic_draw.svg');
 

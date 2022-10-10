@@ -53,4 +53,6 @@ class StringKeys {
   static const String totalPrice = 'Tổng chi phí ước tính:';
   static const String addImage = 'Thêm ảnh';
   static const String submitResult = 'Lưu kết quả';
+  static const String availableToSave = 'Hồ sơ sẵn sàng để lưu';
+  static const String claimIsProcessing = 'Hồ sơ đang trong quá trình xử lý';
 }

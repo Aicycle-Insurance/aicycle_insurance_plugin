@@ -1,3 +1,4 @@
+import 'package:aicycle_insurance_non_null_safety/src/common/button/common_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -11,10 +12,14 @@ class DamageResultBottomBar extends StatelessWidget {
     this.totalCost,
     this.onAddMoreImage,
     this.onSubmited,
+    this.onChecked,
+    this.disableSaveButton,
   }) : super(key: key);
   final double totalCost;
   final Function() onAddMoreImage;
   final Function() onSubmited;
+  final Function() onChecked;
+  final bool disableSaveButton;
 
   @override
   Widget build(BuildContext context) {
@@ -33,57 +38,37 @@ class DamageResultBottomBar extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            //   child: Row(
-            //     children: [
-            //       Text(
-            //         StringKeys.totalPrice,
-            //         style: TextStyle(fontSize: 14, color: DefaultColors.ink400),
-            //       ),
-            //       const SizedBox(width: 8),
-            //       Expanded(child: _totalCost())
-            //     ],
-            //   ),
-            // ),
-            // Divider(
-            //   thickness: 1,
-            //   height: 1,
-            //   color: DefaultColors.ink100,
-            // ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Row(
                 children: [
                   Expanded(
-                    child: CupertinoButton(
-                      padding: EdgeInsets.zero,
+                    child: CommonButton.text(
+                      StringKeys.addImage,
                       color: DefaultColors.primaryA200,
-                      child: Text(
-                        StringKeys.addImage,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: DefaultColors.primaryA500,
-                        ),
-                      ),
+                      textColor: DefaultColors.primaryA500,
                       onPressed: onAddMoreImage,
                     ),
                   ),
                   const SizedBox(width: 16),
-                  Expanded(
-                    child: CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      color: DefaultColors.primaryA500,
-                      child: Text(
+                  if (disableSaveButton == false)
+                    Expanded(
+                      child: CommonButton.text(
                         StringKeys.submitResult,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white,
-                        ),
+                        color: DefaultColors.primaryA500,
+                        textColor: Colors.white,
+                        onPressed: onSubmited,
                       ),
-                      onPressed: onSubmited,
                     ),
-                  ),
+                  if (disableSaveButton == true)
+                    Expanded(
+                      child: CommonButton.text(
+                        'Kiểm tra hồ sơ',
+                        color: DefaultColors.primaryA500,
+                        textColor: Colors.white,
+                        onPressed: onChecked,
+                      ),
+                    ),
                 ],
               ),
             )
@@ -92,26 +77,4 @@ class DamageResultBottomBar extends StatelessWidget {
       ),
     );
   }
-
-  // Widget _totalCost() {
-  //   String _totalCost =
-  //       StringUtils.formatPriceNumber(double.parse(totalCost.toString())) +
-  //           ' đ';
-  //   return Row(
-  //     children: [
-  //       const SizedBox(
-  //         width: 16,
-  //       ),
-  //       Text(
-  //         _totalCost,
-  //         style: TextStyle(
-  //           fontSize: 16,
-  //           fontWeight: FontWeight.bold,
-  //           color: DefaultColors.ink500,
-  //         ),
-  //         overflow: TextOverflow.ellipsis,
-  //       ),
-  //     ],
-  //   );
-  // }
 }

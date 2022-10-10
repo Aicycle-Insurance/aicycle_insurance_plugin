@@ -11,6 +11,7 @@ import '../../camera_view/camera_argument.dart';
 import '../../constants/colors.dart';
 import '../../../types/image.dart';
 import '../../../types/part_direction.dart';
+import '../controller/camera_controller.dart';
 
 class BottomActionBar extends StatelessWidget {
   const BottomActionBar({
@@ -86,28 +87,27 @@ class BottomActionBar extends StatelessWidget {
                   onPressed: onTakePicture,
                 ),
               ),
-              Obx(
-                () {
+              GetBuilder(
+                id: 'camera-bottom-bar',
+                builder: (CameraController _) {
+                  var partDirection = currentArg.value.partDirection.value;
                   var imageFileList = <PickedFileWithId>[];
                   var imageNetworkList = <AiImage>[];
                   switch (currentTabIndex.value) {
                     case 0:
-                      imageFileList.assignAll(
-                          currentArg.value.partDirection.overViewImageFiles);
-                      imageNetworkList.assignAll(
-                          currentArg.value.partDirection.overViewImages);
+                      imageFileList.assignAll(partDirection.overViewImageFiles);
+                      imageNetworkList.assignAll(partDirection.overViewImages);
                       break;
                     case 1:
-                      imageFileList.assignAll(
-                          currentArg.value.partDirection.middleViewImageFiles);
-                      imageNetworkList.assignAll(
-                          currentArg.value.partDirection.middleViewImages);
+                      imageFileList
+                          .assignAll(partDirection.middleViewImageFiles);
+                      imageNetworkList
+                          .assignAll(partDirection.middleViewImages);
                       break;
                     case 2:
-                      imageFileList.assignAll(
-                          currentArg.value.partDirection.closeViewImageFiles);
-                      imageNetworkList.assignAll(
-                          currentArg.value.partDirection.closeViewImages);
+                      imageFileList
+                          .assignAll(partDirection.closeViewImageFiles);
+                      imageNetworkList.assignAll(partDirection.closeViewImages);
                       break;
                   }
                   return Container(
@@ -115,46 +115,40 @@ class BottomActionBar extends StatelessWidget {
                     width: 60,
                     margin: const EdgeInsets.only(right: 16.0),
                     child: imageFileList.length + imageNetworkList.length != 0
-                        ? GestureDetector(
-                            onTap: () {
-                              // => controller.onPreviewImageTapped(context)
-                            },
-                            child: Stack(
-                              children: [
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: imageFileList.isNotEmpty
-                                      ? Image.file(
-                                          File(imageFileList.last.file.path),
-                                          fit: BoxFit.cover,
-                                        )
-                                      : imageNetworkList.isNotEmpty
-                                          ? CachedNetworkImage(
-                                              imageUrl:
-                                                  imageNetworkList.last.url)
-                                          : const SizedBox(),
-                                ),
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.black,
-                                    ),
-                                    child: Text(
-                                      (imageFileList.length +
-                                              imageNetworkList.length)
-                                          .toString(),
-                                      style: const TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.white,
-                                      ),
+                        ? Stack(
+                            children: [
+                              Align(
+                                alignment: Alignment.center,
+                                child: imageFileList.isNotEmpty
+                                    ? Image.file(
+                                        File(imageFileList.last.file.path),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : imageNetworkList.isNotEmpty
+                                        ? CachedNetworkImage(
+                                            imageUrl: imageNetworkList.last.url)
+                                        : const SizedBox(),
+                              ),
+                              Align(
+                                alignment: Alignment.center,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.black,
+                                  ),
+                                  child: Text(
+                                    (imageFileList.length +
+                                            imageNetworkList.length)
+                                        .toString(),
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.white,
                                     ),
                                   ),
-                                )
-                              ],
-                            ),
+                                ),
+                              )
+                            ],
                           )
                         : const SizedBox(),
                   );
