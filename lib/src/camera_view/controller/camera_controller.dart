@@ -44,7 +44,7 @@ class CameraController extends GetxController
   final flashMode = ValueNotifier(CameraFlashes.NONE);
   final sensor = ValueNotifier(Sensors.BACK);
   final captureMode = ValueNotifier(CaptureModes.PHOTO);
-  final photoSize = ValueNotifier(const Size(1080, 1920));
+  final photoSize = ValueNotifier(const Size(1600, 1200));
   final PictureController pictureController = PictureController();
 
   /// khung chụp
