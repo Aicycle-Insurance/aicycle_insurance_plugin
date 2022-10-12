@@ -276,6 +276,7 @@ class DrawingToolController extends GetxController {
         {"damages": damagePayload},
         token: token,
       );
+      print(editResponse.body);
       if (editResponse != null) {
         return DamageAssessmentModel.fromJson(editResponse.body)
             .copyWith(imageId: damageAssess.value.imageId);

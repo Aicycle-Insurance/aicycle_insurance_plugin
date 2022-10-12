@@ -54,6 +54,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
       child: DefaultTabController(
         length: 3,
         child: Scaffold(
+          backgroundColor: Colors.black,
           appBar: AppBar(
             automaticallyImplyLeading: false,
             elevation: 0,
@@ -129,20 +130,21 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
           ),
           body: Column(
             children: [
-              Expanded(
+              SizedBox(
+                width: Get.width - 16,
+                height: (Get.width - 16) / 3 * 4,
                 child: Stack(
                   children: [
                     /// Camera view
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      top: 0,
-                      bottom: 0,
+                    Center(
                       child: CameraAwesome(
                         onPermissionsResult: (result) =>
                             _handleCameraDoNotHavePermission(result),
-                        selectDefaultSize: (List<Size> availableSizes) =>
-                            availableSizes[1],
+                        selectDefaultSize: (List<Size> availableSizes) {
+                          // return availableSizes[0];
+                          print(availableSizes);
+                          return Size(1280.0, 960.0);
+                        },
                         sensor: controller.sensor,
                         photoSize: controller.photoSize,
                         switchFlashMode: controller.flashMode,
@@ -342,12 +344,14 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                   ],
                 ),
               ),
-              BottomActionBar(
-                currentArg: controller.currentArg,
-                currentTabIndex: controller.currentTabIndex,
-                previewFile: controller.previewFile,
-                onTakePicture: () => controller.takePicture(context),
-                flashMode: controller.flashMode,
+              Flexible(
+                child: BottomActionBar(
+                  currentArg: controller.currentArg,
+                  currentTabIndex: controller.currentTabIndex,
+                  previewFile: controller.previewFile,
+                  onTakePicture: () => controller.takePicture(context),
+                  flashMode: controller.flashMode,
+                ),
               ),
             ],
           ),
