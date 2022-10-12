@@ -32,8 +32,7 @@ class DamageAssessmentModel {
       );
 
   factory DamageAssessmentModel.fromJson(Map<String, dynamic> json) {
-    List<dynamic> _results = json['result']['results']['Results'];
-    Map<String, dynamic> _result = _results.first;
+    Map<String, dynamic> _result = json['result'][0] ?? json['result'];
     return DamageAssessmentModel(
       imageId: json['imageId'],
       imgUrl: _result['img_url'],

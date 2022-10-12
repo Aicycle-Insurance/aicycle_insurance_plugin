@@ -5,7 +5,9 @@ class Endpoints {
   // static const String baseUrl = 'https://dev-api-insurance.aicycle.ai';
 
   /// API Prod
-  static const String baseUrl = 'https://api-insurance.aicycle.ai';
+  // static const String baseUrl = 'https://api-insurance.aicycle.ai';
+  /// API Triton
+  static const String baseUrl = 'https://api-aws-insurance.aicycle.ai';
   static const String createClaimFolder = baseUrl + '/claimfolders';
   static String getUploadUrl = baseUrl + '/images/url';
 
@@ -26,11 +28,13 @@ class Endpoints {
       baseUrl + '/session/$sessionID/all-images';
   // call engine
   static String callEngineAfterTakePhoto =
-      baseUrl + '/claimimages/damage-assessment';
+      baseUrl + '/claimimages/triton-assessment';
   static String runEnginePercent =
       baseUrl + '/claimimages/run_engine_percentage/';
+  // static String callEngineAfterUserEdit(String imageId) =>
+  //     baseUrl + '/claimimages/$imageId/damage-reassessment';
   static String callEngineAfterUserEdit(String imageId) =>
-      baseUrl + '/claimimages/$imageId/damage-reassessment';
+      baseUrl + '/claimimages/$imageId/triton-reassessment';
 
   // Truyền thông tin từ phía API tới BE
   static String postPTIInformation = baseUrl + '/session/session-info';

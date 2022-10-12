@@ -18,11 +18,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: FirstPage(title: 'SDK Demo'),
-      // home: MyHomePage(
-      //   title: 'SDK Demo',
-      //   sessionId: '20220916144013',
-      // ),
+      // home: FirstPage(title: 'SDK Demo'),
+      home: MyHomePage(
+        title: 'SDK Demo',
+        sessionId: '20221007149933',
+      ),
     );
   }
 }
@@ -105,31 +105,31 @@ class _MyHomePageState extends State<MyHomePage> {
         automaticallyImplyLeading: true,
       ),
       body: ClaimFolderView(
-        sessionId: widget.sessionId,
-        // sessionId: '20220916144013', // a Trung
-        // sessionId: '20220922144893', // chị Diệp
-        maDonVi: '016',
-        phoneNumber: '0972795635',
-        kieuCongViec: 'G',
-        loaiCongViec: 'G',
-        deviceId: '5EC1BDF2B4D1FD7B',
-        maDonViNguoiDangNhap: '090',
-        maGiamDinhVien: 'LDH',
-        bienSoXe: '29A1223',
-        hangXe: 'TOYOTA',
-        hieuXe: 'VIOS E',
-        onGetResultCallBack: (data) {
-          print(data.toString());
-        },
-        onError: (message) {
-          // handle error here.
-          print(message);
-        },
-        // Liên hệ để có token key
-        uTokenKey:
-            // 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMyIsImlhdCI6MTY2MzkwMjYzMSwiZXhwIjoxNjYzOTg5MDMxfQ.yVGx5Mm2LdKRGjrOrvwaMd6JDezyGawBXTERYDydWv0'
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNyIsImlhdCI6MTY2MTMwNzQ3OCwiZXhwIjoxNzQ3NzA3NDc4fQ.Uk9RRkXmVxCh9xoiOrzVlF6z2Yku9u8f1w6jHanY-V8',
-      ),
+          sessionId: widget.sessionId,
+          // sessionId: '20220916144013', // a Trung
+          // sessionId: '20220922144893', // chị Diệp
+          maDonVi: '016',
+          phoneNumber: '0972795635',
+          kieuCongViec: 'G',
+          loaiCongViec: 'G',
+          deviceId: '5EC1BDF2B4D1FD7B',
+          maDonViNguoiDangNhap: '090',
+          maGiamDinhVien: 'LDH',
+          bienSoXe: '29A1223',
+          hangXe: 'TOYOTA',
+          hieuXe: 'VIOS E',
+          onGetResultCallBack: (data) {
+            print(data.toString());
+          },
+          onError: (message) {
+            // handle error here.
+            print(message);
+          },
+          // Liên hệ để có token key
+          uTokenKey:
+              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwiaWF0IjoxNjY1NDYwODI4fQ.k6KtEJDb3BntLXqVTdYLq8Lwc5YBUngwuCvID7KtJFk'
+          // 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNyIsImlhdCI6MTY2MTMwNzQ3OCwiZXhwIjoxNzQ3NzA3NDc4fQ.Uk9RRkXmVxCh9xoiOrzVlF6z2Yku9u8f1w6jHanY-V8',
+          ),
     );
   }
 }
