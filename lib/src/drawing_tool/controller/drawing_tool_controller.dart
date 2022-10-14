@@ -108,17 +108,14 @@ class DrawingToolController extends GetxController {
   Future<void> initBackground() async {
     backgroundImage = Rx<ui.Image>(await (FileImage(File(imageUrl)).image));
     paintController.background = backgroundImage.value.backgroundDrawable;
-    // await initMask();
   }
 
   /// Khởi tạo mask đã có
   Future<void> initMask() async {
-    // for (var part in damageAssess.value.carParts) {
     for (var mask in initDamageModelList) {
       var img = await CachedNetworkImageProvider(mask.maskUrl).image;
       initNetworkMask[mask.maskUrl] = img;
     }
-    // }
   }
 
   /// Tạo mask
@@ -148,9 +145,11 @@ class DrawingToolController extends GetxController {
           (await img.toByteData(format: ui.ImageByteFormat.png))
               .buffer
               .asUint8List());
-
-      var _color = HexColor.fromHex(currentDamageClass.colorHex)
-          .withOpacity(damageBaseOpacity);
+      // var _hexColor = currentDamageClass.colorHex;
+      var _damageType = DamageTypeConstant.listDamageType
+          .firstWhere((element) => element.damageTypeGuid == mask.uuid);
+      var _color =
+          HexColor.fromHex(_damageType.colorHex).withOpacity(damageBaseOpacity);
       tImg = imageplugin.colorOffset(
         tImg,
         alpha: -256 + _color.alpha,
@@ -354,5 +353,16 @@ class DrawingToolController extends GetxController {
       currentDamageType.value = result;
       await setDamageMask();
     }
+  }
+
+  void onYesTapped() async {
+    drawStatus.value = DrawStatus.drawing;
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) async {
+      var renderObj =
+          painterKey.currentContext?.findRenderObject() as RenderBox;
+      painterSize = renderObj.size;
+      // await imageMaskToDrawable();
+      setDamageMask();
+    });
   }
 }

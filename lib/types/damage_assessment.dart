@@ -45,46 +45,4 @@ class DamageAssessmentModel {
   }
 }
 
-// class CarDamageModel {
-//   final String className;
-//   final String maskUrl;
-//   final String? location;
-//   final num score;
-//   final List<dynamic> boxes;
-//   final String maskPath;
-//   final bool isPart;
-//   final Color color;
-
-//   CarDamageModel({
-//      this.className,
-//      this.location,
-//      this.score,
-//      this.boxes,
-//      this.maskPath,
-//      this.isPart,
-//      this.maskUrl,
-//      this.color,
-//   });
-
-//   factory CarDamageModel.fromJson(Map<String, dynamic> json) {
-//     int damageIdx = LocalStorageService()
-//         .damageTypes
-//         .indexWhere((element) => element.damageTypeGuid == json['class_uuid']);
-//     String _name = 'Unknown';
-//     if (damageIdx != -1) {
-//       _name = LocalStorageService().damageTypes[damageIdx].damageTypeName;
-//     }
-//     return CarDamageModel(
-//       className: json['damage_type_name'] ?? _name,
-//       location: json['location'],
-//       score: json['score'],
-//       boxes: json['box'],
-//       maskPath: json['mask_path'],
-//       isPart: json['is_part'],
-//       maskUrl: json['mask_url'] ?? '',
-//       color: json['damage_type_color'] != null
-//           ? HexColor.fromHex(json['car_part_color'])
-//           : Colors.transparent,
-//     );
-//   }
 // }
