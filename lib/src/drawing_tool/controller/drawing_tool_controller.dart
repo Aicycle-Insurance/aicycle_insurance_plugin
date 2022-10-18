@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:aicycle_insurance_non_null_safety/types/damage.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../src/common/dialog/process_dialog.dart';
 import '../../../src/constants/endpoints.dart';
@@ -265,6 +266,7 @@ class DrawingToolController extends GetxController {
         int idx = DamageTypeConstant.listDamageType.indexWhere(
             (element) => element.damageTypeName == correctedData.damageClass);
 
+        print(DamageTypeConstant.listDamageType[idx].damageTypeGuid);
         damagePayload.add({
           "class": DamageTypeConstant.listDamageType[idx].damageTypeGuid,
           "maskPath": correctedData.maskImgName,
@@ -275,7 +277,6 @@ class DrawingToolController extends GetxController {
         {"damages": damagePayload},
         token: token,
       );
-      print(editResponse.body);
       if (editResponse != null) {
         return DamageAssessmentModel.fromJson(editResponse.body)
             .copyWith(imageId: damageAssess.value.imageId);

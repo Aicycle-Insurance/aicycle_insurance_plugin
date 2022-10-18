@@ -42,7 +42,6 @@ class PreviewImageWithMask extends StatelessWidget {
               j++) {
             var carPartDamage =
                 damageAssess.value.carParts[i].carPartDamages[j];
-            print(carPartDamage.className);
             if (!cachedDamageType.contains(carPartDamage.uuid)) {
               cachedDamageType.add(carPartDamage.uuid);
               listInitDamageModel.add(carPartDamage);

@@ -106,8 +106,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: ClaimFolderView(
           sessionId: widget.sessionId,
-          // sessionId: '20220916144013', // a Trung
-          // sessionId: '20220922144893', // chị Diệp
           maDonVi: '016',
           phoneNumber: '0972795635',
           kieuCongViec: 'G',
