@@ -142,7 +142,6 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                             _handleCameraDoNotHavePermission(result),
                         selectDefaultSize: (List<Size> availableSizes) {
                           // return availableSizes[0];
-                          print(availableSizes);
                           return Size(1280.0, 960.0);
                         },
                         sensor: controller.sensor,

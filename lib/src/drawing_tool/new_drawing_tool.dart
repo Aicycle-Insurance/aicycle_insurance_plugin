@@ -75,22 +75,6 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
         ),
       );
     }
-    // if (widget.damageAssess.value.carDamages.isNotEmpty) {
-    //   var currentType = DamageTypeConstant.listDamageType.firstWhere(
-    //       (element) =>
-    //           element.damageTypeGuid ==
-    //           widget.damageAssess.value.carDamages.first.uuid);
-    //   currentDamageType = Rx<DamageTypes>(currentType);
-    //   paintController.freeStyleColor =
-    //       HexColor.fromHex(currentType.colorHex).withOpacity(damageBaseOpacity);
-    // } else {
-    //   currentDamageType = Rx<DamageTypes>(DamageTypeConstant.typeDent);
-    // }
-    // currentDamageType.listen((p0) {
-    //   paintController.freeStyleColor =
-    //       HexColor.fromHex(p0.colorHex).withOpacity(damageBaseOpacity);
-    // });
-    // drawStatus = Rx<DrawStatus>(DrawStatus.none);
   }
 
   @override
@@ -208,19 +192,7 @@ class _NewDrawingToolLayerState extends State<NewDrawingToolLayer> {
                                           ],
                                         ),
                                       ),
-                                      onPressed: () {
-                                        controller.drawStatus.value =
-                                            DrawStatus.drawing;
-                                        WidgetsBinding.instance
-                                            ?.addPostFrameCallback((timeStamp) {
-                                          var renderObj = controller
-                                              .painterKey.currentContext
-                                              ?.findRenderObject() as RenderBox;
-                                          controller.painterSize =
-                                              renderObj.size;
-                                          controller.setDamageMask();
-                                        });
-                                      },
+                                      onPressed: controller.onYesTapped,
                                     ),
                                   ],
                                 ),
