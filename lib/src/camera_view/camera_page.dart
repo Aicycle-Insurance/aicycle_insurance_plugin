@@ -343,7 +343,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                   ],
                 ),
               ),
-              Flexible(
+              Expanded(
                 child: BottomActionBar(
                   currentArg: controller.currentArg,
                   currentTabIndex: controller.currentTabIndex,

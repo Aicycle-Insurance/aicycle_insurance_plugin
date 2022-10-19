@@ -277,7 +277,8 @@ class CameraController extends GetxController
           },
           token: currentArg.value.token,
         );
-        if (callEngineResponse.statusCode == 200) {
+        if (callEngineResponse.statusCode == 200 &&
+            callEngineResponse.body != null) {
           geImageInPartDirection().whenComplete(() {
             switch (currentTabIndex.value) {
               case 0:

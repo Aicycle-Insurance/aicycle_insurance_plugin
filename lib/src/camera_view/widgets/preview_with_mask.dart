@@ -37,6 +37,26 @@ class PreviewImageWithMask extends StatelessWidget {
           var imWidth = damageAssess.value.imageSize[0].toDouble();
           var imHeight = damageAssess.value.imageSize[1].toDouble();
           // duyệt các damages của từng part
+          // var colorPart =
+          //     Colors.red.withOpacity(damageBaseOpacity) ?? Colors.transparent;
+          // var boxPart = damageAssess.value.carParts[i].carPartBoxes;
+          // masks.add(
+          //   Positioned(
+          //     left: boxPart[0].toDouble() * imWidth,
+          //     top: boxPart[1].toDouble() * imHeight,
+          //     child: SizedBox(
+          //       width: imWidth * (boxPart[2] - boxPart[0]),
+          //       height: imHeight * (boxPart[3] - boxPart[1]),
+          //       child: CachedNetworkImage(
+          //         imageUrl: damageAssess.value.carParts[i].carPartMaskUrl,
+          //         fit: BoxFit.fill,
+          //         color: colorPart,
+          //         width: imWidth * (boxPart[2] - boxPart[0]),
+          //         height: imHeight * (boxPart[3] - boxPart[1]),
+          //       ),
+          //     ),
+          //   ),
+          // );
           for (var j = 0;
               j < damageAssess.value.carParts[i].carPartDamages.length;
               j++) {
@@ -56,14 +76,14 @@ class PreviewImageWithMask extends StatelessWidget {
                     left: box[0].toDouble() * imWidth,
                     top: box[1].toDouble() * imHeight,
                     child: SizedBox(
-                      width: imWidth * (box[2] - box[0]),
-                      height: imHeight * (box[3] - box[1]),
+                      // width: imWidth * (box[2] - box[0]),
+                      // height: imHeight * (box[3] - box[1]),
                       child: CachedNetworkImage(
                         imageUrl: carPartDamage.maskUrl,
                         fit: BoxFit.fill,
                         color: color,
-                        width: imWidth * (box[2] - box[0]),
-                        height: imHeight * (box[3] - box[1]),
+                        // width: imWidth * (box[2] - box[0]),
+                        // height: imHeight * (box[3] - box[1]),
                       ),
                     ),
                   ),
@@ -75,14 +95,14 @@ class PreviewImageWithMask extends StatelessWidget {
       }
       if (listDamageModelCallBack != null)
         listDamageModelCallBack(listInitDamageModel);
-      if (previewUserMaskImagesBuffer != null) {
-        for (var maskImageBuffer in previewUserMaskImagesBuffer) {
-          masks.add(Image.memory(
-            maskImageBuffer,
-            fit: BoxFit.fill,
-          ));
-        }
-      }
+      // if (previewUserMaskImagesBuffer != null) {
+      //   for (var maskImageBuffer in previewUserMaskImagesBuffer) {
+      //     masks.add(Image.memory(
+      //       maskImageBuffer,
+      //       fit: BoxFit.fill,
+      //     ));
+      //   }
+      // }
       return Container(
         color: Colors.black,
         child: InteractiveViewer(
