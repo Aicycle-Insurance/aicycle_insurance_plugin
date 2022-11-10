@@ -266,7 +266,6 @@ class DrawingToolController extends GetxController {
         int idx = DamageTypeConstant.listDamageType.indexWhere(
             (element) => element.damageTypeName == correctedData.damageClass);
 
-        print(DamageTypeConstant.listDamageType[idx].damageTypeGuid);
         damagePayload.add({
           "class": DamageTypeConstant.listDamageType[idx].damageTypeGuid,
           "maskPath": correctedData.maskImgName,
@@ -277,7 +276,8 @@ class DrawingToolController extends GetxController {
         {"damages": damagePayload},
         token: token,
       );
-      if (editResponse != null) {
+      if (editResponse.body != null) {
+        print(editResponse.body);
         return DamageAssessmentModel.fromJson(editResponse.body)
             .copyWith(imageId: damageAssess.value.imageId);
       }

@@ -1,3 +1,8 @@
+## 0.2.4
+ - Sửa lỗi hiển thị mask thiệt hại
+## 0.2.3
+ - Đổi URL sang triton server
+ - Sửa lỗi vẽ/sửa/xoá thiệt hại
 ## 0.2.2
  - Sửa lỗi xoá ảnh
 ## 0.2.1
