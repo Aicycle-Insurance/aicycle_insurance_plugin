@@ -1,4 +1,6 @@
 ## 0.2.4
+ - Sửa lỗi chụp ảnh cận cảnh
+## 0.2.4
  - Sửa lỗi hiển thị mask thiệt hại
 ## 0.2.3
  - Đổi URL sang triton server

@@ -287,14 +287,19 @@ class CameraController extends GetxController
                     DamageAssessmentModel.fromJson(callEngineResponse.body);
                 break;
               case 2:
-                damageAssessment.value = DamageAssessmentModel(
-                  carDamages: [],
-                  carParts: [],
-                  imageId:
-                      int.parse(callEngineResponse.body['imageId'].toString()),
-                  imageSize: [],
-                  imgUrl: '',
-                );
+                if ((callEngineResponse.body['result'] as List).isNotEmpty ==
+                    true) {
+                  damageAssessment.value = DamageAssessmentModel(
+                    carDamages: [],
+                    carParts: [],
+                    imageId: int.parse(
+                        (callEngineResponse.body['result'] as List)
+                            .first['imageId']
+                            .toString()),
+                    imageSize: [],
+                    imgUrl: '',
+                  );
+                }
                 break;
             }
             checkInitCarPart();
